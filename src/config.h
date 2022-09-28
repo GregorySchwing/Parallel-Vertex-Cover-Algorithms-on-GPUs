@@ -69,11 +69,18 @@ static void usage()
             "                                  determined by the code according to the \n"
             "                                  abilities of the gpu and the size of the graph.\n"
             "\n"
-            "   -n <Number of Blocks>               Used to determine the numer of blocks for \n"
+            "   -n <Number of Blocks>               Used to determine the number of blocks for \n"
             "                                  the gpu to run. Must be an Integer. If not \n"
             "                                  determined by the user it will be determined \n"
             "                                  by the code according to the abilities of the\n"
             "                                  gpu and the size of the graph.\n"
+            "\n"
+            "   -m <Use MIS Branching>              Used to determine if the code should use \n"
+            "                                  neighborhood or degree-priority MIS branching\n"
+            "                                  (Mentioned in Referenced Paper). Is either 0 \n"
+            "                                  or 1. If not provided by the user it will be \n"
+            "                                  determined by the code according to the \n"
+            "                                  average edge-connectivity of the graph.\n"
             "\n"
             "\n");
 }
@@ -167,6 +174,7 @@ struct Config
     unsigned int numBlocks;
     bool userDefMemory;
     bool useGlobalMemory;
+    bool useMaximalIndependentSetBranching;
     unsigned int blockDim;
     unsigned int globalListSize;
     float globalListThreshold;
@@ -192,7 +200,7 @@ static Config parseArgs(int argc, char **argv)
     config.graphFileName = "GraphInput.txt";
 
     int opt;
-    while ((opt = getopt(argc, argv, "v:f:o:i:k:q:t:d:b:g:n:h")) >= 0)
+    while ((opt = getopt(argc, argv, "v:f:o:i:k:q:t:d:b:g:n:m:h")) >= 0)
     {
         switch (opt)
         {
@@ -229,6 +237,9 @@ static Config parseArgs(int argc, char **argv)
             break;
         case 'n':
             config.numBlocks = atoi(optarg);
+            break;
+        case 'm':
+            config.useMaximalIndependentSetBranching = atoi(optarg);
             break;
         case 'h':
             usage();
