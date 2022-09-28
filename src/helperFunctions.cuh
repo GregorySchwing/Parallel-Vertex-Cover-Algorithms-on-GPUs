@@ -24,6 +24,30 @@ __device__ bool binarySearch(unsigned int * arr, unsigned int l, unsigned int r,
     return false;
 }
 
+/*
+__device__ void solveMISOfMaxDegreeVertex(CSRGraph graph,int* vertexDegrees_s, unsigned int* numDeletedVertices, int maxDegree, unsigned int maxVertex){
+
+    // Load degrees of entire graph into SM, could possibly just use vertexDegrees_s here
+    // vertexDegrees_s is treated as read-only, and this kernel just solves the MIS.
+    //*numDeletedVertices2 = *numDeletedVertices;
+    //for(unsigned int vertex = threadIdx.x; vertex<graph.vertexNum; vertex+=blockDim.x){
+    //    vertexDegrees_s2[vertex] = vertexDegrees_s[vertex];
+    //}
+    //__syncthreads();
+
+    // The first vertex in the MIS will automatically be the max vertex, v.
+    // Then the difference between MIS branching and neighbor branching is
+    // Do the neighbors of v, N(v) = {w,y}, solve the MIS of N(w)/w; N(y)/y?
+    // The only way a radius > 1 makes sense if the memory is laid out like so
+    // v → w → N(w) → y → N(y)
+    for(unsigned int edge = graph.srcPtr[maxVertex] ; edge < graph.srcPtr[maxVertex + 1]; ++edge) {
+        unsigned int neighbor = graph.dst[edge];
+        int neighborDegree = vertexDegrees_s[neighbor];
+        
+    }
+}
+
+*/
 __device__ void deleteNeighborsOfMaxDegreeVertex(CSRGraph graph,int* vertexDegrees_s, unsigned int* numDeletedVertices, int* vertexDegrees_s2, 
     unsigned int* numDeletedVertices2, int maxDegree, unsigned int maxVertex){
 
@@ -54,6 +78,68 @@ __device__ void deleteNeighborsOfMaxDegreeVertex(CSRGraph graph,int* vertexDegre
     }
 }
 
+/*
+__device__ void deleteMISOfMaxDegreeVertex(CSRGraph graph,int* vertexDegrees_s, unsigned int* numDeletedVertices, int* vertexDegrees_s2, 
+    unsigned int* numDeletedVertices2, int maxDegree, unsigned int maxVertex){
+
+    *numDeletedVertices2 = *numDeletedVertices;
+    for(unsigned int vertex = threadIdx.x; vertex<graph.vertexNum; vertex+=blockDim.x){
+        vertexDegrees_s2[vertex] = vertexDegrees_s[vertex];
+    }
+    __syncthreads();
+
+    for(unsigned int edge = graph.srcPtr[maxVertex] + threadIdx.x; edge < graph.srcPtr[maxVertex + 1]; edge+=blockDim.x) { // Delete Neighbors of maxVertex
+        unsigned int neighbor = graph.dst[edge];
+        if (vertexDegrees_s2[neighbor] != -1){
+            for(unsigned int neighborEdge = graph.srcPtr[neighbor]; neighborEdge < graph.srcPtr[neighbor + 1]; ++neighborEdge) {
+                unsigned int neighborOfNeighbor = graph.dst[neighborEdge];
+                if(vertexDegrees_s2[neighborOfNeighbor] != -1) {
+                    atomicSub(&vertexDegrees_s2[neighborOfNeighbor], 1);
+                }
+            }
+        }
+    }
+    
+    *numDeletedVertices2 += maxDegree;
+    __syncthreads();
+
+    for(unsigned int edge = graph.srcPtr[maxVertex] + threadIdx.x; edge < graph.srcPtr[maxVertex + 1] ; edge += blockDim.x) {
+        unsigned int neighbor = graph.dst[edge];
+        vertexDegrees_s2[neighbor] = -1;
+    }
+}
+
+
+__device__ void deleteComplementMISOfMaxDegreeVertex(CSRGraph graph,int* vertexDegrees_s, unsigned int* numDeletedVertices, int* vertexDegrees_s2, 
+    unsigned int* numDeletedVertices2, int maxDegree, unsigned int maxVertex){
+
+    *numDeletedVertices2 = *numDeletedVertices;
+    for(unsigned int vertex = threadIdx.x; vertex<graph.vertexNum; vertex+=blockDim.x){
+        vertexDegrees_s2[vertex] = vertexDegrees_s[vertex];
+    }
+    __syncthreads();
+
+    for(unsigned int edge = graph.srcPtr[maxVertex] + threadIdx.x; edge < graph.srcPtr[maxVertex + 1]; edge+=blockDim.x) { // Delete Neighbors of maxVertex
+        unsigned int neighbor = graph.dst[edge];
+        if (vertexDegrees_s2[neighbor] != -1){
+            for(unsigned int neighborEdge = graph.srcPtr[neighbor]; neighborEdge < graph.srcPtr[neighbor + 1]; ++neighborEdge) {
+                unsigned int neighborOfNeighbor = graph.dst[neighborEdge];
+                if(vertexDegrees_s2[neighborOfNeighbor] != -1) {
+                    atomicSub(&vertexDegrees_s2[neighborOfNeighbor], 1);
+                }
+            }
+        }
+    }
+    
+    *numDeletedVertices2 += maxDegree;
+    __syncthreads();
+
+    for(unsigned int edge = graph.srcPtr[maxVertex] + threadIdx.x; edge < graph.srcPtr[maxVertex + 1] ; edge += blockDim.x) {
+        unsigned int neighbor = graph.dst[edge];
+        vertexDegrees_s2[neighbor] = -1;
+    }
+}
+*/
 __device__ void deleteMaxDegreeVertex(CSRGraph graph,int* vertexDegrees_s, unsigned int* numDeletedVertices, unsigned int maxVertex){
 
     if(threadIdx.x == 0){
@@ -324,7 +410,54 @@ __device__ void findMaxDegree(unsigned int vertexNum, unsigned int *maxVertex, i
     *maxVertex = vertex_s[0];
     *maxDegree = degree_s[0];
 }
+/*
+// Imanaga et al.
+__device__ unsigned int breakTie(unsigned int x){
+    x = ((x >> 16)^ x) * 0x45d9f3b;
+    x = ((x >> 16)^ x) * 0x45d9f3b;
+    x = (x >>16)^ x;
+    return x;
+}
 
+__device__ void findMaxDegree_with_tiebreaker(unsigned int vertexNum, unsigned int *maxVertex, int *maxDegree, int *vertexDegrees_s, int * shared_mem) {
+    *maxVertex = 0;
+    *maxDegree = 0;
+    for(unsigned int vertex = threadIdx.x; vertex < vertexNum; vertex += blockDim.x) {
+        int degree = vertexDegrees_s[vertex];
+        if(degree > *maxDegree){ 
+            *maxVertex = vertex;
+            *maxDegree = degree;
+        } else if (degree == *maxDegree && breakTie(vertex) > breakTie(*maxVertex)){
+            *maxVertex = vertex;
+            *maxDegree = degree;            
+        }
+    }
+
+    // Reduce max degree
+    int * vertex_s = shared_mem;
+    int * degree_s = &shared_mem[blockDim.x];
+    __syncthreads(); 
+
+    vertex_s[threadIdx.x] = *maxVertex;
+    degree_s[threadIdx.x] = *maxDegree;
+    __syncthreads();
+
+    for(unsigned int stride = blockDim.x/2; stride > 0; stride /= 2) {
+        if(threadIdx.x < stride) {
+            if(degree_s[threadIdx.x] < degree_s[threadIdx.x + stride]){
+                degree_s[threadIdx.x] = degree_s[threadIdx.x + stride];
+                vertex_s[threadIdx.x] = vertex_s[threadIdx.x + stride];
+            } else if (degree_s[threadIdx.x] == degree_s[threadIdx.x + stride] && breakTie(vertex_s[threadIdx.x]) > breakTie(vertex_s[threadIdx.x + stride])) {
+                degree_s[threadIdx.x] = degree_s[threadIdx.x + stride];
+                vertex_s[threadIdx.x] = vertex_s[threadIdx.x + stride];
+            }
+        }
+        __syncthreads();
+    }
+    *maxVertex = vertex_s[0];
+    *maxDegree = degree_s[0];
+}
+*/
 __device__ unsigned int findNumOfEdges(unsigned int vertexNum, int *vertexDegrees_s, int * shared_mem){
     int sumDegree = 0;
     for(unsigned int vertex = threadIdx.x; vertex < vertexNum; vertex += blockDim.x) {
@@ -339,6 +472,7 @@ __device__ unsigned int findNumOfEdges(unsigned int vertexNum, int *vertexDegree
     
     __syncthreads();
     
+    // Add an option to compile with warp shuffle
     for(unsigned int stride = blockDim.x/2; stride > 0; stride /= 2) {
         if(threadIdx.x < stride) {
             degree_s[threadIdx.x] += degree_s[threadIdx.x + stride];

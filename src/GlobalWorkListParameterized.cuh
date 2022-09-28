@@ -202,13 +202,13 @@ __global__ void GlobalWorkListParameterized_shared_kernel(Stacks stacks, WorkLis
 
 }
 
-
+/*
 #if USE_GLOBAL_MEMORY
 __global__ void GlobalWorkListParameterized_global_kernel_MIS(Stacks stacks, WorkList workList, CSRGraph graph, Counters* counters
-    , int* first_to_dequeue_global, int hashFunctionParameter = 0x45d9f3b, int* global_memory, unsigned int * k, unsigned int * kFound, int* NODES_PER_SM) {
+    , int* first_to_dequeue_global, int* global_memory, unsigned int * k, unsigned int * kFound, int* NODES_PER_SM, int hashFunctionParameter = 0x45d9f3b) {
 #else
 __global__ void GlobalWorkListParameterized_shared_kernel_MIS(Stacks stacks, WorkList workList, CSRGraph graph, Counters* counters
-    , int* first_to_dequeue_global, int hashFunctionParameter = 0x45d9f3b, unsigned int * k, unsigned int * kFound, int* NODES_PER_SM) {
+    , int* first_to_dequeue_global, unsigned int * k, unsigned int * kFound, int* NODES_PER_SM, int hashFunctionParameter = 0x45d9f3b) {
 #endif
 
     __shared__ Counters blockCounters;
@@ -335,7 +335,7 @@ __global__ void GlobalWorkListParameterized_shared_kernel_MIS(Stacks stacks, Wor
             unsigned int maxVertex;
             int maxDegree;
             startTime(MAX_DEGREE,&blockCounters);
-            findMaxDegree(graph.vertexNum, &maxVertex, &maxDegree, vertexDegrees_s, vertexDegrees_s2);
+            findMaxDegree_with_tiebreaker(graph.vertexNum, &maxVertex, &maxDegree, vertexDegrees_s, vertexDegrees_s2);
             endTime(MAX_DEGREE,&blockCounters);
 
             __syncthreads();
@@ -352,11 +352,13 @@ __global__ void GlobalWorkListParameterized_shared_kernel_MIS(Stacks stacks, Wor
             } else { // Vertex cover not found, need to branch
 
                 startTime(FIND_MIS,&blockCounters);
-                deleteNeighborsOfMaxDegreeVertex(graph,vertexDegrees_s, &numDeletedVertices, vertexDegrees_s2, &numDeletedVertices2, maxDegree, maxVertex);
+                //solveMISOfMaxDegreeVertex(graph,vertexDegrees_s, &numDeletedVertices, vertexDegrees_s2, &numDeletedVertices2, maxDegree, maxVertex);
                 endTime(FIND_MIS,&blockCounters);
 
+                __syncthreads();
+
                 startTime(PREPARE_RIGHT_CHILD,&blockCounters);
-                deleteNeighborsOfMaxDegreeVertex(graph,vertexDegrees_s, &numDeletedVertices, vertexDegrees_s2, &numDeletedVertices2, maxDegree, maxVertex);
+                //deleteMISOfMaxDegreeVertex(graph,vertexDegrees_s, &numDeletedVertices, vertexDegrees_s2, &numDeletedVertices2, maxDegree, maxVertex);
                 endTime(PREPARE_RIGHT_CHILD,&blockCounters);
 
                 __syncthreads();
@@ -383,7 +385,7 @@ __global__ void GlobalWorkListParameterized_shared_kernel_MIS(Stacks stacks, Wor
 
                 startTime(PREPARE_LEFT_CHILD,&blockCounters);
                 // Prepare the child that removes the neighbors of the max vertex to be processed on the next iteration
-                deleteMaxDegreeVertex(graph, vertexDegrees_s, &numDeletedVertices, maxVertex);
+                //deleteComplementMISOfMaxDegreeVertex(graph, vertexDegrees_s, &numDeletedVertices, maxVertex);
                 endTime(PREPARE_LEFT_CHILD,&blockCounters);
 
                 dequeueOrPopNextItr = false;
@@ -399,3 +401,4 @@ __global__ void GlobalWorkListParameterized_shared_kernel_MIS(Stacks stacks, Wor
     #endif
 
 }
+*/
