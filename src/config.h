@@ -75,12 +75,12 @@ static void usage()
             "                                  by the code according to the abilities of the\n"
             "                                  gpu and the size of the graph.\n"
             "\n"
-            "   -m <Use MIS Branching>              Used to determine if the code should use \n"
-            "                                  neighborhood or degree-priority MIS branching\n"
-            "                                  (Mentioned in Referenced Paper). Is either 0 \n"
-            "                                  or 1. If not provided by the user it will be \n"
+            "   -hops <Number of Hops>              Used to determine the number of hops in \n"
+            "                                  defining the neighborhood used for MIS branching\n"
+            "                                  (Mentioned in Referenced Paper). Must be an Integer\n"
+            "                                  (>= 1). If not provided by the user it will be \n"
             "                                  determined by the code according to the \n"
-            "                                  average edge-connectivity of the graph.\n"
+            "                                  clustering coefficient of the graph.\n"
             "\n"
             "\n");
 }
@@ -174,7 +174,7 @@ struct Config
     unsigned int numBlocks;
     bool userDefMemory;
     bool useGlobalMemory;
-    bool useMaximalIndependentSetBranching;
+    unsigned int numHops;
     unsigned int blockDim;
     unsigned int globalListSize;
     float globalListThreshold;
@@ -200,7 +200,7 @@ static Config parseArgs(int argc, char **argv)
     config.graphFileName = "GraphInput.txt";
 
     int opt;
-    while ((opt = getopt(argc, argv, "v:f:o:i:k:q:t:d:b:g:n:m:h")) >= 0)
+    while ((opt = getopt(argc, argv, "v:f:o:i:k:q:t:d:b:g:n:hops:h")) >= 0)
     {
         switch (opt)
         {
@@ -238,8 +238,8 @@ static Config parseArgs(int argc, char **argv)
         case 'n':
             config.numBlocks = atoi(optarg);
             break;
-        case 'm':
-            config.useMaximalIndependentSetBranching = atoi(optarg);
+        case 'hops':
+            config.numHops  = atoi(optarg);
             break;
         case 'h':
             usage();

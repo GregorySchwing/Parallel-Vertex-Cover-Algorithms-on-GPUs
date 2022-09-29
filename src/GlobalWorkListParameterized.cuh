@@ -202,7 +202,7 @@ __global__ void GlobalWorkListParameterized_shared_kernel(Stacks stacks, WorkLis
 
 }
 
-/*
+
 #if USE_GLOBAL_MEMORY
 __global__ void GlobalWorkListParameterized_global_kernel_MIS(Stacks stacks, WorkList workList, CSRGraph graph, Counters* counters
     , int* first_to_dequeue_global, int* global_memory, unsigned int * k, unsigned int * kFound, int* NODES_PER_SM, int hashFunctionParameter = 0x45d9f3b) {
@@ -351,15 +351,16 @@ __global__ void GlobalWorkListParameterized_shared_kernel_MIS(Stacks stacks, Wor
 
             } else { // Vertex cover not found, need to branch
 
-                startTime(FIND_MIS,&blockCounters);
-                //solveMISOfMaxDegreeVertex(graph,vertexDegrees_s, &numDeletedVertices, vertexDegrees_s2, &numDeletedVertices2, maxDegree, maxVertex);
-                endTime(FIND_MIS,&blockCounters);
+                // Perhaps use recursion here.
+                startTime(PREPARE_RIGHT_CHILD,&blockCounters);
+                deleteNeighborsOfMaxDegreeVertex(graph,vertexDegrees_s, &numDeletedVertices, vertexDegrees_s2, &numDeletedVertices2, maxDegree, maxVertex);
+                endTime(PREPARE_RIGHT_CHILD,&blockCounters);
 
                 __syncthreads();
 
-                startTime(PREPARE_RIGHT_CHILD,&blockCounters);
-                //deleteMISOfMaxDegreeVertex(graph,vertexDegrees_s, &numDeletedVertices, vertexDegrees_s2, &numDeletedVertices2, maxDegree, maxVertex);
-                endTime(PREPARE_RIGHT_CHILD,&blockCounters);
+                startTime(FIND_MIS,&blockCounters);
+                //solveMISOfMaxDegreeVertex(graph,vertexDegrees_s, &numDeletedVertices, vertexDegrees_s2, &numDeletedVertices2, maxDegree, maxVertex);
+                endTime(FIND_MIS,&blockCounters);
 
                 __syncthreads();
 
@@ -401,4 +402,3 @@ __global__ void GlobalWorkListParameterized_shared_kernel_MIS(Stacks stacks, Wor
     #endif
 
 }
-*/

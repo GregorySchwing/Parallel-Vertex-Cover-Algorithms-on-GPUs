@@ -410,7 +410,7 @@ __device__ void findMaxDegree(unsigned int vertexNum, unsigned int *maxVertex, i
     *maxVertex = vertex_s[0];
     *maxDegree = degree_s[0];
 }
-/*
+
 // Imanaga et al.
 __device__ unsigned int breakTie(unsigned int x){
     x = ((x >> 16)^ x) * 0x45d9f3b;
@@ -447,7 +447,152 @@ __device__ void findMaxDegree_with_tiebreaker(unsigned int vertexNum, unsigned i
             if(degree_s[threadIdx.x] < degree_s[threadIdx.x + stride]){
                 degree_s[threadIdx.x] = degree_s[threadIdx.x + stride];
                 vertex_s[threadIdx.x] = vertex_s[threadIdx.x + stride];
-            } else if (degree_s[threadIdx.x] == degree_s[threadIdx.x + stride] && breakTie(vertex_s[threadIdx.x]) > breakTie(vertex_s[threadIdx.x + stride])) {
+            } else if (degree_s[threadIdx.x] == degree_s[threadIdx.x + stride] && breakTie(vertex_s[threadIdx.x]) < breakTie(vertex_s[threadIdx.x + stride])) {
+                degree_s[threadIdx.x] = degree_s[threadIdx.x + stride];
+                vertex_s[threadIdx.x] = vertex_s[threadIdx.x + stride];
+            }
+        }
+        __syncthreads();
+    }
+    *maxVertex = vertex_s[0];
+    *maxDegree = degree_s[0];
+}
+
+
+__device__ void findMaxDegreeKHop(CSRGraph graph, int *vertexDegrees_s, int * shared_mem, int vertex, int k, unsigned int *maxVertex, int *maxDegree) {
+    // Base Case
+    if (k == 1){
+        // Hop to neighbors of v, N(v) = {w,y}
+        // The only way a radius > 1 makes sense if the memory is laid out like so
+        // v → w → N(w) → y → N(y)
+        // HALO-II is imperative here.
+        // Note the lack of thread parallelism in this loop.
+        // All threads call the recursive function with the same neighbor.
+        for(unsigned int edge = graph.srcPtr[vertex] + threadIdx.x; edge < graph.srcPtr[vertex + 1]; ++edge) {
+            // This should be maximally coalesced if pre-sorted by HALO-II
+            unsigned int neighbor = graph.dst[edge];
+            int degree = vertexDegrees_s[neighbor];
+            if(degree > *maxDegree){ 
+                *maxVertex = neighbor;
+                *maxDegree = degree;
+            } else if (degree == *maxDegree && breakTie(neighbor) > breakTie(*maxVertex)){
+                *maxVertex = neighbor;
+                *maxDegree = degree;            
+            }
+        }
+
+        // Reduce max degree
+        int * vertex_s = shared_mem;
+        int * degree_s = &shared_mem[blockDim.x];
+        __syncthreads(); 
+
+        vertex_s[threadIdx.x] = *maxVertex;
+        degree_s[threadIdx.x] = *maxDegree;
+        __syncthreads();
+
+        for(unsigned int stride = blockDim.x/2; stride > 0; stride /= 2) {
+            if(threadIdx.x < stride) {
+                if(degree_s[threadIdx.x] < degree_s[threadIdx.x + stride]){
+                    degree_s[threadIdx.x] = degree_s[threadIdx.x + stride];
+                    vertex_s[threadIdx.x] = vertex_s[threadIdx.x + stride];
+                } else if (degree_s[threadIdx.x] == degree_s[threadIdx.x + stride] && breakTie(vertex_s[threadIdx.x]) < breakTie(vertex_s[threadIdx.x + stride])) {
+                    degree_s[threadIdx.x] = degree_s[threadIdx.x + stride];
+                    vertex_s[threadIdx.x] = vertex_s[threadIdx.x + stride];
+                }
+            }
+            __syncthreads();
+        }
+        *maxVertex = vertex_s[0];
+        *maxDegree = degree_s[0];
+        
+        return;
+    // KHop(k - 1)
+    } else {
+        for(unsigned int edge = graph.srcPtr[*maxVertex]; edge < graph.srcPtr[*maxVertex + 1] ; ++edge) {
+            unsigned int neighbor = graph.dst[edge];
+            findMaxDegreeKHop(graph, vertexDegrees_s, shared_mem, neighbor, k-1, maxVertex, maxDegree);
+            // make sure maxVertex, maxDegree has been updated.
+            // might even need a thread fence, for the global memory version.
+            __syncthreads();
+        }      
+    }
+}
+
+
+__device__ void deleteNeighborsOfMaxDegreeVertex(CSRGraph graph,int* vertexDegrees_s, unsigned int* numDeletedVertices, int* vertexDegrees_s2, 
+    unsigned int* numDeletedVertices2, int maxDegree, unsigned int maxVertex, unsigned int hops){
+
+    *numDeletedVertices2 = *numDeletedVertices;
+    for(unsigned int vertex = threadIdx.x; vertex<graph.vertexNum; vertex+=blockDim.x){
+        vertexDegrees_s2[vertex] = vertexDegrees_s[vertex];
+    }
+    __syncthreads();
+
+    for(unsigned int edge = graph.srcPtr[maxVertex] + threadIdx.x; edge < graph.srcPtr[maxVertex + 1]; edge+=blockDim.x) { // Delete Neighbors of maxVertex
+        unsigned int neighbor = graph.dst[edge];
+        if (vertexDegrees_s2[neighbor] != -1){
+            for(unsigned int neighborEdge = graph.srcPtr[neighbor]; neighborEdge < graph.srcPtr[neighbor + 1]; ++neighborEdge) {
+                unsigned int neighborOfNeighbor = graph.dst[neighborEdge];
+                if(vertexDegrees_s2[neighborOfNeighbor] != -1) {
+                    atomicSub(&vertexDegrees_s2[neighborOfNeighbor], 1);
+                }
+            }
+        }
+    }
+    
+    *numDeletedVertices2 += maxDegree;
+    __syncthreads();
+
+    for(unsigned int edge = graph.srcPtr[maxVertex] + threadIdx.x; edge < graph.srcPtr[maxVertex + 1] ; edge += blockDim.x) {
+        unsigned int neighbor = graph.dst[edge];
+        vertexDegrees_s2[neighbor] = -1;
+    }
+    unsigned int newMaxVertex = 0;
+    int newMaxDegree = 0;
+
+    __syncthreads();
+
+    do {
+        newMaxVertex = 0;
+        newMaxDegree = 0;
+        findMaxDegreeKHop(graph, vertexDegrees_s, vertexDegrees_s2, maxVertex, hops, &newMaxVertex, &newMaxDegree);
+        // deleteNeighborsOfMax, this should append the maxV to LCList, and the N(maxV) to RCList
+    } while (maxVertex > 0);
+}
+
+/*
+__device__ void findRunningMaxDegreeOfNeighbors_with_tiebreaker(CSRGraph graph, unsigned int vertexNum, unsigned int *maxVertex, int *maxDegree, int *vertexDegrees_s, int * shared_mem, int vertex, int currentMaxVertex = 0, int currentMaxDegree = 0) {
+    *maxVertex = currentMaxVertex;
+    *maxDegree = currentMaxDegree;
+    for(unsigned int edge = graph.srcPtr[vertex] + threadIdx.x; edge < graph.srcPtr[vertex + 1]; ++edge) {
+        // This should be maximally coalesced if pre-sorted by HALO-II
+        unsigned int neighbor = graph.dst[edge];
+        int degree = vertexDegrees_s[neighbor];
+        if(degree > *maxDegree){ 
+            *maxVertex = neighbor;
+            *maxDegree = degree;
+        } else if (degree == *maxDegree && breakTie(neighbor) > breakTie(*maxVertex)){
+            *maxVertex = neighbor;
+            *maxDegree = degree;            
+        }
+    }
+
+    /// ???
+    // Reduce max degree
+    int * vertex_s = shared_mem;
+    int * degree_s = &shared_mem[blockDim.x];
+    __syncthreads(); 
+
+    vertex_s[threadIdx.x] = *maxVertex;
+    degree_s[threadIdx.x] = *maxDegree;
+    __syncthreads();
+
+    for(unsigned int stride = blockDim.x/2; stride > 0; stride /= 2) {
+        if(threadIdx.x < stride) {
+            if(degree_s[threadIdx.x] < degree_s[threadIdx.x + stride]){
+                degree_s[threadIdx.x] = degree_s[threadIdx.x + stride];
+                vertex_s[threadIdx.x] = vertex_s[threadIdx.x + stride];
+            } else if (degree_s[threadIdx.x] == degree_s[threadIdx.x + stride] && breakTie(vertex_s[threadIdx.x]) < breakTie(vertex_s[threadIdx.x + stride])) {
                 degree_s[threadIdx.x] = degree_s[threadIdx.x + stride];
                 vertex_s[threadIdx.x] = vertex_s[threadIdx.x + stride];
             }
