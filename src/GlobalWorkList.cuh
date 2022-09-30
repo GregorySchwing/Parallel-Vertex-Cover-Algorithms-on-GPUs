@@ -337,7 +337,8 @@ __global__ void GlobalWorkList_shared_kernel_MIS(Stacks stacks, unsigned int * m
             unsigned int maxVertex;
             int maxDegree;
             startTime(MAX_DEGREE,&blockCounters);
-            findMaxDegree(graph.vertexNum, &maxVertex, &maxDegree, vertexDegrees_s, vertexDegrees_s2);
+            //findMaxDegree(graph.vertexNum, &maxVertex, &maxDegree, vertexDegrees_s, vertexDegrees_s2);
+            findMaxDegree_with_tiebreaker(graph.vertexNum, &maxVertex, &maxDegree, vertexDegrees_s, vertexDegrees_s2);
             endTime(MAX_DEGREE,&blockCounters);
 
             __syncthreads();
