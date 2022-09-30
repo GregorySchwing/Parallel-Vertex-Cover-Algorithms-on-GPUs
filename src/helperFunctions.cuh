@@ -495,6 +495,8 @@ __device__ void findMaxDegreeKHop(CSRGraph graph, int *vertexDegrees_s, int * sh
     }
 }
 
+// Only difference between this and deleteNeighborsOfMaxDegreeVertex
+// is the preloading of the shared memory.
 __device__ void deleteNeighborsOfMaxDegreeVertex_MIS(CSRGraph graph, int* vertexDegrees_s2, 
     unsigned int* numDeletedVertices2, int maxDegree, unsigned int maxVertex){
 
@@ -517,36 +519,13 @@ __device__ void deleteNeighborsOfMaxDegreeVertex_MIS(CSRGraph graph, int* vertex
         unsigned int neighbor = graph.dst[edge];
         vertexDegrees_s2[neighbor] = -1;
     }
+
+    __syncthreads();
 }
 
 __device__ void preloadDegrees(CSRGraph graph,int* vertexDegrees_s, int* vertexDegrees_s2){
     for(unsigned int vertex = threadIdx.x; vertex<graph.vertexNum; vertex+=blockDim.x){
         vertexDegrees_s2[vertex] = vertexDegrees_s[vertex];
-    }
-    __syncthreads();
-}
-
-__device__ void deleteNeighborsOfMaxDegreeVertexPreloaded(CSRGraph graph, unsigned int* numDeletedVertices, int* vertexDegrees_s2, 
-    unsigned int* numDeletedVertices2, int maxDegree, unsigned int maxVertex, unsigned int hops){
-
-    for(unsigned int edge = graph.srcPtr[maxVertex] + threadIdx.x; edge < graph.srcPtr[maxVertex + 1]; edge+=blockDim.x) { // Delete Neighbors of maxVertex
-        unsigned int neighbor = graph.dst[edge];
-        if (vertexDegrees_s2[neighbor] != -1){
-            for(unsigned int neighborEdge = graph.srcPtr[neighbor]; neighborEdge < graph.srcPtr[neighbor + 1]; ++neighborEdge) {
-                unsigned int neighborOfNeighbor = graph.dst[neighborEdge];
-                if(vertexDegrees_s2[neighborOfNeighbor] != -1) {
-                    atomicSub(&vertexDegrees_s2[neighborOfNeighbor], 1);
-                }
-            }
-        }
-    }
-    
-    *numDeletedVertices2 += maxDegree;
-    __syncthreads();
-
-    for(unsigned int edge = graph.srcPtr[maxVertex] + threadIdx.x; edge < graph.srcPtr[maxVertex + 1] ; edge += blockDim.x) {
-        unsigned int neighbor = graph.dst[edge];
-        vertexDegrees_s2[neighbor] = -1;
     }
     __syncthreads();
 }

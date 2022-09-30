@@ -214,14 +214,14 @@ int main(int argc, char *argv[]) {
         // In addition to the standard usage of SM
         // We are now finding a MIS on a khop
         // So we need an array for degrees and an array for SM max reduction
-        if(config.numHops > 1){
-            sharedMemNeeded *= 3;
+        // LC and RC in shared mem
+        if(config.numHops > 1)
+            sharedMemNeeded *= 2;
+
+        if(graph.vertexNum > numThreadsPerBlock*2){
+            sharedMemNeeded+=graph.vertexNum;
         } else {
-            if(graph.vertexNum > numThreadsPerBlock*2){
-                sharedMemNeeded+=graph.vertexNum;
-            } else {
-                sharedMemNeeded+=numThreadsPerBlock*2;
-            }
+            sharedMemNeeded+=numThreadsPerBlock*2;
         }
 
         sharedMemNeeded *= sizeof(int);
