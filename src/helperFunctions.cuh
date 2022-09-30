@@ -131,6 +131,8 @@ __device__ void deleteMaxDegreeVertex(CSRGraph graph,int* vertexDegrees_s, unsig
             --vertexDegrees_s[neighbor];
         }
     }
+
+    __syncthreads(); 
 }
 
 __device__ unsigned int leafReductionRule(unsigned int vertexNum, int *vertexDegrees_s, CSRGraph graph, int* shared_mem){
@@ -534,9 +536,14 @@ __device__ void FindKHopMIS(CSRGraph graph, unsigned int* numDeletedVertices, in
     unsigned int* numDeletedVertices2, int* vertexDegrees_s2,
     int* vertexDegrees_MIS_Reduction,  int maxDegree, unsigned int maxVertex, int hops, Counters * blockCounters){
 
-    unsigned int newMaxVertex = 0;
-    int newMaxDegree = 0;
-
+    unsigned int newMaxVertex = maxVertex;
+    int newMaxDegree = maxDegree;
+    *numDeletedVertices2 = *numDeletedVertices;
+    for(unsigned int vertex = threadIdx.x; vertex<graph.vertexNum; vertex+=blockDim.x){
+        vertexDegrees_s2[vertex] = vertexDegrees_s[vertex];
+    }
+    __syncthreads();
+    /*
     startTime(PREPARE_RIGHT_CHILD,blockCounters);
     deleteNeighborsOfMaxDegreeVertex(graph,vertexDegrees_s, numDeletedVertices, vertexDegrees_s2, numDeletedVertices2, maxDegree, maxVertex);
     endTime(PREPARE_RIGHT_CHILD,blockCounters);
@@ -545,15 +552,8 @@ __device__ void FindKHopMIS(CSRGraph graph, unsigned int* numDeletedVertices, in
     // Prepare the child that removes the neighbors of the max vertex to be processed on the next iteration
     deleteMaxDegreeVertex(graph, vertexDegrees_s, numDeletedVertices, maxVertex);
     endTime(PREPARE_LEFT_CHILD,blockCounters);
-
+    */
     do {
-        newMaxVertex = 0;
-        newMaxDegree = 0;
-
-        startTime(MAX_DEGREE_KHOP,blockCounters);
-        findMaxDegreeKHop(graph, vertexDegrees_s2, vertexDegrees_MIS_Reduction, maxVertex, hops, &newMaxVertex, &newMaxDegree);
-        endTime(MAX_DEGREE_KHOP,blockCounters);
-
         startTime(PREPARE_RIGHT_CHILD,blockCounters);
         deleteNeighborsOfMaxDegreeVertex_MIS(graph, vertexDegrees_s2, numDeletedVertices2, newMaxVertex, newMaxDegree);
         endTime(PREPARE_RIGHT_CHILD,blockCounters);
@@ -562,6 +562,13 @@ __device__ void FindKHopMIS(CSRGraph graph, unsigned int* numDeletedVertices, in
         deleteMaxDegreeVertex(graph, vertexDegrees_s, numDeletedVertices, newMaxVertex);
         endTime(PREPARE_LEFT_CHILD,blockCounters);
 
+        newMaxVertex = 0;
+        newMaxDegree = 0;
+        
+        startTime(MAX_DEGREE_KHOP,blockCounters);
+        findMaxDegreeKHop(graph, vertexDegrees_s2, vertexDegrees_MIS_Reduction, maxVertex, hops, &newMaxVertex, &newMaxDegree);
+        endTime(MAX_DEGREE_KHOP,blockCounters);
+        
     } while (newMaxDegree > 0);
 }
 

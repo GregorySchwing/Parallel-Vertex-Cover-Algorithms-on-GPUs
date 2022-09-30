@@ -337,6 +337,7 @@ __global__ void GlobalWorkList_shared_kernel_MIS(Stacks stacks, unsigned int * m
             unsigned int maxVertex;
             int maxDegree;
             startTime(MAX_DEGREE,&blockCounters);
+            // Until you get 261 on phat stick with 1 hop and use the non-tiebreaker v
             //findMaxDegree(graph.vertexNum, &maxVertex, &maxDegree, vertexDegrees_s, vertexDegrees_s2);
             findMaxDegree_with_tiebreaker(graph.vertexNum, &maxVertex, &maxDegree, vertexDegrees_s, vertexDegrees_s2);
             endTime(MAX_DEGREE,&blockCounters);
