@@ -352,7 +352,7 @@ __global__ void GlobalWorkListParameterized_shared_kernel_MIS(Stacks stacks, Wor
                 dequeueOrPopNextItr = true;
 
             } else { // Vertex cover not found, need to branch
-                // Simulateously also PREPARE_LEFT_CHILD, PREPARE_RIGHT_CHILD
+                // Simultaneously also PREPARE_LEFT_CHILD, PREPARE_RIGHT_CHILD
                 startTime(FIND_MIS,&blockCounters);
                 FindKHopMIS(graph, &numDeletedVertices, vertexDegrees_s, 
                             &numDeletedVertices2, vertexDegrees_s2, 
