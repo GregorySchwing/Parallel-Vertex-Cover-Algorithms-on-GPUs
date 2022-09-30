@@ -536,7 +536,6 @@ __device__ void FindKHopMIS(CSRGraph graph, unsigned int* numDeletedVertices, in
 
     unsigned int newMaxVertex = 0;
     int newMaxDegree = 0;
-    unsigned int numDeletedVertices3 = 0;
 
     *numDeletedVertices2 = *numDeletedVertices;
     for(unsigned int vertex = threadIdx.x; vertex<graph.vertexNum; vertex+=blockDim.x){

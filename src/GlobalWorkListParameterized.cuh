@@ -382,11 +382,6 @@ __global__ void GlobalWorkListParameterized_shared_kernel_MIS(Stacks stacks, Wor
                     endTime(ENQUEUE,&blockCounters);
                 }
 
-                //startTime(PREPARE_LEFT_CHILD,&blockCounters);
-                // Prepare the child that removes the neighbors of the max vertex to be processed on the next iteration
-                //deleteComplementMISOfMaxDegreeVertex(graph, vertexDegrees_s, &numDeletedVertices, maxVertex);
-                //endTime(PREPARE_LEFT_CHILD,&blockCounters);
-
                 dequeueOrPopNextItr = false;
             }
         }
