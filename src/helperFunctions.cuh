@@ -485,7 +485,7 @@ __device__ void findMaxDegreeKHop(CSRGraph graph, int *vertexDegrees_s, int * sh
         // HALO-II is imperative here.
         // Note the lack of thread parallelism in this loop.
         // All threads call the recursive function with the same neighbor.
-        for(unsigned int edge = graph.srcPtr[*maxVertex]; edge < graph.srcPtr[*maxVertex + 1] ; ++edge) {
+        for(unsigned int edge = graph.srcPtr[vertex]; edge < graph.srcPtr[vertex + 1] ; ++edge) {
             unsigned int neighbor = graph.dst[edge];
             findMaxDegreeKHop(graph, vertexDegrees_s, shared_mem, neighbor, hops-1, maxVertex, maxDegree);
             // make sure maxVertex, maxDegree has been updated.
@@ -498,7 +498,7 @@ __device__ void findMaxDegreeKHop(CSRGraph graph, int *vertexDegrees_s, int * sh
 // Only difference between this and deleteNeighborsOfMaxDegreeVertex
 // is the preloading of the shared memory.
 __device__ void deleteNeighborsOfMaxDegreeVertex_MIS(CSRGraph graph, int* vertexDegrees_s2, 
-    unsigned int* numDeletedVertices2, int maxDegree, unsigned int maxVertex){
+    unsigned int* numDeletedVertices2, unsigned int maxVertex, int maxDegree){
 
     for(unsigned int edge = graph.srcPtr[maxVertex] + threadIdx.x; edge < graph.srcPtr[maxVertex + 1]; edge+=blockDim.x) { // Delete Neighbors of maxVertex
         unsigned int neighbor = graph.dst[edge];
@@ -537,11 +537,14 @@ __device__ void FindKHopMIS(CSRGraph graph, unsigned int* numDeletedVertices, in
     unsigned int newMaxVertex = 0;
     int newMaxDegree = 0;
 
-    *numDeletedVertices2 = *numDeletedVertices;
-    for(unsigned int vertex = threadIdx.x; vertex<graph.vertexNum; vertex+=blockDim.x){
-         vertexDegrees_s2[vertex] = vertexDegrees_s[vertex];
-    }
-    __syncthreads();
+    startTime(PREPARE_RIGHT_CHILD,blockCounters);
+    deleteNeighborsOfMaxDegreeVertex(graph,vertexDegrees_s, numDeletedVertices, vertexDegrees_s2, numDeletedVertices2, maxDegree, maxVertex);
+    endTime(PREPARE_RIGHT_CHILD,blockCounters);
+
+    startTime(PREPARE_LEFT_CHILD,blockCounters);
+    // Prepare the child that removes the neighbors of the max vertex to be processed on the next iteration
+    deleteMaxDegreeVertex(graph, vertexDegrees_s, numDeletedVertices, maxVertex);
+    endTime(PREPARE_LEFT_CHILD,blockCounters);
 
     do {
         newMaxVertex = 0;

@@ -191,6 +191,7 @@ static Config parseArgs(int argc, char **argv)
     config.k = 0;
     config.blockDim = 0;
     config.numBlocks = 0;
+    config.numHops = 0;
     config.userDefMemory = false;
     config.useGlobalMemory = false;
     config.globalListSize = 1 << 19;

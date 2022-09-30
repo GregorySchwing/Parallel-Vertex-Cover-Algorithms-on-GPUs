@@ -163,7 +163,7 @@ int main(int argc, char *argv[]) {
         //Global Entries Memory Allocation
         int * global_memory_d;
         int globalMemNeeded = graph.vertexNum*numBlocks*2;
-        if(config.numHops > 1)
+        if(config.numHops != 0)
             globalMemNeeded += graph.vertexNum*numBlocks;
         globalMemNeeded *= sizeof(int);
 
@@ -215,7 +215,7 @@ int main(int argc, char *argv[]) {
         // We are now finding a MIS on a khop
         // So we need an array for degrees and an array for SM max reduction
         // LC and RC in shared mem
-        if(config.numHops > 1)
+        if(config.numHops != 0)
             sharedMemNeeded *= 2;
 
         if(graph.vertexNum > numThreadsPerBlock*2){
@@ -232,7 +232,7 @@ int main(int argc, char *argv[]) {
         cudaEventCreate(&stop);
         cudaEventRecord(start);
         if (config.useGlobalMemory){
-            if (config.numHops <= 1){
+            if (config.numHops == 0){
                 if (config.version == HYBRID && config.instance==PVC){
                     GlobalWorkListParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, k_d, kFound_d, NODES_PER_SM_d);
                 } else if(config.version == HYBRID && config.instance==MVC) {
@@ -254,7 +254,7 @@ int main(int argc, char *argv[]) {
                 }
             }
         } else {
-            if (config.numHops <= 1){
+            if (config.numHops == 0){
                 if (config.version == HYBRID && config.instance==PVC){
                     GlobalWorkListParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, k_d, kFound_d, NODES_PER_SM_d);
                 } else if(config.version == HYBRID && config.instance==MVC) {
