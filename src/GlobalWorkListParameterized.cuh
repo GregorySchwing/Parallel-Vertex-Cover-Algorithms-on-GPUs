@@ -205,10 +205,10 @@ __global__ void GlobalWorkListParameterized_shared_kernel(Stacks stacks, WorkLis
 
 #if USE_GLOBAL_MEMORY
 __global__ void GlobalWorkListParameterized_global_kernel_MIS(Stacks stacks, WorkList workList, CSRGraph graph, Counters* counters
-    , int* first_to_dequeue_global, int* global_memory, unsigned int * k, unsigned int * kFound, int* NODES_PER_SM, int hashFunctionParameter = 0x45d9f3b) {
+    , int* first_to_dequeue_global, int* global_memory, unsigned int * k, unsigned int * kFound, int* NODES_PER_SM, int numHops, int hashFunctionParameter = 0x45d9f3b) {
 #else
 __global__ void GlobalWorkListParameterized_shared_kernel_MIS(Stacks stacks, WorkList workList, CSRGraph graph, Counters* counters
-    , int* first_to_dequeue_global, unsigned int * k, unsigned int * kFound, int* NODES_PER_SM, int hashFunctionParameter = 0x45d9f3b) {
+    , int* first_to_dequeue_global, unsigned int * k, unsigned int * kFound, int* NODES_PER_SM, int numHops, int hashFunctionParameter = 0x45d9f3b) {
 #endif
 
     __shared__ Counters blockCounters;
@@ -231,9 +231,9 @@ __global__ void GlobalWorkListParameterized_shared_kernel_MIS(Stacks stacks, Wor
     unsigned int numDeletedVertices2;
     
     #if USE_GLOBAL_MEMORY
-    int * vertexDegrees_s = &global_memory[graph.vertexNum*(2*blockIdx.x)];
-    int * vertexDegrees_s2 = &global_memory[graph.vertexNum*(2*blockIdx.x + 1)];
-    int * vertexDegrees_MIS_Reduction = &global_memory[graph.vertexNum*(2*blockIdx.x + 2)];
+    int * vertexDegrees_s = &global_memory[graph.vertexNum*(3*blockIdx.x)];
+    int * vertexDegrees_s2 = &global_memory[graph.vertexNum*(3*blockIdx.x + 1)];
+    int * vertexDegrees_MIS_Reduction = &global_memory[graph.vertexNum*(3*blockIdx.x + 2)];
     #else
     extern __shared__ int shared_mem[];
     int * vertexDegrees_s = shared_mem;
@@ -352,13 +352,12 @@ __global__ void GlobalWorkListParameterized_shared_kernel_MIS(Stacks stacks, Wor
                 dequeueOrPopNextItr = true;
 
             } else { // Vertex cover not found, need to branch
-                int hops = 2;
                 // Simulateously also PREPARE_LEFT_CHILD, PREPARE_RIGHT_CHILD
                 startTime(FIND_MIS,&blockCounters);
                 FindKHopMIS(graph, &numDeletedVertices, vertexDegrees_s, 
                             &numDeletedVertices2, vertexDegrees_s2, 
                             vertexDegrees_MIS_Reduction,
-                            maxDegree, maxVertex, hops, counters);
+                            maxDegree, maxVertex, numHops, counters);
                 endTime(FIND_MIS,&blockCounters);
 
                 __syncthreads();

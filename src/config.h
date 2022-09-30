@@ -75,7 +75,7 @@ static void usage()
             "                                  by the code according to the abilities of the\n"
             "                                  gpu and the size of the graph.\n"
             "\n"
-            "   -hops <Number of Hops>              Used to determine the number of hops in \n"
+            "   -H <Number of Hops>                 Used to determine the number of hops in \n"
             "                                  defining the neighborhood used for MIS branching\n"
             "                                  (Mentioned in Referenced Paper). Must be an Integer\n"
             "                                  (>= 1). If not provided by the user it will be \n"
@@ -200,7 +200,7 @@ static Config parseArgs(int argc, char **argv)
     config.graphFileName = "GraphInput.txt";
 
     int opt;
-    while ((opt = getopt(argc, argv, "v:f:o:i:k:q:t:d:b:g:n:hops:h")) >= 0)
+    while ((opt = getopt(argc, argv, "v:f:o:i:k:q:t:d:b:g:n:H:h")) >= 0)
     {
         switch (opt)
         {
@@ -238,7 +238,7 @@ static Config parseArgs(int argc, char **argv)
         case 'n':
             config.numBlocks = atoi(optarg);
             break;
-        case 'hops':
+        case 'H':
             config.numHops  = atoi(optarg);
             break;
         case 'h':

@@ -232,24 +232,48 @@ int main(int argc, char *argv[]) {
         cudaEventCreate(&stop);
         cudaEventRecord(start);
         if (config.useGlobalMemory){
-            if (config.version == HYBRID && config.instance==PVC){
-                GlobalWorkListParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, k_d, kFound_d, NODES_PER_SM_d);
-            } else if(config.version == HYBRID && config.instance==MVC) {
-                GlobalWorkList_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, NODES_PER_SM_d);
-            } else if(config.version == STACK_ONLY && config.instance==PVC){
-                LocalStacksParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, graph_d, global_memory_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
-            } else if(config.version == STACK_ONLY && config.instance==MVC) {
-                LocalStacks_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, graph_d, minimum_d, global_memory_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
+            if (config.numHops <= 1){
+                if (config.version == HYBRID && config.instance==PVC){
+                    GlobalWorkListParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, k_d, kFound_d, NODES_PER_SM_d);
+                } else if(config.version == HYBRID && config.instance==MVC) {
+                    GlobalWorkList_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, NODES_PER_SM_d);
+                } else if(config.version == STACK_ONLY && config.instance==PVC){
+                    LocalStacksParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, graph_d, global_memory_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
+                } else if(config.version == STACK_ONLY && config.instance==MVC) {
+                    LocalStacks_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, graph_d, minimum_d, global_memory_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
+                }
+            } else {
+                if (config.version == HYBRID && config.instance==PVC){
+                    GlobalWorkListParameterized_global_kernel_MIS <<< numBlocks , numThreadsPerBlock >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, k_d, kFound_d, NODES_PER_SM_d, config.numHops);
+                } else if(config.version == HYBRID && config.instance==MVC) {
+                    GlobalWorkList_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, NODES_PER_SM_d);
+                } else if(config.version == STACK_ONLY && config.instance==PVC){
+                    LocalStacksParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, graph_d, global_memory_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
+                } else if(config.version == STACK_ONLY && config.instance==MVC) {
+                    LocalStacks_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, graph_d, minimum_d, global_memory_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
+                }
             }
         } else {
-            if (config.version == HYBRID && config.instance==PVC){
-                GlobalWorkListParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, k_d, kFound_d, NODES_PER_SM_d);
-            } else if(config.version == HYBRID && config.instance==MVC) {
-                GlobalWorkList_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
-            } else if(config.version == STACK_ONLY && config.instance==PVC){
-                LocalStacksParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, graph_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
-            } else if(config.version == STACK_ONLY && config.instance==MVC) {
-                LocalStacks_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, graph_d, minimum_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
+            if (config.numHops <= 1){
+                if (config.version == HYBRID && config.instance==PVC){
+                    GlobalWorkListParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, k_d, kFound_d, NODES_PER_SM_d);
+                } else if(config.version == HYBRID && config.instance==MVC) {
+                    GlobalWorkList_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
+                } else if(config.version == STACK_ONLY && config.instance==PVC){
+                    LocalStacksParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, graph_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
+                } else if(config.version == STACK_ONLY && config.instance==MVC) {
+                    LocalStacks_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, graph_d, minimum_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
+                }
+            } else {
+                if (config.version == HYBRID && config.instance==PVC){
+                    GlobalWorkListParameterized_shared_kernel_MIS <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, k_d, kFound_d, NODES_PER_SM_d, config.numHops);
+                } else if(config.version == HYBRID && config.instance==MVC) {
+                    GlobalWorkList_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
+                } else if(config.version == STACK_ONLY && config.instance==PVC){
+                    LocalStacksParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, graph_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
+                } else if(config.version == STACK_ONLY && config.instance==MVC) {
+                    LocalStacks_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, graph_d, minimum_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
+                }
             }
         }
         cudaEventRecord(stop);
