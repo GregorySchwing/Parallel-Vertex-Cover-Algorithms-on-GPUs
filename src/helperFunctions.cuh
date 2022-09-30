@@ -565,49 +565,6 @@ __device__ void FindKHopMIS(CSRGraph graph, unsigned int* numDeletedVertices, in
     } while (newMaxDegree > 0);
 }
 
-/*
-__device__ void findRunningMaxDegreeOfNeighbors_with_tiebreaker(CSRGraph graph, unsigned int vertexNum, unsigned int *maxVertex, int *maxDegree, int *vertexDegrees_s, int * shared_mem, int vertex, int currentMaxVertex = 0, int currentMaxDegree = 0) {
-    *maxVertex = currentMaxVertex;
-    *maxDegree = currentMaxDegree;
-    for(unsigned int edge = graph.srcPtr[vertex] + threadIdx.x; edge < graph.srcPtr[vertex + 1]; ++edge) {
-        // This should be maximally coalesced if pre-sorted by HALO-II
-        unsigned int neighbor = graph.dst[edge];
-        int degree = vertexDegrees_s[neighbor];
-        if(degree > *maxDegree){ 
-            *maxVertex = neighbor;
-            *maxDegree = degree;
-        } else if (degree == *maxDegree && breakTie(neighbor) > breakTie(*maxVertex)){
-            *maxVertex = neighbor;
-            *maxDegree = degree;            
-        }
-    }
-
-    /// ???
-    // Reduce max degree
-    int * vertex_s = shared_mem;
-    int * degree_s = &shared_mem[blockDim.x];
-    __syncthreads(); 
-
-    vertex_s[threadIdx.x] = *maxVertex;
-    degree_s[threadIdx.x] = *maxDegree;
-    __syncthreads();
-
-    for(unsigned int stride = blockDim.x/2; stride > 0; stride /= 2) {
-        if(threadIdx.x < stride) {
-            if(degree_s[threadIdx.x] < degree_s[threadIdx.x + stride]){
-                degree_s[threadIdx.x] = degree_s[threadIdx.x + stride];
-                vertex_s[threadIdx.x] = vertex_s[threadIdx.x + stride];
-            } else if (degree_s[threadIdx.x] == degree_s[threadIdx.x + stride] && breakTie(vertex_s[threadIdx.x]) < breakTie(vertex_s[threadIdx.x + stride])) {
-                degree_s[threadIdx.x] = degree_s[threadIdx.x + stride];
-                vertex_s[threadIdx.x] = vertex_s[threadIdx.x + stride];
-            }
-        }
-        __syncthreads();
-    }
-    *maxVertex = vertex_s[0];
-    *maxDegree = degree_s[0];
-}
-*/
 __device__ unsigned int findNumOfEdges(unsigned int vertexNum, int *vertexDegrees_s, int * shared_mem){
     int sumDegree = 0;
     for(unsigned int vertex = threadIdx.x; vertex < vertexNum; vertex += blockDim.x) {
