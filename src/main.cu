@@ -162,8 +162,13 @@ int main(int argc, char *argv[]) {
 
         //Global Entries Memory Allocation
         int * global_memory_d;
+        int globalMemNeeded = graph.vertexNum*numBlocks*2;
+        if(config.numHops > 1)
+            globalMemNeeded *= 2;
+        globalMemNeeded *= sizeof(int);
+
         if(config.useGlobalMemory){
-            cudaMalloc((void**)&global_memory_d, sizeof(int)*graph.vertexNum*numBlocks*2);
+            cudaMalloc((void**)&global_memory_d, globalMemNeeded);
         }
 
         unsigned int * minimum_d;
@@ -210,6 +215,13 @@ int main(int argc, char *argv[]) {
         } else {
             sharedMemNeeded+=numThreadsPerBlock*2;
         }
+
+        // In addition to the standard usage of SM
+        // We are now finding a MIS on a khop
+        // So we need an array for degrees and an array for SM max reduction
+        if(config.numHops > 1)
+            sharedMemNeeded *= 2;
+
         sharedMemNeeded *= sizeof(int);
         
         cudaEvent_t start, stop;

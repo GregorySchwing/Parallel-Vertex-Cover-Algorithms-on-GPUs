@@ -233,10 +233,14 @@ __global__ void GlobalWorkListParameterized_shared_kernel_MIS(Stacks stacks, Wor
     #if USE_GLOBAL_MEMORY
     int * vertexDegrees_s = &global_memory[graph.vertexNum*(2*blockIdx.x)];
     int * vertexDegrees_s2 = &global_memory[graph.vertexNum*(2*blockIdx.x + 1)];
+    int * vertexDegrees_MIS = &global_memory[graph.vertexNum*(2*blockIdx.x + 2)];
+    int * vertexDegrees_MIS_Reduction = &global_memory[graph.vertexNum*(2*blockIdx.x + 3)];
     #else
     extern __shared__ int shared_mem[];
     int * vertexDegrees_s = shared_mem;
     int * vertexDegrees_s2 = &shared_mem[graph.vertexNum];
+    int * vertexDegrees_MIS = &shared_mem[2*graph.vertexNum];
+    int * vertexDegrees_MIS_Reduction = &shared_mem[3*graph.vertexNum];
     #endif
 
     bool dequeueOrPopNextItr = true; 
@@ -350,16 +354,13 @@ __global__ void GlobalWorkListParameterized_shared_kernel_MIS(Stacks stacks, Wor
                 dequeueOrPopNextItr = true;
 
             } else { // Vertex cover not found, need to branch
-
-                // Perhaps use recursion here.
-                startTime(PREPARE_RIGHT_CHILD,&blockCounters);
-                deleteNeighborsOfMaxDegreeVertex(graph,vertexDegrees_s, &numDeletedVertices, vertexDegrees_s2, &numDeletedVertices2, maxDegree, maxVertex);
-                endTime(PREPARE_RIGHT_CHILD,&blockCounters);
-
-                __syncthreads();
-
+                int hops = 2;
+                // Simulateously also PREPARE_LEFT_CHILD, PREPARE_RIGHT_CHILD
                 startTime(FIND_MIS,&blockCounters);
-                //solveMISOfMaxDegreeVertex(graph,vertexDegrees_s, &numDeletedVertices, vertexDegrees_s2, &numDeletedVertices2, maxDegree, maxVertex);
+                FindKHopMIS(graph, &numDeletedVertices, vertexDegrees_s, 
+                            &numDeletedVertices2, vertexDegrees_s2, 
+                            vertexDegrees_MIS, vertexDegrees_MIS_Reduction,
+                            maxDegree, maxVertex, hops);
                 endTime(FIND_MIS,&blockCounters);
 
                 __syncthreads();
@@ -384,10 +385,10 @@ __global__ void GlobalWorkListParameterized_shared_kernel_MIS(Stacks stacks, Wor
                     endTime(ENQUEUE,&blockCounters);
                 }
 
-                startTime(PREPARE_LEFT_CHILD,&blockCounters);
+                //startTime(PREPARE_LEFT_CHILD,&blockCounters);
                 // Prepare the child that removes the neighbors of the max vertex to be processed on the next iteration
                 //deleteComplementMISOfMaxDegreeVertex(graph, vertexDegrees_s, &numDeletedVertices, maxVertex);
-                endTime(PREPARE_LEFT_CHILD,&blockCounters);
+                //endTime(PREPARE_LEFT_CHILD,&blockCounters);
 
                 dequeueOrPopNextItr = false;
             }
