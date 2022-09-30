@@ -164,7 +164,7 @@ int main(int argc, char *argv[]) {
         int * global_memory_d;
         int globalMemNeeded = graph.vertexNum*numBlocks*2;
         if(config.numHops > 1)
-            globalMemNeeded *= 2;
+            globalMemNeeded += graph.vertexNum*numBlocks;
         globalMemNeeded *= sizeof(int);
 
         if(config.useGlobalMemory){
@@ -210,17 +210,19 @@ int main(int argc, char *argv[]) {
         }
 
         int sharedMemNeeded = graph.vertexNum;
-        if(graph.vertexNum > numThreadsPerBlock*2){
-            sharedMemNeeded+=graph.vertexNum;
-        } else {
-            sharedMemNeeded+=numThreadsPerBlock*2;
-        }
 
         // In addition to the standard usage of SM
         // We are now finding a MIS on a khop
         // So we need an array for degrees and an array for SM max reduction
-        if(config.numHops > 1)
-            sharedMemNeeded *= 2;
+        if(config.numHops > 1){
+            sharedMemNeeded *= 3;
+        } else {
+            if(graph.vertexNum > numThreadsPerBlock*2){
+                sharedMemNeeded+=graph.vertexNum;
+            } else {
+                sharedMemNeeded+=numThreadsPerBlock*2;
+            }
+        }
 
         sharedMemNeeded *= sizeof(int);
         

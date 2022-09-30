@@ -434,9 +434,9 @@ __device__ void findMaxDegree_with_tiebreaker(unsigned int vertexNum, unsigned i
     *maxDegree = degree_s[0];
 }
 
-__device__ void findMaxDegreeKHop(CSRGraph graph, int *vertexDegrees_s, int * shared_mem, int vertex, int k, unsigned int *maxVertex, int *maxDegree) {
-    // Base Case
-    if (k == 1){
+__device__ void findMaxDegreeKHop(CSRGraph graph, int *vertexDegrees_s, int * shared_mem, int vertex, int hops, unsigned int *maxVertex, int *maxDegree) {
+    // Base Case k == 1
+    if (hops == 1){
         // Check the neighbors for a greater degree.
         // The source vertex, v, was already evaluated on the previous findMax call.
         for(unsigned int edge = graph.srcPtr[vertex] + threadIdx.x; edge < graph.srcPtr[vertex + 1]; ++edge) {
@@ -477,7 +477,7 @@ __device__ void findMaxDegreeKHop(CSRGraph graph, int *vertexDegrees_s, int * sh
         *maxDegree = degree_s[0];
         
         return;
-    // KHop(k - 1)
+    // k = (k - 1)
     } else {
         // Hop to neighbors of v, N(v) = {w,y}
         // The only way a hop > 1 makes sense if the memory is laid out like so
@@ -487,7 +487,7 @@ __device__ void findMaxDegreeKHop(CSRGraph graph, int *vertexDegrees_s, int * sh
         // All threads call the recursive function with the same neighbor.
         for(unsigned int edge = graph.srcPtr[*maxVertex]; edge < graph.srcPtr[*maxVertex + 1] ; ++edge) {
             unsigned int neighbor = graph.dst[edge];
-            findMaxDegreeKHop(graph, vertexDegrees_s, shared_mem, neighbor, k-1, maxVertex, maxDegree);
+            findMaxDegreeKHop(graph, vertexDegrees_s, shared_mem, neighbor, hops-1, maxVertex, maxDegree);
             // make sure maxVertex, maxDegree has been updated.
             // might even need a thread fence.
             __syncthreads();
@@ -495,14 +495,8 @@ __device__ void findMaxDegreeKHop(CSRGraph graph, int *vertexDegrees_s, int * sh
     }
 }
 
-__device__ void deleteNeighborsOfMaxDegreeVertex(CSRGraph graph,int* vertexDegrees_s, unsigned int* numDeletedVertices, int* vertexDegrees_s2, 
-    unsigned int* numDeletedVertices2, int maxDegree, unsigned int maxVertex, unsigned int hops){
-
-    *numDeletedVertices2 = *numDeletedVertices;
-    for(unsigned int vertex = threadIdx.x; vertex<graph.vertexNum; vertex+=blockDim.x){
-        vertexDegrees_s2[vertex] = vertexDegrees_s[vertex];
-    }
-    __syncthreads();
+__device__ void deleteNeighborsOfMaxDegreeVertex_MIS(CSRGraph graph, int* vertexDegrees_s2, 
+    unsigned int* numDeletedVertices2, int maxDegree, unsigned int maxVertex){
 
     for(unsigned int edge = graph.srcPtr[maxVertex] + threadIdx.x; edge < graph.srcPtr[maxVertex + 1]; edge+=blockDim.x) { // Delete Neighbors of maxVertex
         unsigned int neighbor = graph.dst[edge];
@@ -558,23 +552,35 @@ __device__ void deleteNeighborsOfMaxDegreeVertexPreloaded(CSRGraph graph, unsign
 }
 
 __device__ void FindKHopMIS(CSRGraph graph, unsigned int* numDeletedVertices, int* vertexDegrees_s, 
-    unsigned int* numDeletedVertices2, int* vertexDegrees_s2,  int* vertexDegrees_MIS, 
-    int* vertexDegrees_MIS_Reduction,  int maxDegree, unsigned int maxVertex, int hops){
+    unsigned int* numDeletedVertices2, int* vertexDegrees_s2,
+    int* vertexDegrees_MIS_Reduction,  int maxDegree, unsigned int maxVertex, int hops, Counters * blockCounters){
 
     unsigned int newMaxVertex = 0;
     int newMaxDegree = 0;
+    unsigned int numDeletedVertices3 = 0;
 
     *numDeletedVertices2 = *numDeletedVertices;
     for(unsigned int vertex = threadIdx.x; vertex<graph.vertexNum; vertex+=blockDim.x){
-         vertexDegrees_MIS[vertex] = vertexDegrees_s2[vertex] = vertexDegrees_s[vertex];
+         vertexDegrees_s2[vertex] = vertexDegrees_s[vertex];
     }
     __syncthreads();
 
     do {
         newMaxVertex = 0;
         newMaxDegree = 0;
-        findMaxDegreeKHop(graph, vertexDegrees_MIS, vertexDegrees_MIS_Reduction, maxVertex, hops, &newMaxVertex, &newMaxDegree);
-        // deleteNeighborsOfMax, this should append the maxV to LCList, and the N(maxV) to RCList
+
+        startTime(MAX_DEGREE_KHOP,blockCounters);
+        findMaxDegreeKHop(graph, vertexDegrees_s2, vertexDegrees_MIS_Reduction, maxVertex, hops, &newMaxVertex, &newMaxDegree);
+        endTime(MAX_DEGREE_KHOP,blockCounters);
+
+        startTime(PREPARE_RIGHT_CHILD,blockCounters);
+        deleteNeighborsOfMaxDegreeVertex_MIS(graph, vertexDegrees_s2, numDeletedVertices2, newMaxVertex, newMaxDegree);
+        endTime(PREPARE_RIGHT_CHILD,blockCounters);
+        
+        startTime(PREPARE_LEFT_CHILD,blockCounters);
+        deleteMaxDegreeVertex(graph, vertexDegrees_s, numDeletedVertices, newMaxVertex);
+        endTime(PREPARE_LEFT_CHILD,blockCounters);
+
     } while (newMaxDegree > 0);
 }
 

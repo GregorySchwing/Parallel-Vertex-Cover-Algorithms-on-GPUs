@@ -233,14 +233,12 @@ __global__ void GlobalWorkListParameterized_shared_kernel_MIS(Stacks stacks, Wor
     #if USE_GLOBAL_MEMORY
     int * vertexDegrees_s = &global_memory[graph.vertexNum*(2*blockIdx.x)];
     int * vertexDegrees_s2 = &global_memory[graph.vertexNum*(2*blockIdx.x + 1)];
-    int * vertexDegrees_MIS = &global_memory[graph.vertexNum*(2*blockIdx.x + 2)];
-    int * vertexDegrees_MIS_Reduction = &global_memory[graph.vertexNum*(2*blockIdx.x + 3)];
+    int * vertexDegrees_MIS_Reduction = &global_memory[graph.vertexNum*(2*blockIdx.x + 2)];
     #else
     extern __shared__ int shared_mem[];
     int * vertexDegrees_s = shared_mem;
     int * vertexDegrees_s2 = &shared_mem[graph.vertexNum];
-    int * vertexDegrees_MIS = &shared_mem[2*graph.vertexNum];
-    int * vertexDegrees_MIS_Reduction = &shared_mem[3*graph.vertexNum];
+    int * vertexDegrees_MIS_Reduction = &shared_mem[2*graph.vertexNum];
     #endif
 
     bool dequeueOrPopNextItr = true; 
@@ -359,8 +357,8 @@ __global__ void GlobalWorkListParameterized_shared_kernel_MIS(Stacks stacks, Wor
                 startTime(FIND_MIS,&blockCounters);
                 FindKHopMIS(graph, &numDeletedVertices, vertexDegrees_s, 
                             &numDeletedVertices2, vertexDegrees_s2, 
-                            vertexDegrees_MIS, vertexDegrees_MIS_Reduction,
-                            maxDegree, maxVertex, hops);
+                            vertexDegrees_MIS_Reduction,
+                            maxDegree, maxVertex, hops, counters);
                 endTime(FIND_MIS,&blockCounters);
 
                 __syncthreads();
