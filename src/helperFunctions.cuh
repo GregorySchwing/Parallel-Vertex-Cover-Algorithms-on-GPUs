@@ -525,35 +525,20 @@ __device__ void deleteNeighborsOfMaxDegreeVertex_MIS(CSRGraph graph, int* vertex
     __syncthreads();
 }
 
-__device__ void preloadDegrees(CSRGraph graph,int* vertexDegrees_s, int* vertexDegrees_s2){
-    for(unsigned int vertex = threadIdx.x; vertex<graph.vertexNum; vertex+=blockDim.x){
-        vertexDegrees_s2[vertex] = vertexDegrees_s[vertex];
-    }
-    __syncthreads();
-}
-
 __device__ void FindKHopMIS(CSRGraph graph, unsigned int* numDeletedVertices, int* vertexDegrees_s, 
     unsigned int* numDeletedVertices2, int* vertexDegrees_s2,
     int* vertexDegrees_MIS_Reduction,  int maxDegree, unsigned int maxVertex, int hops, Counters * blockCounters){
 
     unsigned int newMaxVertex = maxVertex;
     int newMaxDegree = maxDegree;
-    
+
     *numDeletedVertices2 = *numDeletedVertices;
+
     for(unsigned int vertex = threadIdx.x; vertex<graph.vertexNum; vertex+=blockDim.x){
         vertexDegrees_s2[vertex] = vertexDegrees_s[vertex];
     }
     __syncthreads();
-    /*
-    startTime(PREPARE_RIGHT_CHILD,blockCounters);
-    deleteNeighborsOfMaxDegreeVertex(graph,vertexDegrees_s, numDeletedVertices, vertexDegrees_s2, numDeletedVertices2, maxDegree, maxVertex);
-    endTime(PREPARE_RIGHT_CHILD,blockCounters);
 
-    startTime(PREPARE_LEFT_CHILD,blockCounters);
-    // Prepare the child that removes the neighbors of the max vertex to be processed on the next iteration
-    deleteMaxDegreeVertex(graph, vertexDegrees_s, numDeletedVertices, maxVertex);
-    endTime(PREPARE_LEFT_CHILD,blockCounters);
-    */
     do {
         startTime(PREPARE_RIGHT_CHILD,blockCounters);
         deleteNeighborsOfMaxDegreeVertex_MIS(graph, vertexDegrees_s2, numDeletedVertices2, newMaxVertex, newMaxDegree);
