@@ -34,7 +34,11 @@ i = Θ(k log(k)), but |L| = k. .
 def repeat_it(lst, numbers):
     return chain.from_iterable(repeat(i, j) for i, j in zip(lst, numbers))
 
-
+def line_prepender(filename, line):
+    with open(filename, 'r+') as f:
+        content = f.read()
+        f.seek(0, 0)
+        f.write(line.rstrip('\r\n') + '\n' + content)
 
 
 # Instantiate the parser
@@ -42,10 +46,10 @@ parser = argparse.ArgumentParser(description='Create counter examples for greedy
 
 # Required positional argument
 parser.add_argument('-k', type=int,
-                    help='k <The size of the min vertex cover>')
+                    help='k <The size of the min vertex cover>', required=True)
 
 parser.add_argument('-o', type=str, nargs='?',
-                    help='-o <The prefix for the output file>')
+                    help='-o <The prefix for the output edgelist file>')
                     
 parser.add_argument('-p', type=str, nargs='?',
                     help='-p <The prefix for the image file>')
@@ -68,6 +72,7 @@ numNodes = 1
 # R_1
 
 L = [x for x in range(1,k+1)]
+L[:] = [number - 1 for number in L]
 print ("L == R_1: ",k)
 print (L)
 numNodes += len(L)
@@ -76,6 +81,7 @@ B.add_nodes_from(L, bipartite=0)
 for x in range(2,k+1):
 	print ("R_", x, ": ",k//x)
 	R = [x for x in range(numNodes,numNodes+k//x)]
+	R[:] = [number - 1 for number in R]
 	print(R)
 	numNodes += len(R)
 	B.add_nodes_from(R, bipartite=1)
@@ -86,14 +92,19 @@ for x in range(2,k+1):
 	#B.add_edges_from([(1,26)])
 
 if (mtxPrefix):
+
+  nx.write_edgelist(B, "{}.edgelist".format(mtxPrefix), data=False)
+  line_prepender("{}.edgelist".format(mtxPrefix), "{} {}".format(B.number_of_nodes(), B.number_of_edges()))
+  """  
   fh = io.BytesIO()
-  a = nx.to_scipy_sparse_array(B)
-  sp.io.mmwrite(fh, a)
+  a = nx.to_scipy_sparse_array(B, weight=None)
+  sp.io.mmwrite(fh, a, symmetry="symmetric")
 
   # Write the stuff
   with open("{}.mtx".format(mtxPrefix), "wb") as f:
       f.write(fh.getbuffer())
-
+  """
+  
 if (imagePrefix):
   edge_widths = 0.1
 
