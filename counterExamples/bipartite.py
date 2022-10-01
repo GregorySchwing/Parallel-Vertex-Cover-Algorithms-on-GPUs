@@ -78,18 +78,27 @@ print (L)
 numNodes += len(L)
 B.add_nodes_from(L, bipartite=0)
 # R_1 == L
-for x in range(2,k+1):
+for x in range(k, 1, -1):
 	print ("R_", x, ": ",k//x)
 	R = [x for x in range(numNodes,numNodes+k//x)]
 	R[:] = [number - 1 for number in R]
 	print(R)
 	numNodes += len(R)
 	B.add_nodes_from(R, bipartite=1)
-	zipped = zip(L, repeat_it(R, [(len(L)//len(R))] * len(R)))
+	print("L")
+	print([k//x] * len(R))
+	iterableR = list(repeat_it(R, [x] * len(R)))
+	iterableL = (L[0:k+1])
+	zipped = zip(iterableL, iterableR)
+	print("iterableR", iterableR)
+	print("iterableL", iterableL)
 	edgeList = list(zipped)
 	print (edgeList)
 	B.add_edges_from(edgeList)
 	#B.add_edges_from([(1,26)])
+	
+degrees = [val for (node, val) in B.degree()]
+print(degrees)
 
 if (mtxPrefix):
 
@@ -115,7 +124,7 @@ if (imagePrefix):
 
   # displaying the title
   plt.suptitle("Constructed bipartite graph counterexample for k-VC")
-  plt.title("k =" + str(k) + "; n = " + str(numNodes) + "; Greedy solution = Ω(log(n)) · k")
+  plt.title("k =" + str(k) + "; n = " + str(B.number_of_nodes()) + "; Greedy solution = Ω(log(n)) · k")
   plt.savefig('{}.png'.format(imagePrefix), bbox_inches='tight')
       
   nx.drawing.nx_pydot.write_dot(B,'foo.dot')
