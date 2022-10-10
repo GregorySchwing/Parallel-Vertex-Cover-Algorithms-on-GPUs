@@ -105,6 +105,7 @@ struct PCSR
         uint64_t get_n();
         bool is_null(edge_t e);
         vector<tuple<uint32_t, uint32_t, uint32_t>> get_edges();
+        vector<uint32_t> get_degrees();
         vector<uint32_t> bfs(uint32_t start_node);
         uint64_t get_size();
         void print_array();
@@ -124,6 +125,7 @@ struct PCSR
         uint32_t find_elem_pointer(edge_list_t *list, uint32_t index, edge_t elem);
         bool edge_equals(edge_t e1, edge_t e2);
         std::vector<uint32_t> sparse_matrix_vector_multiplication(std::vector<uint32_t> const &v);
+        void print_graph();
         void printGraph();
         void add_node();
         void add_edge(uint32_t src, uint32_t dest, uint32_t value);
@@ -156,8 +158,11 @@ PCSR<T>::PCSR(FILE * fp, u_int32_t vertexNum, u_int32_t edgeNum)
     {
       unsigned int v0, v1;
       fscanf(fp, "%u%u", &v0, &v1);
-          //printf("adding edge %u %u", v0, v1);
-          add_edge(v0, v1, 1);
+      //printf("adding edge %u %u", v0, v1);
+      if (v0 < v1)
+        add_edge(v0, v1, 1);
+      else
+        add_edge(v1, v0, 1);
     }
 
     fclose(fp);
@@ -231,6 +236,17 @@ vector<tuple<uint32_t, uint32_t, uint32_t>> PCSR<T>::get_edges() {
   return output;
 }
 
+template <class T>
+vector<uint32_t> PCSR<T>::get_degrees() {
+  uint64_t n = get_n();
+  vector<uint32_t> output;
+
+  for (int i = 0; i < n; i++) {
+        output.push_back(
+            nodes[i].num_neighbors);
+  }
+  return output;
+}
 
 template <class T>
 vector<uint32_t> PCSR<T>::bfs(uint32_t start_node) {
@@ -698,7 +714,7 @@ std::vector<uint32_t> PCSR<T>::sparse_matrix_vector_multiplication(std::vector<u
 
 
 template <class T>
-void PCSR<T>::printGraph() {
+void PCSR<T>::print_graph() {
   int num_vertices = nodes.size();
   for (int i = 0; i < num_vertices; i++) {
     // +1 to avoid sentinel
@@ -720,6 +736,28 @@ void PCSR<T>::printGraph() {
     printf("\n");
   }
 }
+
+
+template <class T>
+void PCSR<T>::printGraph() {
+  cout<<"\nDegree Array : ";
+  for (auto i: get_degrees())
+    cout<< " " << i;
+  // cout<< " "<< std::get<0>(i) << " "<< std::get<1>(i) << " "<< std::get<2>(i) << " ";
+  cout<<"\n";
+  /*
+  cout<<"\nsrcPtration Array : ";
+  for(unsigned int i=0;i<vertexNum;i++){
+      cout<<srcPtr[i]<<" ";
+  }
+  */
+  cout<<"\nCGraph Array : ";
+  for (tuple<uint32_t, uint32_t, uint32_t> i: get_edges())
+    cout<< " " << std::get<1>(i);
+  // cout<< " "<< std::get<0>(i) << " "<< std::get<1>(i) << " "<< std::get<2>(i) << " ";
+  cout<<"\n";
+}
+
 
 
 // add a node to the graph
