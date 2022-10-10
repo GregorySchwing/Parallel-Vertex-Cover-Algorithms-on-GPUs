@@ -6,6 +6,10 @@
 #include "Sequential.h"
 #include "auxFunctions.h"
 #include "CSRGraphRep.cuh"
+//#include "PCSR.h"
+#include "Graph.h"
+#include "GraphPolicy.h"
+
 #define USE_GLOBAL_MEMORY 0
 #include "LocalStacks.cuh"
 #include "GlobalWorkList.cuh"
@@ -24,10 +28,21 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
 
+
     Config config = parseArgs(argc,argv);
     printf("\nGraph file: %s",config.graphFileName);
     printf("\nUUID: %s\n",config.outputFilePrefix);
 
+    unsigned int vertexNum;
+	unsigned int edgeNum;
+
+	FILE *fp;
+	fp = fopen(config.graphFileName, "r");
+
+	fscanf(fp, "%u%u", &vertexNum, &edgeNum);
+    printf("Templated graph read %u %u\n", vertexNum, edgeNum);
+
+    Graph<PCSR<int>> graphT(fp, vertexNum, edgeNum);
     CSRGraph graph = createCSRGraphFromFile(config.graphFileName);
     performChecks(graph, config);
 

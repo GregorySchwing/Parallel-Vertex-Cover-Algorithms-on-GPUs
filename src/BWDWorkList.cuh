@@ -21,17 +21,24 @@ struct WorkList{
 	Counter * counter;
 };
 
+// Start by only adding the struction non-branching reduction.
 struct WorkListChen : public WorkList{
+
 	// it is unlikely (and possibly provably impossible) the max size will be required.
 	// experimentation with different values for k should be done.
 	// where k != the parameter k. possibly k == k/2.
-    volatile int* tuple_rows; // max size (k+1)// domain {0..m}
-    volatile int* tuple_cols; // max size (k) // domain {0..m}
-    volatile char* tuple_vals; // max size (k) // domain {0,1,2}
+    //volatile int* tuple_rows; // max size (k+1)// domain {0..m}
+    //volatile int* tuple_cols; // max size (k) // domain {0..m}
+    //volatile char* tuple_vals; // max size (k) // domain {0,1,2}
+
+	// Or 1 int packed into a 64 bit datatype, x result from folding
+	// Not sure how I'll handle folds.
 
 	// Two ints packed into a 64 bit datatype, v_wz (vertex representing anti-edge b/w w&z)
     volatile long long* struction_vertex_labels; // max size (k/2)*3
     volatile int* struction_new_vertex_cols;	// max size (k/2)*6
+    volatile int* struction_new_vertex_degrees;	// max size (k/2)*6
+	volatile int* struction_vertex_count;
 };
 
 __device__ bool checkThreshold(WorkList workList){
