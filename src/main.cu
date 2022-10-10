@@ -36,13 +36,21 @@ int main(int argc, char *argv[]) {
     unsigned int vertexNum;
 	unsigned int edgeNum;
 
-	FILE *fp;
-	fp = fopen(config.graphFileName, "r");
+	FILE *fp1;
+	fp1 = fopen(config.graphFileName, "r");
 
-	fscanf(fp, "%u%u", &vertexNum, &edgeNum);
-    printf("Templated graph read %u %u\n", vertexNum, edgeNum);
+	fscanf(fp1, "%u%u", &vertexNum, &edgeNum);
 
-    Graph<PCSR<int>> graphT(fp, vertexNum, edgeNum);
+
+    Graph<PCSR<int>> graphT(fp1, vertexNum, edgeNum);
+
+	FILE *fp2;
+	fp2 = fopen(config.graphFileName, "r");
+
+	fscanf(fp2, "%u%u", &vertexNum, &edgeNum);
+
+    Graph<CSR<int>> graphT2(fp2, vertexNum, edgeNum);
+
     CSRGraph graph = createCSRGraphFromFile(config.graphFileName);
     performChecks(graph, config);
 
@@ -50,6 +58,8 @@ int main(int argc, char *argv[]) {
 	std::chrono::duration<double> elapsed_seconds_max, elapsed_seconds_edge, elapsed_seconds_mvc;
 
     begin = std::chrono::system_clock::now(); 
+    //unsigned int RemoveMaxMinimumT = RemoveMaxApproximateMVC(graphT);
+
     unsigned int RemoveMaxMinimum = RemoveMaxApproximateMVC(graph);
     end = std::chrono::system_clock::now(); 
 	elapsed_seconds_max = end - begin; 
