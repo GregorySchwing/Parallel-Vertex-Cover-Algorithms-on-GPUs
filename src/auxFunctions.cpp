@@ -205,6 +205,10 @@ CSRGraph createCSRGraphFromFile(const char *filename)
 	return graph;
 }
 
+
+// O(kn) - Buss; |V|,|E| = O(k^2)
+// Min number of triangles = (m/3n)*(4m−n^2). 
+// note these triangles don't have to be degree(2)
 unsigned int RemoveMaxApproximateMVC(CSRGraph graph)
 {
 
@@ -251,6 +255,11 @@ unsigned int RemoveMaxApproximateMVC(CSRGraph graph)
 
 	return minimum;
 }
+
+// O(kn) - NT; |V| = O(2k),|E| = O(k^2)
+//unsigned int RemoveMaxApproximateMVC_NT(CSRGraph graph)
+//{
+//}
 
 unsigned int getRandom(int lower, int upper)
 {

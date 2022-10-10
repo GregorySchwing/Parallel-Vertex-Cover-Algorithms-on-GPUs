@@ -21,6 +21,56 @@ struct WorkList{
 	Counter * counter;
 };
 
+struct WorkListChen : public WorkList{
+	// Dynamic CSR of Tuples: rows[k+1] (type unsigned int), cols[un-amortizedUpperBound] (type unsigned int), values[k] (type char - domain is (0,1,2))
+	// Dynamic CSR of New Nodes/Edges: rows[k+1] (type unsigned int), cols[k] (type unsigned int)
+	// Max degree of any vertex = k', let x be a vertex, p = |N(x)|
+	// p < k' else the high-degree reduction rule would apply; therefore, p <= k'-1
+	/*
+		"Remark 2.3: When the struction operation is applied to a
+		degree-3 vertex u in G with neighbors v, w, and z, and with
+		an edge between v and w, the only vertices removed from G
+		are u, v, w, and z, and the only vertices of G in the resulting
+		graph whose degree could have increased are the neighbors of
+		z."
+	*/
+	// internal edges of new neighborhood <= ((p)*(p-1))
+	// extrenal edges of new neighborhood <= ((p)*(p-1))
+
+	// upper bound on number of edges in a new neighborhood: +((p)(p))  = p(2p-1)
+	
+	// Fully connected graph of new nodes : ((k'-2)*(k'-3)); since upper bound of new nodes is (k'-2)
+	// Max number of edges to non-neighborhood vertices from original graph : (p-1)*(p-1); since upper bound of new nodes is (p-1)
+	// upper bound of edges b/w nodes n = n*(n-1)
+
+	// un-amortized max number of edges = k'*(2k'^2 - 7k' + 7)
+	// However, k' isn't fixed and is constantly shrinking; since every struction decreases k' by 2
+	// therefore, the worst case number of edges is the value from the following recursion summation
+	// f(m) = 2m^2 - 7m + 7
+	// T(m) = T(m-2) + f(m-2)
+
+	// However, in the VC algorithm of Chen et al, the struction operation is only applied to vertices of max degree 4
+	// therefore, f(m) can be replaced by f(c,m); where c=4
+	// f(c,m) = ((c-2)*(c-3))+((m-1)(m-1))  = 2k'^2 - 7k' + 7 
+	// T(m) = T(m-2) + f(4,m-2)
+
+	// Therefore, storing the external edges in each worklist is prohibitive.
+	//  However, the external edges are already stored in the original graph
+	// so by simple storing pointers to the labels making up the anti-edge 
+	// for example the external edges of V_wv are [w,v] and 2 hopping to the
+	// entries of w and v in the original graph, checking whether said neighbor has
+	// degree > 0, using my local degree structure, so account for vertices removed
+	// by a struction operation, 
+	// the max number of new nodes is 3
+	// the max number of internal edges is 3
+	// the max number of external edges is 6 
+	// only the internal edges will be represented as edges.
+	// the external edges will be stored as 64 bit labels of the anti-edge node
+	// with two 32-bit ints packed into the variable.
+
+
+};
+
 __device__ bool checkThreshold(WorkList workList){
 
     __shared__ int numEnqueued;

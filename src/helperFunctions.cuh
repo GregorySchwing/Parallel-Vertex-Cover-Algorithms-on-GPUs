@@ -54,6 +54,92 @@ __device__ void deleteNeighborsOfMaxDegreeVertex(CSRGraph graph,int* vertexDegre
     }
 }
 
+__device__ void deleteNeighborsOfTwoNeighborsOfMaxDegreeVertex(CSRGraph graph, int neighbor1, int neighbor2, int* vertexDegrees_s, unsigned int* numDeletedVertices, int* vertexDegrees_s2, 
+    unsigned int* numDeletedVertices2, int maxDegree, unsigned int maxVertex){
+
+    *numDeletedVertices2 = *numDeletedVertices;
+    for(unsigned int vertex = threadIdx.x; vertex<graph.vertexNum; vertex+=blockDim.x){
+        vertexDegrees_s2[vertex] = vertexDegrees_s[vertex];
+    }
+    __syncthreads();
+
+    if (threadIdx.x < blockDim.x/2){
+        unsigned int edge = graph.srcPtr[maxVertex] + neighbor1; // Delete Neighbors of maxVertex
+        unsigned int neighbor = graph.dst[edge];
+        if (vertexDegrees_s2[neighbor] != -1){
+            for(unsigned int neighborEdge = graph.srcPtr[neighbor] + threadIdx.x; neighborEdge < graph.srcPtr[neighbor + 1];neighborEdge+=(blockDim.x/2)) {
+                unsigned int neighborOfNeighbor = graph.dst[neighborEdge];
+                if(vertexDegrees_s2[neighborOfNeighbor] != -1) {
+                    atomicSub(&vertexDegrees_s2[neighborOfNeighbor], 1);
+                }
+            }
+        }
+    } else {
+        unsigned int edge = graph.srcPtr[maxVertex] + neighbor2; // Delete Neighbors of maxVertex
+        unsigned int neighbor = graph.dst[edge];
+        if (vertexDegrees_s2[neighbor] != -1){
+            for(unsigned int neighborEdge = graph.srcPtr[neighbor] + threadIdx.x-(blockDim.x/2); neighborEdge < graph.srcPtr[neighbor + 1];neighborEdge+=(blockDim.x/2)) {
+                unsigned int neighborOfNeighbor = graph.dst[neighborEdge];
+                if(vertexDegrees_s2[neighborOfNeighbor] != -1) {
+                    atomicSub(&vertexDegrees_s2[neighborOfNeighbor], 1);
+                }
+            }
+        }        
+    }
+    
+    *numDeletedVertices2 += 2;
+    __syncthreads();
+
+    if (threadIdx.x == 0){
+        unsigned int edge1 = graph.srcPtr[maxVertex] + neighbor1;
+        unsigned int neighbor1 = graph.dst[edge1];
+        vertexDegrees_s2[neighbor1] = -1;
+        unsigned int edge2 = graph.srcPtr[maxVertex] + neighbor1;
+        unsigned int neighbor2 = graph.dst[edge2];
+        vertexDegrees_s2[neighbor2] = -1;
+    }
+}
+
+
+__device__ void deleteNeighborsOfTwoNeighborsOfMaxDegreeVertex(CSRGraph graph, int neighbor1, int neighbor2, int* vertexDegrees_s, unsigned int* numDeletedVertices, int maxDegree, unsigned int maxVertex){
+
+    if (threadIdx.x < blockDim.x/2){
+        unsigned int edge = graph.srcPtr[maxVertex] + neighbor1; // Delete Neighbors of maxVertex
+        unsigned int neighbor = graph.dst[edge];
+        if (vertexDegrees_s[neighbor] != -1){
+            for(unsigned int neighborEdge = graph.srcPtr[neighbor] + threadIdx.x; neighborEdge < graph.srcPtr[neighbor + 1];neighborEdge+=(blockDim.x/2)) {
+                unsigned int neighborOfNeighbor = graph.dst[neighborEdge];
+                if(vertexDegrees_s[neighborOfNeighbor] != -1) {
+                    atomicSub(&vertexDegrees_s[neighborOfNeighbor], 1);
+                }
+            }
+        }
+    } else {
+        unsigned int edge = graph.srcPtr[maxVertex] + neighbor2; // Delete Neighbors of maxVertex
+        unsigned int neighbor = graph.dst[edge];
+        if (vertexDegrees_s[neighbor] != -1){
+            for(unsigned int neighborEdge = graph.srcPtr[neighbor] + threadIdx.x-(blockDim.x/2); neighborEdge < graph.srcPtr[neighbor + 1];neighborEdge+=(blockDim.x/2)) {
+                unsigned int neighborOfNeighbor = graph.dst[neighborEdge];
+                if(vertexDegrees_s[neighborOfNeighbor] != -1) {
+                    atomicSub(&vertexDegrees_s[neighborOfNeighbor], 1);
+                }
+            }
+        }        
+    }
+    
+    *numDeletedVertices += 2;
+    __syncthreads();
+
+    if (threadIdx.x == 0){
+        unsigned int edge1 = graph.srcPtr[maxVertex] + neighbor1;
+        unsigned int neighbor1 = graph.dst[edge1];
+        vertexDegrees_s[neighbor1] = -1;
+        unsigned int edge2 = graph.srcPtr[maxVertex] + neighbor1;
+        unsigned int neighbor2 = graph.dst[edge2];
+        vertexDegrees_s[neighbor2] = -1;
+    }
+}
+
 __device__ void deleteMaxDegreeVertex(CSRGraph graph,int* vertexDegrees_s, unsigned int* numDeletedVertices, unsigned int maxVertex){
 
     if(threadIdx.x == 0){
@@ -72,6 +158,40 @@ __device__ void deleteMaxDegreeVertex(CSRGraph graph,int* vertexDegrees_s, unsig
 
     __syncthreads(); 
 }
+
+
+__device__ void deleteMaxDegreeVertexAndTwoNeighbors(CSRGraph graph, int neighbor1, int neighbor2, int* vertexDegrees_s, int* vertexDegrees_s2, unsigned int* numDeletedVertices, unsigned int maxVertex){
+
+    // s2 has been successfully enqueued, so we can reuse it here.
+    for(unsigned int vertex = threadIdx.x; vertex<graph.vertexNum; vertex+=blockDim.x){
+        vertexDegrees_s2[vertex] = vertexDegrees_s[vertex];
+    }
+    __syncthreads();
+
+    if(threadIdx.x == 0){
+        vertexDegrees_s2[maxVertex] = -1;
+        unsigned int edge1 = graph.srcPtr[maxVertex] + neighbor1; 
+        unsigned int neighbor1 = graph.dst[edge1];
+        vertexDegrees_s2[neighbor1]= -1;
+        unsigned int edge2 = graph.srcPtr[maxVertex] + neighbor2; 
+        unsigned int neighbor2 = graph.dst[edge2];
+        vertexDegrees_s2[neighbor2]= -1;
+    }
+
+    *numDeletedVertices +=3;
+
+    __syncthreads(); 
+
+    for(unsigned int edge = graph.srcPtr[maxVertex] + threadIdx.x; edge < graph.srcPtr[maxVertex + 1]; edge += blockDim.x) {
+        unsigned int neighbor = graph.dst[edge];
+        if(vertexDegrees_s[neighbor] != -1) {
+            --vertexDegrees_s[neighbor];
+        }
+    }
+
+    __syncthreads(); 
+}
+
 
 __device__ unsigned int leafReductionRule(unsigned int vertexNum, int *vertexDegrees_s, CSRGraph graph, int* shared_mem){
 

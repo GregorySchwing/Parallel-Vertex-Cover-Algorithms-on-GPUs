@@ -337,7 +337,8 @@ __global__ void GlobalWorkListParameterized_shared_kernel_MIS(Stacks stacks, Wor
             unsigned int maxVertex;
             int maxDegree;
             startTime(MAX_DEGREE,&blockCounters);
-            findMaxDegree_with_tiebreaker(graph.vertexNum, &maxVertex, &maxDegree, vertexDegrees_s, vertexDegrees_s2);
+            findMaxDegree(graph.vertexNum, &maxVertex, &maxDegree, vertexDegrees_s, vertexDegrees_s2);
+            //findMaxDegree_with_tiebreaker(graph.vertexNum, &maxVertex, &maxDegree, vertexDegrees_s, vertexDegrees_s2);
             endTime(MAX_DEGREE,&blockCounters);
 
             __syncthreads();
@@ -352,13 +353,10 @@ __global__ void GlobalWorkListParameterized_shared_kernel_MIS(Stacks stacks, Wor
                 dequeueOrPopNextItr = true;
 
             } else { // Vertex cover not found, need to branch
-                // Simultaneously also PREPARE_LEFT_CHILD, PREPARE_RIGHT_CHILD
-                startTime(FIND_MIS,&blockCounters);
-                FindKHopMIS(graph, &numDeletedVertices, vertexDegrees_s, 
-                            &numDeletedVertices2, vertexDegrees_s2, 
-                            vertexDegrees_MIS_Reduction,
-                            maxDegree, maxVertex, numHops, counters);
-                endTime(FIND_MIS,&blockCounters);
+
+                startTime(PREPARE_RIGHT_CHILD,&blockCounters);
+                deleteNeighborsOfMaxDegreeVertex(graph,vertexDegrees_s, &numDeletedVertices, vertexDegrees_s2, &numDeletedVertices2, maxDegree, maxVertex);
+                endTime(PREPARE_RIGHT_CHILD,&blockCounters);
 
                 __syncthreads();
 
@@ -380,6 +378,68 @@ __global__ void GlobalWorkListParameterized_shared_kernel_MIS(Stacks stacks, Wor
                     __syncthreads(); 
                 } else {
                     endTime(ENQUEUE,&blockCounters);
+                }
+
+                if (maxDegree <= 2){
+                    startTime(PREPARE_LEFT_CHILD,&blockCounters);
+                    // Prepare the child that removes the neighbors of the max vertex to be processed on the next iteration
+                    deleteMaxDegreeVertex(graph, vertexDegrees_s, &numDeletedVertices, maxVertex);
+                    endTime(PREPARE_LEFT_CHILD,&blockCounters);
+                } else {
+                    // Try to balance the search tree degrees, by maximizing the number of children
+                    // It is proven in Chen et al that either all the neighbors will be removed from the cover
+                    // or at the most all but 2 will be removed.  Since the first branch handles
+                    // removing all the neighbors of maxDegree, this will enumerate all the possible
+                    // combinations of 2 neighbors of maxDegree and remove then, along with maxDegree.
+
+                    // VERY naive but if this is faster then it a strong indication to implement the full chen et al.
+                    int neighbor1 = 0;                                                   
+                    int neighbor2 = 1;
+                    while (neighbor1 < maxDegree-1) {
+                        __syncthreads();
+
+                        deleteNeighborsOfTwoNeighborsOfMaxDegreeVertex(graph, neighbor1, neighbor2, vertexDegrees_s, &numDeletedVertices, vertexDegrees_s2, &numDeletedVertices2, maxDegree, maxVertex);
+                        deleteMaxDegreeVertex(graph, vertexDegrees_s2, &numDeletedVertices2, maxVertex);
+                        
+                        __syncthreads();
+
+                        bool enqueueSuccess;
+                        if(checkThreshold(workList)){
+                            startTime(ENQUEUE,&blockCounters);
+                            enqueueSuccess = enqueue(vertexDegrees_s2, workList, graph.vertexNum, &numDeletedVertices2);
+                        } else  {
+                            enqueueSuccess = false;
+                        }
+                        
+                        __syncthreads();
+                        
+                        if(!enqueueSuccess) {
+                            startTime(PUSH_TO_STACK,&blockCounters);
+                            pushStack(graph.vertexNum, vertexDegrees_s2, &numDeletedVertices2, stackVertexDegrees, stackNumDeletedVertices, &stackTop);
+                            maxDepth(stackTop, &blockCounters);
+                            endTime(PUSH_TO_STACK,&blockCounters);
+                            __syncthreads(); 
+                        } else {
+                            endTime(ENQUEUE,&blockCounters);
+                        }
+
+                        neighbor2++;
+
+                        if (neighbor2 == maxDegree) {
+                            neighbor1++;
+                            neighbor2 = neighbor1 + 1;
+                        }
+
+                        // Perform the last degree update in vertexDegree_s and numVerticesDeleted1
+                        if (neighbor1 == (maxDegree-1) && neighbor2 == (maxDegree-1))
+                            break;
+                    }
+
+                    startTime(PREPARE_LEFT_CHILD,&blockCounters);
+                    deleteNeighborsOfTwoNeighborsOfMaxDegreeVertex(graph, neighbor1, neighbor2, vertexDegrees_s, &numDeletedVertices, maxDegree, maxVertex);
+                    // Prepare the child that removes the neighbors of the max vertex to be processed on the next iteration
+                    deleteMaxDegreeVertex(graph, vertexDegrees_s, &numDeletedVertices, maxVertex);
+                    endTime(PREPARE_LEFT_CHILD,&blockCounters);
                 }
 
                 dequeueOrPopNextItr = false;
