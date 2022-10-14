@@ -159,10 +159,11 @@ PCSR<T>::PCSR(FILE * fp, u_int32_t vertexNum, u_int32_t edgeNum)
       unsigned int v0, v1;
       fscanf(fp, "%u%u", &v0, &v1);
       //printf("adding edge %u %u", v0, v1);
-      if (v0 < v1)
-        add_edge(v0, v1, 1);
-      else
-        add_edge(v1, v0, 1);
+      // To get the correct degrees, need an incoming and outgoing edge for each edge in edgelist
+      //if (v0 < v1)
+      add_edge(v0, v1, 1);
+      //else
+      add_edge(v1, v0, 1);
     }
 
     fclose(fp);
