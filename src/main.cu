@@ -9,6 +9,7 @@
 //#include "PCSR.h"
 #include "Graph.h"
 #include "GraphPolicy.h"
+#include "ReductionRules.h"
 
 #define USE_GLOBAL_MEMORY 0
 #include "LocalStacks.cuh"
@@ -42,14 +43,14 @@ int main(int argc, char *argv[]) {
 	fscanf(fp1, "%u%u", &vertexNum, &edgeNum);
 
 
-    Graph<PCSR<int>> graphT(fp1, vertexNum, edgeNum);
+    Graph<PCSR<int>> graphPCSR(fp1, vertexNum, edgeNum);
 
 	FILE *fp2;
 	fp2 = fopen(config.graphFileName, "r");
 
 	fscanf(fp2, "%u%u", &vertexNum, &edgeNum);
 
-    Graph<CSR<int>> graphT2(fp2, vertexNum, edgeNum);
+    Graph<CSR<int>> graphCSR(fp2, vertexNum, edgeNum);
 
     CSRGraph graph = createCSRGraphFromFile(config.graphFileName);
     performChecks(graph, config);
@@ -58,27 +59,30 @@ int main(int argc, char *argv[]) {
 	std::chrono::duration<double> elapsed_seconds_max, elapsed_seconds_edge, elapsed_seconds_mvc;
 
     begin = std::chrono::system_clock::now(); 
-    //unsigned int RemoveMaxMinimumT = RemoveMaxApproximateMVC(graphT);
-    Graph<PCSR<int>> graphCopy = graphT;
-    unsigned int RemoveMaxMinimumT2 = graphT2.RemoveMaxApproximateMVC();
-
+    unsigned int RemoveMaxMinimumPCSR =  ReductionRules<Graph<PCSR<int>>>::RemoveMaxApproximateMVC(graphPCSR);
+    unsigned int RemoveMaxMinimumCSR =  ReductionRules<Graph<CSR<int>>>::RemoveMaxApproximateMVC(graphCSR);
     unsigned int RemoveMaxMinimum = RemoveMaxApproximateMVC(graph);
     end = std::chrono::system_clock::now(); 
 	elapsed_seconds_max = end - begin; 
 
     printf("\nElapsed Time for Approximate Remove Max: %f\n",elapsed_seconds_max.count());
     printf("Approximate Remove Max Minimum is: %u\n", RemoveMaxMinimum);
+    printf("Approximate RemoveMaxMinimumCSR is: %u\n", RemoveMaxMinimumCSR);
+    printf("Approximate RemoveMaxMinimumPCSR is: %u\n", RemoveMaxMinimumPCSR);
     fflush(stdout);
 
     begin = std::chrono::system_clock::now();
-    unsigned int RemoveEdgeMinimumT2 = graphT2.RemoveEdgeApproximateMVC();
-    unsigned int RemoveEdgeMinimum = RemoveEdgeApproximateMVC(graph);
+    unsigned int RemoveEdgeMinimumPCSR =  ReductionRules<Graph<PCSR<int>>>::RemoveEdgeApproximateMVC(graphPCSR);
+    unsigned int RemoveEdgeMinimumCSR =  ReductionRules<Graph<CSR<int>>>::RemoveEdgeApproximateMVC(graphCSR);
+    unsigned int RemoveEdgeMinimum =  RemoveEdgeApproximateMVC(graph);
+
     end = std::chrono::system_clock::now(); 
 	elapsed_seconds_edge = end - begin; 
 
     printf("Elapsed Time for Approximate Remove Edge: %f\n",elapsed_seconds_edge.count());
     printf("Approximate Remove Edge Minimum is: %u\n", RemoveEdgeMinimum);
-    printf("Approximate Remove Edge Minimum is: %u\n", RemoveEdgeMinimumT2);
+    printf("Approximate RemoveEdgeMinimumCSR is: %u\n", RemoveEdgeMinimumCSR);
+    printf("Approximate RemoveEdgeMinimumPCSR is: %u\n", RemoveEdgeMinimumPCSR);
 
     fflush(stdout);
 
