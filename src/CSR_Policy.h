@@ -25,14 +25,19 @@ template <class T>
 struct CSR
 {
     CSR(FILE * fp, u_int32_t vertexNum, u_int32_t edgeNum);
+	CSR(const CSR<T> & otherCSR);
+
     unsigned int vertexNum; // Number of Vertices
     unsigned int edgeNum; // Number of Edges
     unsigned int* dst;
     unsigned int* srcPtr;
     int* degree;
     
-    void create(unsigned int xn,unsigned int xm); // Initializes the graph rep
-    void copy(CSRGraph graph);
+    // Moved initialization into construction
+	//void create(unsigned int xn,unsigned int xm); // Initializes the graph rep
+    // Moved this into a copy constructor.
+	//void copy(CSR<T> graph);
+
     void deleteVertex(unsigned int v);
     unsigned int findMaxDegree();
     void printGraph();
@@ -118,6 +123,60 @@ CSR<T>::CSR(FILE * fp, u_int32_t vertexNum, u_int32_t edgeNum)
 	}
 }
 
+template <class T>
+CSR<T>::CSR(const CSR<T> & otherCSR)
+{
+    vertexNum =otherCSR.vertexNum;
+    edgeNum =otherCSR.edgeNum;
+
+    dst = (unsigned int*)malloc(sizeof(unsigned int)*2*edgeNum);
+    srcPtr = (unsigned int*)malloc(sizeof(unsigned int)*(vertexNum+1));
+    degree = (int*)malloc(sizeof(int)*vertexNum);
+
+    for(unsigned int i = 0;i<vertexNum;i++){
+        srcPtr[i] = otherCSR.srcPtr[i];
+        degree[i] = otherCSR.degree[i];
+    }
+    srcPtr[vertexNum] = otherCSR.srcPtr[vertexNum];
+
+    for(unsigned int i=0;i<2*edgeNum;i++){
+        dst[i] = otherCSR.dst[i];
+    }
+}
+
+template <class T>
+void CSR<T>::deleteVertex(unsigned int v){
+    assert(v < vertexNum);
+    assert(srcPtr[v]+degree[v] <= 2*edgeNum);
+    for(int i = srcPtr[v];i<srcPtr[v]+degree[v];i++){
+        int neighbor = dst[i];
+        assert(neighbor < vertexNum);
+        int last = srcPtr[neighbor]+degree[neighbor];
+        assert(last <= 2*edgeNum);
+        for(int j = srcPtr[neighbor];j<last;j++){
+            if(dst[j]==v){
+                dst[j] = dst[last-1];
+                if(degree[neighbor]!=-1){
+                    degree[neighbor]--;
+                }
+            }
+        } 
+    }
+    degree[v]=-1;
+}
+
+template <class T>
+unsigned int  CSR<T>::findMaxDegree(){
+    unsigned int max = 0;
+    unsigned int maxd = 0;
+    for(unsigned int i=0;i<vertexNum;i++){
+        if(degree[i]>maxd){
+            maxd = degree[i];
+            max = i;
+        }
+    }
+    return max;
+}
 
 template <class T>
 void CSR<T>::printGraph(){
@@ -138,4 +197,9 @@ void CSR<T>::printGraph(){
         cout<<"\n";
     }
 
+
+template <class T>
+void CSR<T>::del(){
+
+}
 #endif

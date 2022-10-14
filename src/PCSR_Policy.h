@@ -60,6 +60,20 @@ typedef struct edge_list {
   int H;
   int logN;
   edge_t *items;
+
+  edge_list(){}
+
+  edge_list(const edge_list & other_edge_list){
+    N = other_edge_list.N;
+    H = other_edge_list.H;
+    logN = other_edge_list.logN;
+    items = (edge_t *)malloc(N * sizeof(*(items)));
+    for (int i = 0; i < N; i++) {
+        items[i].value = other_edge_list.items[i].value;
+        items[i].dest = other_edge_list.items[i].dest;
+    }
+  }
+
 } edge_list_t;
 
 // find index of first 1-bit (least significant bit)
@@ -97,6 +111,7 @@ struct PCSR
 {
     public:
         PCSR(FILE * fp, u_int32_t  vertexNum, u_int32_t  edgeNum);
+        PCSR(const PCSR<T> & otherPCSR);
         
         ~PCSR();
 
@@ -141,6 +156,7 @@ PCSR<T>::PCSR(FILE * fp, u_int32_t vertexNum, u_int32_t edgeNum)
     printf("\nConstructed PCSR-based Graph\n");
 
     edges.N = 2 << bsr_word(vertexNum);
+    printf("num edges %d", edges.N);
     edges.logN = (1 << bsr_word(bsr_word(edges.N) + 1));
     edges.H = bsr_word(edges.N / edges.logN);
 
@@ -176,6 +192,13 @@ PCSR<T>::PCSR(FILE * fp, u_int32_t vertexNum, u_int32_t edgeNum)
 
     // print out the graph
     //printGraph();
+}
+
+template <class T>
+PCSR<T>::PCSR(const PCSR<T> & otherPCSR)
+{
+  nodes = otherPCSR.nodes;
+  edges = otherPCSR.edges;
 }
 
 template <class T>
