@@ -59,6 +59,8 @@ int main(int argc, char *argv[]) {
 
     begin = std::chrono::system_clock::now(); 
     //unsigned int RemoveMaxMinimumT = RemoveMaxApproximateMVC(graphT);
+    Graph<PCSR<int>> graphCopy = graphT;
+    unsigned int RemoveMaxMinimumT2 = graphT2.RemoveMaxApproximateMVC();
 
     unsigned int RemoveMaxMinimum = RemoveMaxApproximateMVC(graph);
     end = std::chrono::system_clock::now(); 
@@ -69,19 +71,22 @@ int main(int argc, char *argv[]) {
     fflush(stdout);
 
     begin = std::chrono::system_clock::now();
+    unsigned int RemoveEdgeMinimumT2 = graphT2.RemoveEdgeApproximateMVC();
     unsigned int RemoveEdgeMinimum = RemoveEdgeApproximateMVC(graph);
     end = std::chrono::system_clock::now(); 
 	elapsed_seconds_edge = end - begin; 
 
     printf("Elapsed Time for Approximate Remove Edge: %f\n",elapsed_seconds_edge.count());
     printf("Approximate Remove Edge Minimum is: %u\n", RemoveEdgeMinimum);
+    printf("Approximate Remove Edge Minimum is: %u\n", RemoveEdgeMinimumT2);
+
     fflush(stdout);
 
     unsigned int minimum = (RemoveMaxMinimum < RemoveEdgeMinimum) ? RemoveMaxMinimum : RemoveEdgeMinimum;
 
     unsigned int k = config.k; 
     unsigned int kFound = 0;
-
+    exit(1);
     if(config.version == SEQUENTIAL){
         if(config.instance == PVC){
             begin = std::chrono::system_clock::now();
