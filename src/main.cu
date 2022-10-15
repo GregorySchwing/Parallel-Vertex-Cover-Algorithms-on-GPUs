@@ -44,6 +44,7 @@ int main(int argc, char *argv[]) {
 
 
     Graph<PCSR<int>> graphPCSR(fp1, vertexNum, edgeNum);
+    //Graph<PCSR2<int>> graphPCSR2(fp1, vertexNum, edgeNum);
 
 	FILE *fp2;
 	fp2 = fopen(config.graphFileName, "r");
@@ -59,7 +60,7 @@ int main(int argc, char *argv[]) {
 	std::chrono::duration<double> elapsed_seconds_max, elapsed_seconds_edge, elapsed_seconds_mvc;
 
     begin = std::chrono::system_clock::now(); 
-    unsigned int RemoveMaxMinimumPCSR =  ReductionRules<Graph<PCSR<int>>>::RemoveMaxApproximateMVC(graphPCSR);
+    //unsigned int RemoveMaxMinimumPCSR =  ReductionRules<Graph<PCSR<int>>>::RemoveMaxApproximateMVC(graphPCSR);
     unsigned int RemoveMaxMinimumCSR =  ReductionRules<Graph<CSR<int>>>::RemoveMaxApproximateMVC(graphCSR);
     unsigned int RemoveMaxMinimum = RemoveMaxApproximateMVC(graph);
     end = std::chrono::system_clock::now(); 
@@ -68,11 +69,11 @@ int main(int argc, char *argv[]) {
     printf("\nElapsed Time for Approximate Remove Max: %f\n",elapsed_seconds_max.count());
     printf("Approximate Remove Max Minimum is: %u\n", RemoveMaxMinimum);
     printf("Approximate RemoveMaxMinimumCSR is: %u\n", RemoveMaxMinimumCSR);
-    printf("Approximate RemoveMaxMinimumPCSR is: %u\n", RemoveMaxMinimumPCSR);
+    //printf("Approximate RemoveMaxMinimumPCSR is: %u\n", RemoveMaxMinimumPCSR);
     fflush(stdout);
 
     begin = std::chrono::system_clock::now();
-    unsigned int RemoveEdgeMinimumPCSR =  ReductionRules<Graph<PCSR<int>>>::RemoveEdgeApproximateMVC(graphPCSR);
+    //unsigned int RemoveEdgeMinimumPCSR =  ReductionRules<Graph<PCSR<int>>>::RemoveEdgeApproximateMVC(graphPCSR);
     unsigned int RemoveEdgeMinimumCSR =  ReductionRules<Graph<CSR<int>>>::RemoveEdgeApproximateMVC(graphCSR);
     unsigned int RemoveEdgeMinimum =  RemoveEdgeApproximateMVC(graph);
 
@@ -82,7 +83,7 @@ int main(int argc, char *argv[]) {
     printf("Elapsed Time for Approximate Remove Edge: %f\n",elapsed_seconds_edge.count());
     printf("Approximate Remove Edge Minimum is: %u\n", RemoveEdgeMinimum);
     printf("Approximate RemoveEdgeMinimumCSR is: %u\n", RemoveEdgeMinimumCSR);
-    printf("Approximate RemoveEdgeMinimumPCSR is: %u\n", RemoveEdgeMinimumPCSR);
+    //printf("Approximate RemoveEdgeMinimumPCSR is: %u\n", RemoveEdgeMinimumPCSR);
 
     fflush(stdout);
 

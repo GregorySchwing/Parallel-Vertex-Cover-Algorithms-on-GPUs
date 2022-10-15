@@ -1,0 +1,3 @@
+[submodule "ppcsr"]
+	path = ppcsr
+	url = https://github.com/domargan/parallel-packed-csr.git

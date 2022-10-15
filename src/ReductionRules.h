@@ -56,7 +56,8 @@ unsigned int ReductionRules<Graph>::RemoveMaxApproximateMVC(const Graph & graph)
 			++minimum;
 		}
 	}
-
+	
+	// Wrote a destructor
 	//approxGraph.del();
 
 	return minimum;
@@ -100,7 +101,8 @@ unsigned int ReductionRules<Graph>::RemoveEdgeApproximateMVC(const Graph & graph
 		}
 	}
 
-	approxGraph.del();
+	// Wrote a destructor
+	//approxGraph.del();
 
 	return minimum;
 }
