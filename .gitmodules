@@ -1,0 +1,3 @@
+[submodule "parallel-packed-csr"]
+	path = parallel-packed-csr
+	url = https://github.com/GregorySchwing/parallel-packed-csr.git
