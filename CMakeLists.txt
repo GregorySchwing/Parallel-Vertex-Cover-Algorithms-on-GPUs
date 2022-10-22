@@ -28,14 +28,10 @@ foreach (_headerFile ${vc-gpu_HEADERS})
 endforeach ()
 list(REMOVE_DUPLICATES vc-gpu_INCLUDE_DIRS)
 
-#add_subdirectory(parallel-packed-csr)
+add_subdirectory(parallel-packed-csr)
 message(STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
 message(STATUS "vc-gpu_SOURCES: ${vc-gpu_SOURCES}")
 
 add_executable(vc-gpu ${vc-gpu_CUDA_SOURCES} ${vc-gpu_SOURCES}  ${vc-gpu_HEADERS} ${vc-gpu_CUDA_HEADERS})
 target_include_directories(vc-gpu PRIVATE ${vc-gpu_INCLUDE_DIRS})
-
-set(THREADS_PREFER_PTHREAD_FLAG ON)
-find_package(Threads REQUIRED)
-target_link_libraries(vc-gpu PRIVATE Threads::Threads numa)
 
