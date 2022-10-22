@@ -29,9 +29,11 @@ endforeach ()
 list(REMOVE_DUPLICATES vc-gpu_INCLUDE_DIRS)
 
 add_subdirectory(parallel-packed-csr)
+file(GLOB_RECURSE pppcsr_HEADERS "${PROJECT_SOURCE_DIR}/parallel-packed-csr/src/*.h")
+
 message(STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
 message(STATUS "vc-gpu_SOURCES: ${vc-gpu_SOURCES}")
 
-add_executable(vc-gpu ${vc-gpu_CUDA_SOURCES} ${vc-gpu_SOURCES}  ${vc-gpu_HEADERS} ${vc-gpu_CUDA_HEADERS})
-target_include_directories(vc-gpu PRIVATE ${vc-gpu_INCLUDE_DIRS})
-
+add_executable(vc-gpu ${vc-gpu_CUDA_SOURCES} ${vc-gpu_SOURCES})
+target_include_directories(vc-gpu PRIVATE ${vc-gpu_INCLUDE_DIRS} ${pppcsr_HEADERS})
+target_link_libraries(vc-gpu parallel-packed-csr cuda)
