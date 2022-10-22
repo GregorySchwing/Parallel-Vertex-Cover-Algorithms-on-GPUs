@@ -22,14 +22,21 @@
 
 using namespace std;
 
+#include <PCSR.h>
+
+
 int main(int argc, char *argv[]) {
 
     Config config = parseArgs(argc,argv);
     printf("\nGraph file: %s",config.graphFileName);
     printf("\nUUID: %s\n",config.outputFilePrefix);
 
+
     CSRGraph graph = createCSRGraphFromFile(config.graphFileName);
     performChecks(graph, config);
+
+    PCSR *pcsr = new PCSR(graph.vertexNum, graph.vertexNum, true, -1);
+
 
     chrono::time_point<std::chrono::system_clock> begin, end;
 	std::chrono::duration<double> elapsed_seconds_max, elapsed_seconds_edge, elapsed_seconds_mvc;
