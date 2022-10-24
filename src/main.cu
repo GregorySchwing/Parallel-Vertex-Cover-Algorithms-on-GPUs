@@ -22,7 +22,7 @@
 
 using namespace std;
 
-#include <PCSR.h>
+//#include <PCSR.h>
 
 
 int main(int argc, char *argv[]) {
@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
     CSRGraph graph = createCSRGraphFromFile(config.graphFileName);
     performChecks(graph, config);
 
-    PCSR *pcsr = new PCSR(graph.vertexNum, graph.vertexNum, true, -1);
+    //PCSR *pcsr = new PCSR(graph.vertexNum, graph.vertexNum, true, -1);
 
 
     chrono::time_point<std::chrono::system_clock> begin, end;
