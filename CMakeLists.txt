@@ -45,4 +45,12 @@ message(STATUS "pppcsr_INCLUDE_DIRS: ${pppcsr_INCLUDE_DIRS}")
 
 add_executable(vc-gpu ${vc-gpu_CUDA_SOURCES} ${vc-gpu_SOURCES})
 target_include_directories(vc-gpu PRIVATE ${vc-gpu_INCLUDE_DIRS} ${pppcsr_INCLUDE_DIRS})
-target_link_libraries(vc-gpu parallel-packed-csr cuda)
+set_target_properties(vc-gpu PROPERTIES
+CUDA_SEPARABLE_COMPILATION ON
+OUTPUT_NAME vc
+CUDA_ARCHITECTURES "35;60;70;80")
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+message("-- Debug build type detected, GPU_NPT setting CUDA_RESOLVE_DEVICE_SYMBOLS ON")
+set_property(TARGET vc-gpu PROPERTY CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+endif()
+#target_link_libraries(vc-gpu parallel-packed-csr cuda)
