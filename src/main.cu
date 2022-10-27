@@ -53,9 +53,12 @@ int main(int argc, char *argv[]) {
     //}
     cout << "Core graph size: " << core_graph.size() << endl;
     //   sort(core_graph.begin(), core_graph.end());
+    std::unique_ptr<ThreadPool> thread_pool;
+    std::unique_ptr<ThreadPoolPPPCSR> thread_poolPPPCSR;
+
     switch (v) {
         case PCSRVersion::PPCSR: {
-        auto thread_pool = make_unique<ThreadPool>(threads, lock_search, num_nodes + 1, partitions_per_domain);
+        thread_pool = make_unique<ThreadPool>(threads, lock_search, num_nodes + 1, partitions_per_domain);
         executeInitial(threads, size, core_graph, thread_pool);
         for (auto &d : thread_pool->pcsr->get_degrees())
             cout << d << " ";
@@ -64,7 +67,7 @@ int main(int argc, char *argv[]) {
         break;
         }
         case PCSRVersion::PPPCSR: {
-        auto thread_pool =
+        thread_poolPPPCSR =
             make_unique<ThreadPoolPPPCSR>(threads, lock_search, num_nodes + 1, partitions_per_domain, false);
         executeInitial(threads, size, core_graph, thread_pool);
         for (auto &d : thread_pool->pcsr->get_degrees())
@@ -73,7 +76,7 @@ int main(int argc, char *argv[]) {
         break;
         }
         default: {
-        auto thread_pool =
+        thread_poolPPPCSR =
             make_unique<ThreadPoolPPPCSR>(threads, lock_search, num_nodes + 1, partitions_per_domain, true);
         executeInitial(threads, size, core_graph, thread_pool);
         for (auto &d : thread_pool->pcsr->get_degrees())
