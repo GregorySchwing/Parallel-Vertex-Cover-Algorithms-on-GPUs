@@ -42,6 +42,12 @@ message(STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
 message(STATUS "vc-gpu_SOURCES: ${vc-gpu_SOURCES}")
 message(STATUS "pppcsr_INCLUDE_DIRS: ${pppcsr_INCLUDE_DIRS}")
 
+# find OpenMP and set it up
+find_package(OpenMP)
+if (OPENMP_FOUND)
+	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+endif()
 
 add_executable(vc-gpu ${vc-gpu_CUDA_SOURCES} ${vc-gpu_SOURCES})
 target_include_directories(vc-gpu PRIVATE ${vc-gpu_INCLUDE_DIRS} ${pppcsr_INCLUDE_DIRS})
@@ -53,4 +59,4 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 message("-- Debug build type detected, GPU_NPT setting CUDA_RESOLVE_DEVICE_SYMBOLS ON")
 set_property(TARGET vc-gpu PROPERTY CUDA_RESOLVE_DEVICE_SYMBOLS ON)
 endif()
-#target_link_libraries(vc-gpu parallel-packed-csr cuda)
+target_link_libraries(vc-gpu parallel-packed-csr cuda)

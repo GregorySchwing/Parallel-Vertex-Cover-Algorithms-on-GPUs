@@ -94,7 +94,6 @@ bool highDegreeReductionRule(CSRGraph graph, int *vertexDegrees, unsigned int *n
 
     return hasDeleted;
 }
-
 bool triangleReductionRule(CSRGraph graph, int *vertexDegrees, unsigned int *numDeletedVertices)
 {
     bool hasDeleted = false;
@@ -152,4 +151,80 @@ bool triangleReductionRule(CSRGraph graph, int *vertexDegrees, unsigned int *num
     } while (hasChanged);
 
     return hasDeleted;
+}
+
+
+bool leafReductionRule(PCSR graph, int *vertexDegrees, bool *deleteVertexFlag)
+{
+    bool hasDeleted = false;
+    bool hasChanged = false;
+	#ifdef _OPENMP
+	#pragma omp parallel for default(none) shared(graph, hasChanged, vertexDegrees, deleteVertexFlag)
+	#endif
+    for (unsigned int i = 0; i < graph.get_n(); ++i)
+    {
+        if (vertexDegrees[i] == 1)
+        {
+            hasChanged = true;
+            // get neighbors
+            for (const int neighbor : graph.get_neighbourhood(i)) {
+                deleteVertexFlag[neighbor] = true;
+            }
+        }
+    }
+
+    return hasDeleted;
+}
+
+bool triangleReductionRule(PCSR graph, int *vertexDegrees, bool *deleteVertexFlag)
+{
+	bool hasChanged = false;
+	#ifdef _OPENMP
+	#pragma omp parallel for default(none) shared(graph, hasChanged, vertexDegrees, deleteVertexFlag)
+	#endif
+    for (unsigned int i = 0; i < graph.get_n(); ++i)
+    {
+        if (vertexDegrees[i] == 2)
+        {
+
+            unsigned int neighbor1, neighbor2;
+            bool foundNeighbor1 = false, keepNeighbors = false;
+        
+
+            // get neighbors
+            for (const int neighbor : graph.get_neighbourhood(i)) {
+                
+                int neighborDegree = vertexDegrees[neighbor];
+                if (neighborDegree > 0)
+                {
+                    // The third condition eliminates any race conditions.
+                    // Only the smallest vertex in the triangle will be removed.
+                    if (neighborDegree == 1 || neighborDegree == 2 && neighbor < i)
+                    {
+                        keepNeighbors = true;
+                        // Cant break in openmp loops, just have to ride the loop out
+                        //break;
+                    }
+                    else if (!foundNeighbor1)
+                    {
+                        foundNeighbor1 = true;
+                        neighbor1 = neighbor;
+                    }
+                    else
+                    {
+                        neighbor2 = neighbor;
+                        // Cant break in openmp loops, just have to ride the loop out
+                        //break;
+                    }
+                }
+            }
+            if (!keepNeighbors)
+            {
+                deleteVertexFlag[neighbor1] = true;
+                deleteVertexFlag[neighbor2] = true;
+            }
+        }
+    }
+
+	return hasChanged;
 }

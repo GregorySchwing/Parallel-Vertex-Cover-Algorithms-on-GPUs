@@ -37,6 +37,8 @@ int main(int argc, char *argv[]) {
 
     //PCSR *pcsr = new PCSR(graph.vertexNum, graph.vertexNum, true, -1);
 
+    // For streaming updates
+    bool * deleteVertexArray = (bool*)malloc(sizeof(bool)*graph.vertexNum);
 
     chrono::time_point<std::chrono::system_clock> begin, end;
 	std::chrono::duration<double> elapsed_seconds_max, elapsed_seconds_edge, elapsed_seconds_mvc;
