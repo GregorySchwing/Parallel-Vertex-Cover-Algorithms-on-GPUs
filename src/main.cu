@@ -39,6 +39,7 @@ int main(int argc, char *argv[]) {
     int threads = 8;
     int size = 1000000;
     int num_nodes = 0;
+    int num_edges = 0;
     bool lock_search = true;
     bool insert = true;
     PCSRVersion v = PCSRVersion::PPPCSRNUMA;
@@ -46,7 +47,7 @@ int main(int argc, char *argv[]) {
     std::vector<std::tuple<Operation, int, int>> core_graph;
     std::vector<std::tuple<Operation, int, int>> updates;
     int temp = 0;
-    std::tie(core_graph, temp) = read_input(std::string(config.graphFileName), Operation::ADD);
+    std::tie(core_graph, temp) = read_input(std::string(config.graphFileName), Operation::ADD, num_nodes, num_edges);
     //for(auto& tuple: core_graph) {
     //    cout << OperationToString(get<0>(tuple)) << " " << get<1>(tuple) << " " << get<2>(tuple) << endl;   
     //}
@@ -56,20 +57,31 @@ int main(int argc, char *argv[]) {
         case PCSRVersion::PPCSR: {
         auto thread_pool = make_unique<ThreadPool>(threads, lock_search, num_nodes + 1, partitions_per_domain);
         executeInitial(threads, size, core_graph, thread_pool);
+        for (auto &d : thread_pool->pcsr->get_degrees())
+            cout << d << " ";
+        cout << endl;
+
         break;
         }
         case PCSRVersion::PPPCSR: {
         auto thread_pool =
             make_unique<ThreadPoolPPPCSR>(threads, lock_search, num_nodes + 1, partitions_per_domain, false);
         executeInitial(threads, size, core_graph, thread_pool);
+        for (auto &d : thread_pool->pcsr->get_degrees())
+            cout << d << " ";
+        cout << endl;
         break;
         }
         default: {
         auto thread_pool =
             make_unique<ThreadPoolPPPCSR>(threads, lock_search, num_nodes + 1, partitions_per_domain, true);
         executeInitial(threads, size, core_graph, thread_pool);
+        for (auto &d : thread_pool->pcsr->get_degrees())
+            cout << d << " ";
+        cout << endl;
         }
     }
+
     exit(1);
     performChecks(graph, config);
 
