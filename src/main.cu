@@ -23,7 +23,9 @@
 using namespace std;
 
 //#include <PCSR.h>
-
+#include <helpers.h>
+#include <thread_pool.h>
+#include <thread_pool_pppcsr.h>
 
 int main(int argc, char *argv[]) {
 
@@ -33,10 +35,45 @@ int main(int argc, char *argv[]) {
 
 
     CSRGraph graph = createCSRGraphFromFile(config.graphFileName);
+
+    int threads = 8;
+    int size = 1000000;
+    int num_nodes = 0;
+    bool lock_search = true;
+    bool insert = true;
+    PCSRVersion v = PCSRVersion::PPPCSRNUMA;
+    int partitions_per_domain = 1;
+    std::vector<std::tuple<Operation, int, int>> core_graph;
+    std::vector<std::tuple<Operation, int, int>> updates;
+    int temp = 0;
+    std::tie(core_graph, temp) = read_input(std::string(config.graphFileName), Operation::ADD);
+    //for(auto& tuple: core_graph) {
+    //    cout << OperationToString(get<0>(tuple)) << " " << get<1>(tuple) << " " << get<2>(tuple) << endl;   
+    //}
+    cout << "Core graph size: " << core_graph.size() << endl;
+    //   sort(core_graph.begin(), core_graph.end());
+    switch (v) {
+        case PCSRVersion::PPCSR: {
+        auto thread_pool = make_unique<ThreadPool>(threads, lock_search, num_nodes + 1, partitions_per_domain);
+        executeInitial(threads, size, core_graph, thread_pool);
+        break;
+        }
+        case PCSRVersion::PPPCSR: {
+        auto thread_pool =
+            make_unique<ThreadPoolPPPCSR>(threads, lock_search, num_nodes + 1, partitions_per_domain, false);
+        executeInitial(threads, size, core_graph, thread_pool);
+        break;
+        }
+        default: {
+        auto thread_pool =
+            make_unique<ThreadPoolPPPCSR>(threads, lock_search, num_nodes + 1, partitions_per_domain, true);
+        executeInitial(threads, size, core_graph, thread_pool);
+        }
+    }
+    exit(1);
     performChecks(graph, config);
 
     //PCSR *pcsr = new PCSR(graph.vertexNum, graph.vertexNum, true, -1);
-
     // For streaming updates
     bool * deleteVertexArray = (bool*)malloc(sizeof(bool)*graph.vertexNum);
 
