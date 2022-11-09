@@ -60,6 +60,7 @@ int main(int argc, char *argv[]) {
         case PCSRVersion::PPCSR: {
         std::unique_ptr<ThreadPool> thread_pool = make_unique<ThreadPool>(threads, lock_search, num_nodes + 1, partitions_per_domain);
         executeInitial(threads, size, core_graph, thread_pool);
+        printf("PCSR degrees\n");
         for (auto &d : thread_pool->pcsr->get_degrees())
             cout << d << " ";
         cout << endl;
@@ -70,6 +71,7 @@ int main(int argc, char *argv[]) {
         std::unique_ptr<ThreadPoolPPPCSR> thread_poolPPPCSR =
             make_unique<ThreadPoolPPPCSR>(threads, lock_search, num_nodes + 1, partitions_per_domain, false);
         executeInitial(threads, size, core_graph, thread_poolPPPCSR);
+        printf("PPPCSR degrees\n");
         for (auto &d : thread_poolPPPCSR->pcsr->get_degrees())
             cout << d << " ";
         cout << endl;
@@ -79,13 +81,17 @@ int main(int argc, char *argv[]) {
         std::unique_ptr<ThreadPoolPPPCSR> thread_poolPPPCSR =
             make_unique<ThreadPoolPPPCSR>(threads, lock_search, num_nodes + 1, partitions_per_domain, true);
         executeInitial(threads, size, core_graph, thread_poolPPPCSR);
+        printf("PPPCSR degrees\n");
         for (auto &d : thread_poolPPPCSR->pcsr->get_degrees())
             cout << d << " ";
         cout << endl;
         }
     }
+    printf("CSR degrees\n");
+    for (int i = 0; i < graph.vertexNum; ++i)
+        printf("%d ",graph.degree[i]);
+    printf("\n");
 
-    exit(1);
     performChecks(graph, config);
 
     //PCSR *pcsr = new PCSR(graph.vertexNum, graph.vertexNum, true, -1);
