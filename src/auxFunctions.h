@@ -9,8 +9,13 @@
 #include <sys/types.h>
 #include <iostream>
 
+#include <PCSR.h>
+#include <PPPCSR.h>
+
 CSRGraph createCSRGraphFromFile(const char *filename);
 unsigned int RemoveMaxApproximateMVC(CSRGraph graph);
+unsigned int RemoveMaxApproximateMVC(PCSR graph);
+unsigned int RemoveMaxApproximateMVC(PPPCSR graph);
 unsigned int RemoveEdgeApproximateMVC(CSRGraph graph);
 bool check_graph(CSRGraph graph);
 void performChecks(CSRGraph graph, Config config);

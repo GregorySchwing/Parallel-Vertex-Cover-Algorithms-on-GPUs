@@ -53,12 +53,13 @@ int main(int argc, char *argv[]) {
     //}
     cout << "Core graph size: " << core_graph.size() << endl;
     //   sort(core_graph.begin(), core_graph.end());
-    //std::unique_ptr<ThreadPool> thread_pool;
-    //std::unique_ptr<ThreadPoolPPPCSR> thread_poolPPPCSR;
+    std::unique_ptr<ThreadPool> thread_pool;
+    std::unique_ptr<ThreadPoolPPPCSR> thread_poolPPPCSR;
 
     switch (v) {
         case PCSRVersion::PPCSR: {
-        std::unique_ptr<ThreadPool> thread_pool = make_unique<ThreadPool>(threads, lock_search, num_nodes + 1, partitions_per_domain);
+        thread_pool = make_unique<ThreadPool>(threads, lock_search, num_nodes + 1, partitions_per_domain);
+        //std::unique_ptr<ThreadPool> thread_pool = make_unique<ThreadPool>(threads, lock_search, num_nodes + 1, partitions_per_domain);
         executeInitial(threads, size, core_graph, thread_pool);
         printf("PCSR degrees\n");
         for (auto &d : thread_pool->pcsr->get_degrees())
@@ -68,7 +69,8 @@ int main(int argc, char *argv[]) {
         break;
         }
         case PCSRVersion::PPPCSR: {
-        std::unique_ptr<ThreadPoolPPPCSR> thread_poolPPPCSR =
+        //std::unique_ptr<ThreadPoolPPPCSR> thread_poolPPPCSR =
+        thread_poolPPPCSR =
             make_unique<ThreadPoolPPPCSR>(threads, lock_search, num_nodes + 1, partitions_per_domain, false);
         executeInitial(threads, size, core_graph, thread_poolPPPCSR);
         printf("PPPCSR degrees\n");
@@ -78,7 +80,8 @@ int main(int argc, char *argv[]) {
         break;
         }
         default: {
-        std::unique_ptr<ThreadPoolPPPCSR> thread_poolPPPCSR =
+        //std::unique_ptr<ThreadPoolPPPCSR> thread_poolPPPCSR =
+        thread_poolPPPCSR =
             make_unique<ThreadPoolPPPCSR>(threads, lock_search, num_nodes + 1, partitions_per_domain, true);
         executeInitial(threads, size, core_graph, thread_poolPPPCSR);
         printf("PPPCSR degrees\n");
@@ -105,6 +108,10 @@ int main(int argc, char *argv[]) {
     unsigned int RemoveMaxMinimum = RemoveMaxApproximateMVC(graph);
     end = std::chrono::system_clock::now(); 
 	elapsed_seconds_max = end - begin; 
+
+    unsigned int RemoveMaxMinimum2 = RemoveMaxApproximateMVC(*(thread_poolPPPCSR->pcsr));
+
+
 
     printf("\nElapsed Time for Approximate Remove Max: %f\n",elapsed_seconds_max.count());
     printf("Approximate Remove Max Minimum is: %u\n", RemoveMaxMinimum);

@@ -252,6 +252,101 @@ unsigned int RemoveMaxApproximateMVC(CSRGraph graph)
 	return minimum;
 }
 
+
+unsigned int RemoveMaxApproximateMVC(PCSR graph)
+{
+
+	PCSR approxGraph(graph);
+	unsigned int minimum = 0;
+	/*
+	bool hasEdges = true;
+	while (hasEdges)
+	{
+		bool leafHasChanged = false, triangleHasChanged = false;
+		unsigned int iterationCounter = 0;
+
+		do
+		{
+			leafHasChanged = leafReductionRule(approxGraph, minimum);
+			if (iterationCounter == 0 || leafHasChanged)
+			{
+				triangleHasChanged = triangleReductionRule(approxGraph, minimum);
+			}
+			++iterationCounter;
+		} while (triangleHasChanged);
+
+		unsigned int maxV;
+		int maxD = 0;
+		for (unsigned int i = 0; i < approxGraph.vertexNum; i++)
+		{
+			if (approxGraph.degree[i] > maxD)
+			{
+				maxV = i;
+				maxD = approxGraph.degree[i];
+			}
+		}
+		if (maxD == 0)
+			hasEdges = false;
+		else
+		{
+			approxGraph.deleteVertex(maxV);
+			++minimum;
+		}
+	}
+
+	approxGraph.del();
+	*/
+	return minimum;
+}
+
+
+unsigned int RemoveMaxApproximateMVC(PPPCSR graph)
+{
+
+	PPPCSR approxGraph(graph);
+	unsigned int minimum = 0;
+	/*
+	bool hasEdges = true;
+	while (hasEdges)
+	{
+		bool leafHasChanged = false, triangleHasChanged = false;
+		unsigned int iterationCounter = 0;
+
+		do
+		{
+			leafHasChanged = leafReductionRule(approxGraph, minimum);
+			if (iterationCounter == 0 || leafHasChanged)
+			{
+				triangleHasChanged = triangleReductionRule(approxGraph, minimum);
+			}
+			++iterationCounter;
+		} while (triangleHasChanged);
+
+		unsigned int maxV;
+		int maxD = 0;
+		for (unsigned int i = 0; i < approxGraph.vertexNum; i++)
+		{
+			if (approxGraph.degree[i] > maxD)
+			{
+				maxV = i;
+				maxD = approxGraph.degree[i];
+			}
+		}
+		if (maxD == 0)
+			hasEdges = false;
+		else
+		{
+			approxGraph.deleteVertex(maxV);
+			++minimum;
+		}
+	}
+
+	approxGraph.del();
+	*/
+	return minimum;
+}
+
+
 unsigned int getRandom(int lower, int upper)
 {
 	srand(time(0));
