@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
     end = std::chrono::system_clock::now(); 
 	elapsed_seconds_max = end - begin; 
 
-    unsigned int RemoveMaxMinimum2 = RemoveMaxApproximateMVC(*(thread_poolPPPCSR->pcsr));
+    unsigned int RemoveMaxMinimum2 = RemoveMaxApproximateMVC(thread_poolPPPCSR);
 
 
 

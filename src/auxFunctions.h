@@ -11,11 +11,12 @@
 
 #include <PCSR.h>
 #include <PPPCSR.h>
+#include <thread_pool_pppcsr.h>
 
 CSRGraph createCSRGraphFromFile(const char *filename);
 unsigned int RemoveMaxApproximateMVC(CSRGraph graph);
 unsigned int RemoveMaxApproximateMVC(PCSR graph);
-unsigned int RemoveMaxApproximateMVC(PPPCSR graph);
+unsigned int RemoveMaxApproximateMVC(std::unique_ptr<ThreadPoolPPPCSR> & thread_poolPPPCSR);
 unsigned int RemoveEdgeApproximateMVC(CSRGraph graph);
 bool check_graph(CSRGraph graph);
 void performChecks(CSRGraph graph, Config config);

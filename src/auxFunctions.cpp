@@ -68,6 +68,34 @@ bool leafReductionRule(CSRGraph &graph, unsigned int &minimum)
 	return hasChanged;
 }
 
+/*
+bool leafReductionRule(CSRGraph &graph, unsigned int &minimum)
+{
+	bool hasChanged;
+	do
+	{
+		hasChanged = false;
+		for (unsigned int i = 0; i < graph.vertexNum; ++i)
+		{
+			if (graph.degree[i] == 1)
+			{
+				hasChanged = true;
+				for (unsigned int j = graph.srcPtr[i]; j < graph.srcPtr[i + 1]; ++j)
+				{
+					if (graph.degree[graph.dst[j]] != -1)
+					{
+						unsigned int neighbor = graph.dst[j];
+						graph.deleteVertex(neighbor);
+						++minimum;
+					}
+				}
+			}
+		}
+	} while (hasChanged);
+
+	return hasChanged;
+}
+*/
 bool triangleReductionRule(CSRGraph &graph, unsigned int &minimum)
 {
 	bool hasChanged;
@@ -300,10 +328,10 @@ unsigned int RemoveMaxApproximateMVC(PCSR graph)
 }
 
 
-unsigned int RemoveMaxApproximateMVC(PPPCSR graph)
+unsigned int RemoveMaxApproximateMVC(std::unique_ptr<ThreadPoolPPPCSR> & thread_poolPPPCSR)
 {
 
-	PPPCSR approxGraph(graph);
+	PPPCSR approxGraph(*(thread_poolPPPCSR->pcsr));
 	unsigned int minimum = 0;
 	/*
 	bool hasEdges = true;
