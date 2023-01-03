@@ -255,6 +255,7 @@ unsigned int RemoveMaxApproximateWCrownMVC(CSRGraph graph)
 		{
 			approxGraph.deleteVertex(maxV);
 			++minimum;
+			cd.CallEdmonds();
 		}
 	}
 
