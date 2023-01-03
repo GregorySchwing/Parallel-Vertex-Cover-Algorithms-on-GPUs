@@ -232,10 +232,18 @@ unsigned int RemoveMaxApproximateWCrownMVC(CSRGraph graph)
 		unsigned int iterationCounter = 0;
 		bool crownHasChanged = false;
 
-		//crownHasChanged = crownDecompositionReductionRule(approxGraph, minimum);
+		do
+		{
+			//leafHasChanged = leafReductionRule(approxGraph, minimum);
+			if (iterationCounter == 0 || leafHasChanged)
+			{
+				triangleHasChanged = triangleReductionRule(approxGraph, minimum);
+			}
+			++iterationCounter;
+		} while (triangleHasChanged);
+		cd.CallEdmonds();
 
 		do {
-			//cd.FindCrown();
 			crownHasChanged = cd.FindCrownPar(minimum);
 		} while (crownHasChanged);
 
