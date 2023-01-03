@@ -39,7 +39,7 @@ class CrownDecomposition {
         int V,E;
         bool *frontier;
     int FindXq(int u, int w);
-
+    bool UpdateMatching(int start, int xq);
 };
 
 bool CrownDecomposition::FindCrown()
@@ -114,7 +114,9 @@ bool CrownDecomposition::FindCrownPar(unsigned int &minimum)
               printf("M alternating Cycle detected %d %d at depth %d!!!\n", u, w, depth);
               int xq = FindXq(u,w);
               printf("xq %d\n", xq+1);
+              bool startIsMatched = UpdateMatching(start, xq);
               exit(1);
+              return FindCrownPar(minimum);
             }
           } else {
             if(dist[w] == -1 && match[u] == w && match[w] == u){
@@ -125,7 +127,9 @@ bool CrownDecomposition::FindCrownPar(unsigned int &minimum)
               printf("M alternating Cycle detected %d %d at depth %d!!!\n", u, w, depth);
               int xq = FindXq(u,w);
               printf("xq %d\n", xq+1);
+              bool startIsMatched = UpdateMatching(start, xq);
               exit(1);
+              return FindCrownPar(minimum);
             }
           }
         }
@@ -157,7 +161,7 @@ bool CrownDecomposition::FindCrownPar(unsigned int &minimum)
 }
 
 int CrownDecomposition::FindXq(int u, int w){
-  // Simply grab parents. necessarily distinct.
+  // Simply grab pred. necessarily distinct.
   if (dist[u] % 2 == 0){
     printf("%d -> %d\n", u,pred[u]);
     printf("%d -> %d\n", w, pred[w]);
@@ -171,10 +175,14 @@ int CrownDecomposition::FindXq(int u, int w){
     int predW = pred[w];
     for (unsigned int j = graph.srcPtr[u]; j < graph.srcPtr[u + 1]; ++j){
       unsigned int v =graph.dst[j];
+      #ifdef NDEBUG
       printf("Neighbor of %d : %d (%d) \n", u+1, v+1, dist[v]);
+      #endif
       if (v != predW && dist[v] != -1 && dist[v] < distU){
+        #ifdef NDEBUG
         printf("%d -> %d\n", u,v);
         printf("%d -> %d\n", w, predW);
+        #endif
         u = v;
         w = predW;
         return FindXq(u, w);
@@ -184,10 +192,14 @@ int CrownDecomposition::FindXq(int u, int w){
     int predU = pred[u];
     for (unsigned int j = graph.srcPtr[w]; j < graph.srcPtr[w + 1]; ++j){
       unsigned int v =graph.dst[j];
+      #ifdef NDEBUG
       printf("Neighbor of %d : %d (%d) \n", w+1, v+1, dist[v]);
+      #endif
       if (v != predU && dist[v] != -1 && dist[v] < distW){
+        #ifdef NDEBUG
         printf("%d -> %d\n", u,predU);
         printf("%d -> %d\n", w, v);
+        #endif
         u = predU;
         w = v;
         return FindXq(u, w);
@@ -195,5 +207,37 @@ int CrownDecomposition::FindXq(int u, int w){
     }
     return predU;
   }
+}
+
+bool CrownDecomposition::UpdateMatching(int start, int xq){
+  int counter = 0;            
+  while(xq != start){
+    // Only on first time do I just turn myself off.
+    if (!counter){
+        printf("%d -> %d\n", xq+1, pred[xq]+1);
+        printf("%d matched with %d -> %d matched with %d\n", xq+1, match[xq]+1, xq+1, -1);
+        match[xq] = -1;
+        counter++;
+        xq = pred[xq];
+    // Only on odd counters do I match with parent.
+    } else {
+      if (counter % 2 == 1){
+          printf("%d -> %d\n", xq+1, pred[xq]+1);
+          printf("%d matched with %d -> %d matched with %d\n", xq+1, match[xq]+1, xq+1, pred[xq]+1);
+          printf("%d -> %d\n", pred[xq]+1, pred[pred[xq]] == -1 ? pred[pred[xq]] : pred[pred[xq]]+1);
+          printf("%d matched with %d -> %d matched with %d\n", pred[xq]+1, match[pred[xq]] == -1 ? match[pred[xq]] : match[pred[xq]]+1, pred[xq]+1, xq+1);
+          int parent = pred[xq];  
+          match[xq] = parent;
+          match[parent] = xq;
+          xq = parent;   
+          counter++; 
+      } else {
+          counter++; 
+          int parent = pred[xq]; 
+          xq = parent;   
+      }
+    }
+  }   
+  return match[start] == -1;
 }
 #endif
