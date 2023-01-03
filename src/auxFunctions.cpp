@@ -129,7 +129,9 @@ bool triangleReductionRule(CSRGraph &graph, unsigned int &minimum)
 bool crownDecompositionReductionRule(CSRGraph &graph, unsigned int &minimum)
 {
 	bool hasChanged = false;
-
+	do {
+		//hasChanged = cd.FindCrownPar();
+	} while (hasChanged);
 
 	return hasChanged;
 }
@@ -219,22 +221,23 @@ unsigned int RemoveMaxApproximateWCrownMVC(CSRGraph graph)
 
 	CSRGraph approxGraph;
 	approxGraph.copy(graph);
-	//MaximumMatcherBlossom mmb(approxGraph);
-	
 	CrownDecomposition cd(approxGraph);
-	cd.FindCrown();
+	//cd.FindCrown();
 	unsigned int minimum = 0;
+	//cd.FindCrownPar(minimum);
 	bool hasEdges = true;
 	while (hasEdges)
 	{
 		bool leafHasChanged = false, triangleHasChanged = false;
 		unsigned int iterationCounter = 0;
 		bool crownHasChanged = false;
-		do
-		{
-			crownHasChanged = crownDecompositionReductionRule(approxGraph, minimum);
+
+		//crownHasChanged = crownDecompositionReductionRule(approxGraph, minimum);
+
+		do {
+			//cd.FindCrown();
+			crownHasChanged = cd.FindCrownPar(minimum);
 		} while (crownHasChanged);
-		
 
 		unsigned int maxV;
 		int maxD = 0;
