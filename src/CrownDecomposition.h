@@ -103,15 +103,19 @@ bool CrownDecomposition::FindCrownPar(unsigned int &minimum)
   while(frontierSum){
     for (unsigned int u = 0; u < graph.vertexNum; u++){
       if (frontier[u]){
+        if (graph.degree[u] <= 0)
+          continue;
         for (unsigned int j = graph.srcPtr[u]; j < graph.srcPtr[u + 1]; ++j){
           unsigned int w =graph.dst[j];
+          if (graph.degree[w] <= 0)
+            continue;
           if (dist[u] % 2 == 0){
             if(dist[w] == -1){
               dist[w] = dist[u] + 1;
               pred[w] = u;
-              printf("dist from %d to %d : %d\n", u+1, w+1, dist[w]);
+              printf("dist from start %d to %d (%d) to %d (%d)\n", start+1, u+1, dist[u], w+1, dist[w]);
             } else if(dist[w] == depth){
-              printf("M alternating Cycle detected %d %d at depth %d!!!\n", u, w, depth);
+              printf("M alternating Cycle detected %d %d at depth %d!!!\n", u+1, w+1, depth);
               int xq = FindXq(u,w);
               printf("xq %d\n", xq+1);
               bool startIsMatched = UpdateMatching(start, xq);
@@ -123,9 +127,9 @@ bool CrownDecomposition::FindCrownPar(unsigned int &minimum)
             if(dist[w] == -1 && match[u] == w && match[w] == u){
               dist[w] = dist[u] + 1;
               pred[w] = u;
-              printf("dist from %d to %d : %d\n", u+1, w+1, dist[w]);
+              printf("dist from start %d to %d (%d) to %d (%d)\n", start+1, u+1, dist[u], w+1, dist[w]);
             } else if(dist[w] == depth && match[u] == w && match[w] == u){
-              printf("M alternating Cycle detected %d %d at depth %d!!!\n", u, w, depth);
+              printf("M alternating Cycle detected %d (matched to %d) (dist %d) (pred %d) %d (matched to %d) (dist %d) (pred %d) at depth %d!!!\n", u+1, match[u]+1, dist[u], pred[u]+1, w+1, match[w]+1, dist[w], pred[w]+1, depth);
               int xq = FindXq(u,w);
               printf("xq %d\n", xq+1);
               bool startIsMatched = UpdateMatching(start, xq);
@@ -140,7 +144,7 @@ bool CrownDecomposition::FindCrownPar(unsigned int &minimum)
     ++depth;
     frontierSum = 0;
     for (unsigned int i = 0; i < graph.vertexNum; i++){
-      frontier[i] = dist[i] == depth;
+      frontier[i] = (dist[i] == depth);
       frontierSum += frontier[i];
     }
   }
@@ -177,10 +181,12 @@ int CrownDecomposition::FindXq(int u, int w){
     int predW = pred[w];
     for (unsigned int j = graph.srcPtr[u]; j < graph.srcPtr[u + 1]; ++j){
       unsigned int v =graph.dst[j];
+      if (graph.degree[v] <= 0)
+        continue;
       #ifdef NDEBUG
       printf("Neighbor of %d : %d (%d) \n", u+1, v+1, dist[v]);
       #endif
-      if (v != predW && dist[v] > -1 && dist[v] < distU){
+      if (v != predW && dist[v] > -1 && dist[v] == distU-1){
         //#ifdef NDEBUG
         printf("u %d (%d) -> %d (%d)\n", u+1, dist[u], v, dist[v]);
         printf("w %d (%d) -> %d (%d)\n", w+1, dist[w], predW+1, dist[predW]);
@@ -194,10 +200,12 @@ int CrownDecomposition::FindXq(int u, int w){
     int predU = pred[u];
     for (unsigned int j = graph.srcPtr[w]; j < graph.srcPtr[w + 1]; ++j){
       unsigned int v =graph.dst[j];
+      if (graph.degree[v] <= 0)
+        continue;
       #ifdef NDEBUG
       printf("Neighbor of %d : %d (%d) \n", w+1, v+1, dist[v]);
       #endif
-      if (v != predU && dist[v] > -1 && dist[v] < distW){
+      if (v != predU && dist[v] > -1 && dist[v] == distW-1){
         //#ifdef NDEBUG
         printf("u %d (%d) -> %d (%d)\n", u+1, dist[u], predU+1, dist[predU]);
         printf("w %d (%d) -> %d (%d)\n", w+1, dist[w], v+1, dist[v]);
