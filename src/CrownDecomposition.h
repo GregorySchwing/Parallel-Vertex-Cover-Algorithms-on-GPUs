@@ -38,6 +38,7 @@ class CrownDecomposition {
         int *dist, *pred, *match;
         int V,E;
         bool *frontier;
+    int FindXq(int u, int w);
 
 };
 
@@ -108,16 +109,22 @@ bool CrownDecomposition::FindCrownPar(unsigned int &minimum)
             if(dist[w] == -1){
               dist[w] = dist[u] + 1;
               pred[w] = u;
+              printf("dist from %d to %d : %d\n", u+1, w+1, dist[w]);
             } else if(dist[w] == depth){
               printf("M alternating Cycle detected %d %d at depth %d!!!\n", u, w, depth);
+              int xq = FindXq(u,w);
+              printf("xq %d\n", xq+1);
               exit(1);
             }
           } else {
             if(dist[w] == -1 && match[u] == w && match[w] == u){
               dist[w] = dist[u] + 1;
               pred[w] = u;
+              printf("dist from %d to %d : %d\n", u+1, w+1, dist[w]);
             } else if(dist[w] == depth && match[u] == w && match[w] == u){
               printf("M alternating Cycle detected %d %d at depth %d!!!\n", u, w, depth);
+              int xq = FindXq(u,w);
+              printf("xq %d\n", xq+1);
               exit(1);
             }
           }
@@ -147,5 +154,46 @@ bool CrownDecomposition::FindCrownPar(unsigned int &minimum)
     }
   }
   return foundCrown;
+}
+
+int CrownDecomposition::FindXq(int u, int w){
+  // Simply grab parents. necessarily distinct.
+  if (dist[u] % 2 == 0){
+    printf("%d -> %d\n", u,pred[u]);
+    printf("%d -> %d\n", w, pred[w]);
+    u = pred[u];
+    w = pred[w];
+    return FindXq(u, w);
+  } else {
+    // I'm looking for a v ∈ Neighborhood(u), s.t. dist(start,v) < dist(start,u)
+    // where v ≠ pred[w]
+    int distU = dist[u];
+    int predW = pred[w];
+    for (unsigned int j = graph.srcPtr[u]; j < graph.srcPtr[u + 1]; ++j){
+      unsigned int v =graph.dst[j];
+      printf("Neighbor of %d : %d (%d) \n", u+1, v+1, dist[v]);
+      if (v != predW && dist[v] != -1 && dist[v] < distU){
+        printf("%d -> %d\n", u,v);
+        printf("%d -> %d\n", w, predW);
+        u = v;
+        w = predW;
+        return FindXq(u, w);
+      }
+    }      
+    int distW = dist[w];
+    int predU = pred[u];
+    for (unsigned int j = graph.srcPtr[w]; j < graph.srcPtr[w + 1]; ++j){
+      unsigned int v =graph.dst[j];
+      printf("Neighbor of %d : %d (%d) \n", w+1, v+1, dist[v]);
+      if (v != predU && dist[v] != -1 && dist[v] < distW){
+        printf("%d -> %d\n", u,predU);
+        printf("%d -> %d\n", w, v);
+        u = predU;
+        w = v;
+        return FindXq(u, w);
+      }
+    }
+    return predU;
+  }
 }
 #endif
