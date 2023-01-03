@@ -124,8 +124,12 @@ int MaximumMatcherBlossom::find_augmenting_path(int s)
   while (qh<=qt)
     {
       int u=q[qh++];
+      if (graph.degree[u] <= 0)
+        continue;
       for (unsigned int j = graph.srcPtr[u]; j < graph.srcPtr[u + 1]; ++j){
         unsigned int v =graph.dst[j];
+        if (graph.degree[v] <= 0)
+          continue;
         if (base[u]!=base[v]&&match[u]!=v)
           if ((v==s)||(match[v]!=-1 && father[match[v]]!=-1))
             blossom_contraction(s,u,v);

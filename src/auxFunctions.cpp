@@ -1,6 +1,5 @@
 #include "auxFunctions.h"
-#include "MaximumMatching.h"
-
+#include "CrownDecomposition.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -220,9 +219,10 @@ unsigned int RemoveMaxApproximateWCrownMVC(CSRGraph graph)
 
 	CSRGraph approxGraph;
 	approxGraph.copy(graph);
-	MaximumMatcherBlossom mmb(approxGraph);
-	int mc = mmb.edmonds();
-	printf("Match count %d\n", 2*mc);
+	//MaximumMatcherBlossom mmb(approxGraph);
+	
+	CrownDecomposition cd(approxGraph);
+	cd.FindCrown();
 	unsigned int minimum = 0;
 	bool hasEdges = true;
 	while (hasEdges)
