@@ -1,4 +1,5 @@
 #include "auxFunctions.h"
+#include "MaximumMatching.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -126,6 +127,15 @@ bool triangleReductionRule(CSRGraph &graph, unsigned int &minimum)
 	return hasChanged;
 }
 
+bool crownDecompositionReductionRule(CSRGraph &graph, unsigned int &minimum)
+{
+	bool hasChanged = false;
+
+
+	return hasChanged;
+}
+
+
 CSRGraph createCSRGraphFromFile(const char *filename)
 {
 
@@ -204,6 +214,52 @@ CSRGraph createCSRGraphFromFile(const char *filename)
 
 	return graph;
 }
+
+unsigned int RemoveMaxApproximateWCrownMVC(CSRGraph graph)
+{
+
+	CSRGraph approxGraph;
+	approxGraph.copy(graph);
+	MaximumMatcherBlossom mmb(approxGraph);
+	int mc = mmb.edmonds();
+	printf("Match count %d\n", 2*mc);
+	unsigned int minimum = 0;
+	bool hasEdges = true;
+	while (hasEdges)
+	{
+		bool leafHasChanged = false, triangleHasChanged = false;
+		unsigned int iterationCounter = 0;
+		bool crownHasChanged = false;
+		do
+		{
+			crownHasChanged = crownDecompositionReductionRule(approxGraph, minimum);
+		} while (crownHasChanged);
+		
+
+		unsigned int maxV;
+		int maxD = 0;
+		for (unsigned int i = 0; i < approxGraph.vertexNum; i++)
+		{
+			if (approxGraph.degree[i] > maxD)
+			{
+				maxV = i;
+				maxD = approxGraph.degree[i];
+			}
+		}
+		if (maxD == 0)
+			hasEdges = false;
+		else
+		{
+			approxGraph.deleteVertex(maxV);
+			++minimum;
+		}
+	}
+
+	approxGraph.del();
+
+	return minimum;
+}
+
 
 unsigned int RemoveMaxApproximateMVC(CSRGraph graph)
 {

@@ -6,6 +6,7 @@
 
 CSRGraph createCSRGraphFromFile(const char *filename);
 unsigned int RemoveMaxApproximateMVC(CSRGraph graph);
+unsigned int RemoveMaxApproximateWCrownMVC(CSRGraph graph);
 unsigned int RemoveEdgeApproximateMVC(CSRGraph graph);
 bool check_graph(CSRGraph graph);
 void performChecks(CSRGraph graph, Config config);

@@ -52,6 +52,16 @@ int main(int argc, char *argv[]) {
     printf("Approximate Remove Edge Minimum is: %u\n", RemoveEdgeMinimum);
     fflush(stdout);
 
+
+    begin = std::chrono::system_clock::now();
+    unsigned int RemoveMaxWCrownMinimum = RemoveMaxApproximateWCrownMVC(graph);
+    end = std::chrono::system_clock::now(); 
+	elapsed_seconds_edge = end - begin; 
+
+    printf("Elapsed Time for Approximate Remove Max W Crown: %f\n",elapsed_seconds_edge.count());
+    printf("Approximate Remove Max W Crown Minimum is: %u\n", RemoveMaxWCrownMinimum);
+    fflush(stdout);
+
     unsigned int minimum = (RemoveMaxMinimum < RemoveEdgeMinimum) ? RemoveMaxMinimum : RemoveEdgeMinimum;
 
     unsigned int k = config.k; 
