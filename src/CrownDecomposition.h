@@ -115,7 +115,8 @@ bool CrownDecomposition::FindCrownPar(unsigned int &minimum)
               int xq = FindXq(u,w);
               printf("xq %d\n", xq+1);
               bool startIsMatched = UpdateMatching(start, xq);
-              exit(1);
+              match[xq] = -2;
+              //exit(1);
               return FindCrownPar(minimum);
             }
           } else {
@@ -128,7 +129,8 @@ bool CrownDecomposition::FindCrownPar(unsigned int &minimum)
               int xq = FindXq(u,w);
               printf("xq %d\n", xq+1);
               bool startIsMatched = UpdateMatching(start, xq);
-              exit(1);
+              match[xq] = -2;
+              //exit(1);
               return FindCrownPar(minimum);
             }
           }
@@ -149,12 +151,12 @@ bool CrownDecomposition::FindCrownPar(unsigned int &minimum)
         // I set. dont add to soln
       } else {
         // H set. add to soln
-        printf("vertex %d is in Head. Add to solution.\n", i+1);
+        printf("vertex %d is in Head. Add to solution (%d).\n", i+1, 1+minimum);
         graph.deleteVertex(i);
         ++minimum;
         foundCrown = true;
       }
-      printf("dist from start %d to %d : %d\n", start+1, i+1, dist[i]);
+      //printf("dist from start %d to %d : %d\n", start+1, i+1, dist[i]);
     }
   }
   return foundCrown;
@@ -162,9 +164,9 @@ bool CrownDecomposition::FindCrownPar(unsigned int &minimum)
 
 int CrownDecomposition::FindXq(int u, int w){
   // Simply grab pred. necessarily distinct.
-  if (dist[u] % 2 == 0){
-    printf("%d -> %d\n", u,pred[u]);
-    printf("%d -> %d\n", w, pred[w]);
+  if (dist[u] > 0 && dist[u] % 2 == 0){
+    printf("u %d (%d) -> %d (%d)\n", u+1, dist[u], pred[u]+1, dist[pred[u]]);
+    printf("w %d (%d) -> %d (%d)\n", w+1, dist[w], pred[w]+1, dist[pred[w]]);
     u = pred[u];
     w = pred[w];
     return FindXq(u, w);
@@ -178,11 +180,11 @@ int CrownDecomposition::FindXq(int u, int w){
       #ifdef NDEBUG
       printf("Neighbor of %d : %d (%d) \n", u+1, v+1, dist[v]);
       #endif
-      if (v != predW && dist[v] != -1 && dist[v] < distU){
-        #ifdef NDEBUG
-        printf("%d -> %d\n", u,v);
-        printf("%d -> %d\n", w, predW);
-        #endif
+      if (v != predW && dist[v] > -1 && dist[v] < distU){
+        //#ifdef NDEBUG
+        printf("u %d (%d) -> %d (%d)\n", u+1, dist[u], v, dist[v]);
+        printf("w %d (%d) -> %d (%d)\n", w+1, dist[w], predW+1, dist[predW]);
+        //#endif
         u = v;
         w = predW;
         return FindXq(u, w);
@@ -195,11 +197,11 @@ int CrownDecomposition::FindXq(int u, int w){
       #ifdef NDEBUG
       printf("Neighbor of %d : %d (%d) \n", w+1, v+1, dist[v]);
       #endif
-      if (v != predU && dist[v] != -1 && dist[v] < distW){
-        #ifdef NDEBUG
-        printf("%d -> %d\n", u,predU);
-        printf("%d -> %d\n", w, v);
-        #endif
+      if (v != predU && dist[v] > -1 && dist[v] < distW){
+        //#ifdef NDEBUG
+        printf("u %d (%d) -> %d (%d)\n", u+1, dist[u], predU+1, dist[predU]);
+        printf("w %d (%d) -> %d (%d)\n", w+1, dist[w], v+1, dist[v]);
+        //#endif
         u = predU;
         w = v;
         return FindXq(u, w);
