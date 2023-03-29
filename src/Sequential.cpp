@@ -38,9 +38,14 @@ unsigned int Sequential(CSRGraph graph, unsigned int minimum)
                 visited[j] = stack.stack[stack.top * graph.vertexNum + j];
             }
             startVertex = stack.startVertex[stack.top];
+            printf("Popping %d on the stack top %d\n",startVertex,stack.top);
+            for (int i = 0; i < NUM_LEVELS; i++){
+                backtrackingIndices[i]=0;
+                path[i]=0;
+            }
             --stack.top;
         }
-
+        popNextItr = false;
         bool leafHasChanged = false, highDegreeHasChanged = false, triangleHasChanged = false;
         unsigned int iterationCounter = 0;
 
@@ -92,7 +97,7 @@ unsigned int Sequential(CSRGraph graph, unsigned int minimum)
             ++backtrackingIndices[depth];    
             c=1;        
         }
-        exit(1);
+        popNextItr = true;
         //}
         /*
         do
