@@ -1,5 +1,6 @@
 #include "Sequential.h"
 #include <cstdio>
+// DFS from a single source.
 unsigned int Sequential(CSRGraph graph, unsigned int minimum)
 {
     Stack stack;
