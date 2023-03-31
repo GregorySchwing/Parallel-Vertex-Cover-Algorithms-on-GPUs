@@ -22,11 +22,13 @@ CSRGraph allocateGraph(CSRGraph graph){
     Graph.dst = dst_d;
     Graph.srcPtr = srcPtr_d;
     Graph.degree = degree_d;
+    Graph.matching = matching_d;
     Graph.unmatched_vertices = unmatched_vertices_d;
     cudaMemcpy(dst_d,graph.dst,sizeof(unsigned int)*2*graph.edgeNum,cudaMemcpyHostToDevice);
     cudaMemcpy(srcPtr_d,graph.srcPtr,sizeof(unsigned int)*(graph.vertexNum+1),cudaMemcpyHostToDevice);
     cudaMemcpy(degree_d,graph.degree,sizeof(int)*graph.vertexNum,cudaMemcpyHostToDevice);
     cudaMemcpy(unmatched_vertices_d,graph.unmatched_vertices,sizeof(unsigned int)*((graph.vertexNum/2)+1),cudaMemcpyHostToDevice);
+    cudaMemcpy(matching_d,graph.matching,sizeof(int)*graph.vertexNum,cudaMemcpyHostToDevice);
 
     return Graph;
 }
@@ -35,4 +37,8 @@ void cudaFreeGraph(CSRGraph graph){
     cudaFree(graph.dst);
     cudaFree(graph.srcPtr);
     cudaFree(graph.degree);
+    if (graph.matching != NULL)
+    cudaFree(graph.matching);
+    if (graph.unmatched_vertices != NULL)
+    cudaFree(graph.unmatched_vertices);
 }

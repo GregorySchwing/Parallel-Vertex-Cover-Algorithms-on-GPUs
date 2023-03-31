@@ -438,6 +438,9 @@ void add_edges_to_unmatched_from_last_vertex_gpu_csc(CSRGraph & graph,CSRGraph &
   //thrust::copy(thrust::device, indices.begin(), indices_end, IC_vec+graph.edgeNum);
   graph.num_unmatched_vertices=(indices_end-indices.begin());
   cudaMemcpy(graph.unmatched_vertices, thrust::raw_pointer_cast(&indices[0]), graph.num_unmatched_vertices*sizeof(*graph.unmatched_vertices), cudaMemcpyDeviceToHost);
+  cudaMemcpy(graph.matching, m_d, graph.num_unmatched_vertices*sizeof(*graph.unmatched_vertices), cudaMemcpyDeviceToHost);
+  cudaMemcpy(graph_d.matching, m_d, graph.num_unmatched_vertices*sizeof(*graph.unmatched_vertices), cudaMemcpyDeviceToHost);
+
   if (exec_protocol){
 
   } else {
