@@ -9,6 +9,8 @@ struct CSRGraph{
     int* degree;
     int* visited;
     int *matching;
+    int num_unmatched_vertices;
+    unsigned int *unmatched_vertices;
     void create(unsigned int xn,unsigned int xm); // Initializes the graph rep
     void copy(CSRGraph graph);
     void deleteVertex(unsigned int v);

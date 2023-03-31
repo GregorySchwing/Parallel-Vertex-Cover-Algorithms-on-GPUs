@@ -413,20 +413,20 @@ void add_edges_to_unmatched_from_last_vertex_gpu_csc(CSRGraph & graph,CSRGraph &
   printf("\nnum unmatched %d\n", indices_end-indices.begin());
   m->num_matched_h[0] = graph.vertexNum-(indices_end-indices.begin());
   // Set number of sources
-  thrust::device_ptr<unsigned int> CP_vec=thrust::device_pointer_cast(CP_d);
+  //thrust::device_ptr<unsigned int> CP_vec=thrust::device_pointer_cast(CP_d);
 
   // NumSources = (indices_end-indices.begin())
   // Previous index = edgeNum
   // Prefix sum = previous index + NumSources
-  thrust::device_vector<int> numSourcesPrefixSum(1);
+  //thrust::device_vector<int> numSourcesPrefixSum(1);
 
-  numSourcesPrefixSum[0] = graph.edgeNum+(indices_end-indices.begin());
+  //numSourcesPrefixSum[0] = graph.edgeNum+(indices_end-indices.begin());
 
   // CP is int[N+2], vertexNum+1 = N+1, CP[N+1]=num unmatched+edgeNum
-  thrust::copy(thrust::device, numSourcesPrefixSum.begin(), numSourcesPrefixSum.end(), CP_vec+graph.vertexNum+1);
+  //thrust::copy(thrust::device, numSourcesPrefixSum.begin(), numSourcesPrefixSum.end(), CP_vec+graph.vertexNum+1);
 
   // Set sources
-  thrust::device_ptr<unsigned int> IC_vec=thrust::device_pointer_cast(IC_d);
+  //thrust::device_ptr<unsigned int> IC_vec=thrust::device_pointer_cast(IC_d);
 
   // IC is int[edgeNum+((N+1)/2)], 
   // IC[edgeNum]...IC[edgeNum+num unmatched] = sources
@@ -435,8 +435,9 @@ void add_edges_to_unmatched_from_last_vertex_gpu_csc(CSRGraph & graph,CSRGraph &
   //printf("New edge count %d\n", edgeNum+(indices_end-indices.begin()));
 
   // Copy sources into column array IC at CP[N] to CP[N+1]
-  thrust::copy(thrust::device, indices.begin(), indices_end, IC_vec+graph.edgeNum);
-
+  //thrust::copy(thrust::device, indices.begin(), indices_end, IC_vec+graph.edgeNum);
+  graph.num_unmatched_vertices=(indices_end-indices.begin());
+  cudaMemcpy(graph.unmatched_vertices, thrust::raw_pointer_cast(&indices[0]), graph.num_unmatched_vertices*sizeof(*graph.unmatched_vertices), cudaMemcpyDeviceToHost);
   if (exec_protocol){
 
   } else {

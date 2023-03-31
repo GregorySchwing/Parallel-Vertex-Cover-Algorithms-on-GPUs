@@ -30,8 +30,8 @@ void maxmatch_from_mis(CSRGraph & graph,CSRGraph & graph_d,struct match * m, str
 
 void add_edges_to_unmatched_from_last_vertex(CSRGraph & graph,CSRGraph & graph_d,struct match * m, int exec_protocol){
   add_edges_to_unmatched_from_last_vertex_gpu_csc (graph,graph_d,m,exec_protocol);
-  if (true)
-    add_edges_to_unmatched_from_last_vertex_cpu_csc (graph,graph_d,m,exec_protocol);
+  //if (true)
+  //  add_edges_to_unmatched_from_last_vertex_cpu_csc (graph,graph_d,m,exec_protocol);
 
 }
 

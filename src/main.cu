@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
     int exec_policy = 1;
     create_match(graph, graph4m_d,&mm,exec_policy);
     maxmatch(graph,graph4m_d, &mm,exec_policy);
-    //add_edges_to_unmatched_from_last_vertex(graph, graph4m_d, &mm, exec_policy);
+    add_edges_to_unmatched_from_last_vertex(graph, graph4m_d, &mm, exec_policy);
     unsigned long ref_size = create_mcm(graph);
     printf("\rgpu mm starting size %lu ref size %lu\n", mm.match_count_h/2, ref_size);
 
