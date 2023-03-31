@@ -1,0 +1,145 @@
+
+Graph file: ../odd.txt
+UUID: 1
+
+bfs_gpu_mm_csc_sc::t_sum=1.099616ms 
+mm_gpu_csc::average time mm = 1.099616ms, avg matched 12.000000, avg unmatched 4.000000, total 16
+Matching is correct.
+Matching is correct.
+Matched vertices 12; matched edges 6
+
+num unmatched 3
+
+Elapsed Time for Boost MCM: 0.000179
+
+Boost MCM size: 7
+gpu mm starting size 6 ref size 7
+
+Elapsed Time for Approximate Remove Max: 0.000003
+Approximate Remove Max Minimum is: 8
+Elapsed Time for Approximate Remove Edge: 0.000003
+Approximate Remove Edge Minimum is: 8
+Entered seq
+0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 
+2 3 0 1 -1 12 11 8 7 13 -1 6 5 9 -1 -1 Popping 4 on the stack top 0
+Depth 0
+um 4->1
+Pushing 1 on the stack top 0
+Depth 1
+Depth 0
+um 4->8
+Pushing 8 on the stack top 1
+Depth 1
+Depth 0
+Depth 0
+Popping 8 on the stack top 1
+Depth 0
+m 8->7
+Pushing 7 on the stack top 1
+Depth 1
+Popping 7 on the stack top 1
+Depth 0
+um 7->3
+Pushing 3 on the stack top 1
+Depth 1
+Depth 0
+Depth 0
+Popping 3 on the stack top 1
+Depth 0
+m 3->1
+Pushing 1 on the stack top 1
+Depth 1
+Popping 1 on the stack top 1
+Depth 0
+um 1->0
+Pushing 0 on the stack top 1
+Depth 1
+Depth 0
+um 1->2
+Pushing 2 on the stack top 2
+Depth 1
+Depth 0
+Depth 0
+Popping 2 on the stack top 2
+Depth 0
+m 2->0
+Pushing 0 on the stack top 2
+Depth 1
+Popping 0 on the stack top 2
+Depth 0
+Depth 0
+Popping 0 on the stack top 1
+Depth 0
+m 0->2
+Pushing 2 on the stack top 1
+Depth 1
+Popping 2 on the stack top 1
+Depth 0
+Depth 0
+Popping 1 on the stack top 0
+Depth 0
+m 1->3
+Pushing 3 on the stack top 0
+Depth 1
+Popping 3 on the stack top 0
+Depth 0
+um 3->7
+Pushing 7 on the stack top 0
+Depth 1
+Depth 0
+um 3->11
+Pushing 11 on the stack top 1
+Depth 1
+Depth 0
+Depth 0
+Popping 11 on the stack top 1
+Depth 0
+m 11->6
+Pushing 6 on the stack top 1
+Depth 1
+Popping 6 on the stack top 1
+Depth 0
+um 6->10
+Pushing 10 on the stack top 1
+Depth 1
+Depth 0
+Depth 0
+Popping 10 on the stack top 1
+Depth 0
+um 10->13
+Pushing 13 on the stack top 1
+Depth 1
+Depth 0
+Depth 0
+Popping 13 on the stack top 1
+Depth 0
+m 13->9
+Pushing 9 on the stack top 1
+Depth 1
+Popping 9 on the stack top 1
+Depth 0
+Depth 0
+Popping 7 on the stack top 0
+Depth 0
+m 7->8
+Pushing 8 on the stack top 0
+Depth 1
+Popping 8 on the stack top 0
+Depth 0
+um 8->12
+Pushing 12 on the stack top 0
+Depth 1
+Depth 0
+Depth 0
+Popping 12 on the stack top 0
+Depth 0
+m 12->5
+Pushing 5 on the stack top 0
+Depth 1
+Popping 5 on the stack top 0
+Depth 0
+Depth 0
+
+Elapsed time: 0.000017s
+Size of minimum vertex cover: 8
+

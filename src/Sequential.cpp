@@ -18,11 +18,18 @@ unsigned int Sequential(CSRGraph graph, unsigned int minimum)
     stack.stack = (int *)malloc(sizeof(int) * stack.size * graph.vertexNum);
     stack.startVertex = (unsigned int *)malloc(sizeof(int) * stack.size);
     stack.top = 0;
-
     for (unsigned int j = 0; j < graph.vertexNum; ++j)
     {
         //stack.stack[j] = graph.visited[j];
         stack.stack[j] = 0;
+        printf("%d ", j);
+    }
+    printf("\n");
+    for (unsigned int j = 0; j < graph.vertexNum; ++j)
+    {
+        //stack.stack[j] = graph.visited[j];
+        stack.stack[j] = 0;
+        printf("%d ", graph.matching[j]);
     }
     for (unsigned int j = 0; j < graph.num_unmatched_vertices; ++j)
     {
@@ -71,26 +78,28 @@ unsigned int Sequential(CSRGraph graph, unsigned int minimum)
                 //for (depth = 0; depth < NUM_LEVELS; ++depth){
                 c = 0;
                 printf("Depth %d\n",depth);
-                start = graph.srcPtr[path[depth]];
-                end = graph.srcPtr[path[depth] + 1];
-                for (; backtrackingIndices[depth] < end-start; ++backtrackingIndices[depth])
-                {
-                    neighbor = graph.dst[start + backtrackingIndices[depth]];
-                    /*
-                    if (graph.matching[path[depth]]>-1 && !visited[graph.matching[path[depth]]]){
-                        neighbor = graph.matching[path[depth]];
-                    } else {
-                        neighbor = graph.dst[start + backtrackingIndices[depth]];
-                    }
-                    */
-                    if (!visited[neighbor])
+                if (graph.matching[path[depth]]>-1 && !visited[graph.matching[path[depth]]]){
+                    neighbor = graph.matching[path[depth]];
+                    printf("m %d->%d\n",path[depth],neighbor);
+                    depth++;
+                    path[depth]=neighbor;
+                    visited[neighbor]=1;
+                    c = 1;
+                } else {
+                    start = graph.srcPtr[path[depth]];
+                    end = graph.srcPtr[path[depth] + 1];
+                    for (; backtrackingIndices[depth] < end-start; ++backtrackingIndices[depth])
                     {
-                        printf("%d->%d\n",path[depth],neighbor);
-                        depth++;
-                        path[depth]=neighbor;
-                        visited[neighbor]=1;
-                        c = 1;
-                        break;
+                        neighbor = graph.dst[start + backtrackingIndices[depth]];
+                        if (!visited[neighbor])
+                        {
+                            printf("um %d->%d\n",path[depth],neighbor);
+                            depth++;
+                            path[depth]=neighbor;
+                            visited[neighbor]=1;
+                            c = 1;
+                            break;
+                        }
                     }
                 }
             }
@@ -106,11 +115,16 @@ unsigned int Sequential(CSRGraph graph, unsigned int minimum)
                 printf("Pushing %d on the stack top %d\n",neighbor,stack.top);
             } 
             printf("Depth %d\n",depth);
+            int bt2 = visited[graph.matching[path[depth]]];
             visited[path[depth]]=0;
             path[depth]=0;
             depth--;
+            if(bt2 && depth >= 0){
+                path[depth]=0;
+                depth--;
+            }
             ++backtrackingIndices[depth];    
-            c=1;        
+            c = 1;
         }
         popNextItr = true;
         //}
