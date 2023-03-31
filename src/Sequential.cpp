@@ -27,7 +27,7 @@ unsigned int Sequential(CSRGraph graph, unsigned int minimum)
     for (unsigned int j = 0; j < graph.num_unmatched_vertices; ++j)
     {
         //stack.stack[j] = graph.visited[j];
-        printf("%d ",graph.unmatched_vertices[j]);
+        //printf("%d ",graph.unmatched_vertices[j]);
     }
     stack.startVertex[stack.top] = graph.unmatched_vertices[0];
     //stack.startVertex[stack.top] = 1;
@@ -76,6 +76,13 @@ unsigned int Sequential(CSRGraph graph, unsigned int minimum)
                 for (; backtrackingIndices[depth] < end-start; ++backtrackingIndices[depth])
                 {
                     neighbor = graph.dst[start + backtrackingIndices[depth]];
+                    /*
+                    if (graph.matching[path[depth]]>-1 && !visited[graph.matching[path[depth]]]){
+                        neighbor = graph.matching[path[depth]];
+                    } else {
+                        neighbor = graph.dst[start + backtrackingIndices[depth]];
+                    }
+                    */
                     if (!visited[neighbor])
                     {
                         printf("%d->%d\n",path[depth],neighbor);
