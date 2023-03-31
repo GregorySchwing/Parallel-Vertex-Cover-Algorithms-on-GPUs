@@ -5,6 +5,7 @@
 
 struct Stack
 {
+    bool foundSolution;
     unsigned int size;
     int top;
     int *stack;

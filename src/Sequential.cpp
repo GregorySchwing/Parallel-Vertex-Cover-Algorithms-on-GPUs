@@ -4,6 +4,7 @@
 unsigned int Sequential(CSRGraph graph, unsigned int minimum)
 {
     Stack stack;
+    stack.foundSolution = false;
     stack.size = graph.vertexNum + 1;
     // Number of DFS levels to do before pushing to the stack.
     int backtrackingIndices[NUM_LEVELS];
@@ -29,7 +30,7 @@ unsigned int Sequential(CSRGraph graph, unsigned int minimum)
     int *visited = (int *)malloc(sizeof(int) * graph.vertexNum);
     unsigned int startVertex;
 
-    while (stack.top != -1)
+    while (stack.top != -1 && !stack.foundSolution)
     {
 
         if (popNextItr)

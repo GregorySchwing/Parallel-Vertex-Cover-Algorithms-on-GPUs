@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 project(vc-gpu VERSION 0.1 LANGUAGES CXX CUDA)
+# CUDA runtime
+
+find_package(CUDAToolkit REQUIRED)
+find_package(Boost 1.40 REQUIRED)
 
 if (NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
@@ -16,10 +20,16 @@ set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
 message(STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
 
 file(GLOB_RECURSE vc-gpu_SOURCES "${PROJECT_SOURCE_DIR}/*.cpp")
+file(GLOB_RECURSE maxmatch_SOURCES "${PROJECT_SOURCE_DIR}/matching/*.c")
+file(GLOB_RECURSE mis_SOURCES "${PROJECT_SOURCE_DIR}/mis/*.c")
 file(GLOB_RECURSE vc-gpu_HEADERS "${PROJECT_SOURCE_DIR}/*.h")
 
 file(GLOB_RECURSE vc-gpu_CUDA_SOURCES "${PROJECT_SOURCE_DIR}/*.cu")
+file(GLOB_RECURSE maxmatch_CUDA_SOURCES "${PROJECT_SOURCE_DIR}/matching/*.cu")
+file(GLOB_RECURSE mis_CUDA_SOURCES "${PROJECT_SOURCE_DIR}/mis/*.cu")
 file(GLOB_RECURSE vc-gpu_CUDA_HEADERS "${PROJECT_SOURCE_DIR}/*.cuh")
+file(GLOB_RECURSE maxmatch_CUDA_HEADERS "${PROJECT_SOURCE_DIR}/matching/*.cu")
+file(GLOB_RECURSE mis_CUDA_HEADERS "${PROJECT_SOURCE_DIR}/mis/*.h")
 
 set(vc-gpu_INCLUDE_DIRS "")
 foreach (_headerFile ${vc-gpu_HEADERS})
@@ -45,6 +55,7 @@ message(STATUS "pppcsr_INCLUDE_DIRS: ${pppcsr_INCLUDE_DIRS}")
 
 add_executable(vc-gpu ${vc-gpu_CUDA_SOURCES} ${vc-gpu_SOURCES})
 target_include_directories(vc-gpu PRIVATE ${vc-gpu_INCLUDE_DIRS} ${pppcsr_INCLUDE_DIRS})
+target_include_directories(vc-gpu SYSTEM PUBLIC ${CUDAToolkit_INCLUDE_DIRS} "${CUDAToolkit_LIBRARY_ROOT}/samples/common/inc/")
 set_target_properties(vc-gpu PROPERTIES
 CUDA_SEPARABLE_COMPILATION ON
 OUTPUT_NAME vc

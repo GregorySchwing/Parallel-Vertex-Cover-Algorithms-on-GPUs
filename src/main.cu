@@ -22,6 +22,7 @@
 
 using namespace std;
 
+//#include "matching/match.h"
 //#include <PCSR.h>
 
 
@@ -34,6 +35,9 @@ int main(int argc, char *argv[]) {
 
     CSRGraph graph = createCSRGraphFromFile(config.graphFileName);
     performChecks(graph, config);
+    //maxmatch(graph);
+
+
 
     //PCSR *pcsr = new PCSR(graph.vertexNum, graph.vertexNum, true, -1);
 
