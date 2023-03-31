@@ -14,6 +14,7 @@ unsigned int Sequential(CSRGraph graph, unsigned int minimum)
         backtrackingIndices[i]=0;
         path[i]=0;
     }
+    unsigned int originalStartVertex;
 
     stack.stack = (int *)malloc(sizeof(int) * stack.size * graph.vertexNum);
     stack.startVertex = (unsigned int *)malloc(sizeof(int) * stack.size);
@@ -37,6 +38,7 @@ unsigned int Sequential(CSRGraph graph, unsigned int minimum)
         //printf("%d ",graph.unmatched_vertices[j]);
     }
     stack.startVertex[stack.top] = graph.unmatched_vertices[0];
+    originalStartVertex = graph.unmatched_vertices[0];
     //stack.startVertex[stack.top] = 1;
 
     bool popNextItr = true;
@@ -78,6 +80,24 @@ unsigned int Sequential(CSRGraph graph, unsigned int minimum)
                 //for (depth = 0; depth < NUM_LEVELS; ++depth){
                 c = 0;
                 printf("Depth %d\n",depth);
+                // Terminate!!!
+                if (graph.matching[path[depth]]==-1 && path[depth] != originalStartVertex){
+                    depth = -1;
+                    stack.foundSolution = true;
+                    printf("Terminate!!!\n");
+                    for (unsigned int j = 0; j < graph.vertexNum; ++j)
+                    {
+                        //stack.stack[j] = graph.visited[j];
+                        printf("%d ", j);
+                    }
+                    printf("\n");
+                    for (unsigned int j = 0; j < graph.vertexNum; ++j)
+                    {
+                        //stack.stack[j] = graph.visited[j];
+                        printf("%d ", visited[j]);
+                    }
+                    break;
+                }
                 if (graph.matching[path[depth]]>-1 && !visited[graph.matching[path[depth]]]){
                     neighbor = graph.matching[path[depth]];
                     printf("m %d->%d\n",path[depth],neighbor);
@@ -126,7 +146,7 @@ unsigned int Sequential(CSRGraph graph, unsigned int minimum)
             ++backtrackingIndices[depth];    
             c = 1;
         }
-        popNextItr = true;
+        popNextItr = !stack.foundSolution;
         //}
         /*
         do

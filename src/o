@@ -2,15 +2,15 @@
 Graph file: ../odd.txt
 UUID: 1
 
-bfs_gpu_mm_csc_sc::t_sum=1.099616ms 
-mm_gpu_csc::average time mm = 1.099616ms, avg matched 12.000000, avg unmatched 4.000000, total 16
+bfs_gpu_mm_csc_sc::t_sum=1.154176ms 
+mm_gpu_csc::average time mm = 1.154176ms, avg matched 12.000000, avg unmatched 4.000000, total 16
 Matching is correct.
 Matching is correct.
 Matched vertices 12; matched edges 6
 
 num unmatched 3
 
-Elapsed Time for Boost MCM: 0.000179
+Elapsed Time for Boost MCM: 0.000180
 
 Boost MCM size: 7
 gpu mm starting size 6 ref size 7
@@ -106,19 +106,7 @@ Depth 0
 Depth 0
 Popping 10 on the stack top 1
 Depth 0
-um 10->13
-Pushing 13 on the stack top 1
-Depth 1
-Depth 0
-Depth 0
-Popping 13 on the stack top 1
-Depth 0
-m 13->9
-Pushing 9 on the stack top 1
-Depth 1
-Popping 9 on the stack top 1
-Depth 0
-Depth 0
+Depth -1
 Popping 7 on the stack top 0
 Depth 0
 m 7->8
@@ -140,6 +128,6 @@ Popping 5 on the stack top 0
 Depth 0
 Depth 0
 
-Elapsed time: 0.000017s
+Elapsed time: 0.000016s
 Size of minimum vertex cover: 8
 
