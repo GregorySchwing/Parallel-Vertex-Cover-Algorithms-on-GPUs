@@ -42,6 +42,9 @@
 #include <thrust/functional.h>
 #include <thrust/device_vector.h>
 #include <thrust/host_vector.h>
+#include <thrust/complex.h>
+#include <thrust/transform.h>
+//using mt = thrust::complex<int>;
 #include "bfstdcsc.h"
 
 struct is_less_than_0
@@ -396,7 +399,10 @@ void add_edges_to_unmatched_from_last_vertex_gpu_csc(CSRGraph & graph,CSRGraph &
   }
 
   thrust::device_ptr<int> m_vec=thrust::device_pointer_cast(m_d);
+  thrust::device_ptr<int> deg_vec=thrust::device_pointer_cast(graph_d.degree);
+  thrust::device_vector<int> masked_matching(graph.vertexNum);
 
+  thrust::transform(m_vec, m_vec+graph.vertexNum, deg_vec, masked_matching.begin(), thrust::multiplies<int>());
   using namespace thrust;
   using namespace thrust::placeholders;
 
@@ -406,9 +412,9 @@ void add_edges_to_unmatched_from_last_vertex_gpu_csc(CSRGraph & graph,CSRGraph &
  typedef thrust::device_vector<int>::iterator IndexIterator;
  IndexIterator indices_end = thrust::copy_if(thrust::make_counting_iterator(0),
                                              thrust::make_counting_iterator((int)(graph.vertexNum)),
-                                             m_vec,
+                                             &masked_matching[0],
                                              indices.begin(),
-                                             _1 == -1);
+                                             _1 < 0);
 
   printf("\nnum unmatched %d\n", indices_end-indices.begin());
   m->num_matched_h[0] = graph.vertexNum-(indices_end-indices.begin());
