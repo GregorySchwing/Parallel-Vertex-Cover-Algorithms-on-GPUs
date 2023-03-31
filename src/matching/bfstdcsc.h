@@ -24,6 +24,8 @@
 #define WARPS_PER_BLOCK (THREADS_PER_BLOCK/THREADS_PER_WARP)
 #define I_SIZE ((3/2)*THREADS_PER_BLOCK)
 #include <stdio.h>
+#include "CSRGraphRep.h"
+
 /*define Structure of Arrays (SoA) for the sparse matrix A representing
  unweighted graphs in the CSC format*/
 struct Csc{
@@ -36,8 +38,8 @@ struct Csc{
 typedef struct
 {
   /*Allocate device memory for the vector CP_d */
-  int *CP_d;
-  int *IC_d;
+  unsigned int *CP_d;
+  unsigned int *IC_d;
   int *degree_d;
   int *base_d;
   int *fll_d;
@@ -52,8 +54,8 @@ typedef struct
 
 
 struct Graph {
-  int M,N,nz;
-  int N_including_supersource,nz_including_supersource;
+  int M,N;
+  int vertexNum,edgeNum;
 
   int i,j;
   int *RP,*JC;
@@ -201,7 +203,7 @@ struct MIS
  * discovered.    
  *  
 */
-int bfs_seq_td_csc (struct Graph * graph,struct bfs * b);
+int bfs_seq_td_csc (CSRGraph & graph,CSRGraph & graph_d,struct bfs * b);
 
 /**************************************************************************/
 /* 
@@ -211,8 +213,8 @@ int bfs_seq_td_csc (struct Graph * graph,struct bfs * b);
  * discovered.    
  *  
 */
-void bfs_seq_td_csc_m_alt (struct Graph * graph,struct bfs * b, struct match * m);
-void bfs_seq_td_csc_m_alt_w_blossoms (struct Graph * graph,struct bfs * b, struct match * m);
+void bfs_seq_td_csc_m_alt (CSRGraph & graph,CSRGraph & graph_d,struct bfs * b, struct match * m);
+void bfs_seq_td_csc_m_alt_w_blossoms (CSRGraph & graph,CSRGraph & graph_d,struct bfs * b, struct match * m);
 
 /**************************************************************************/
 /* 
@@ -222,32 +224,32 @@ void bfs_seq_td_csc_m_alt_w_blossoms (struct Graph * graph,struct bfs * b, struc
  * vertex is  discovered.
  *  
  */
-void bfs_gpu_td_csc_sc(struct Graph * graph,struct bfs * b, int exec_protocol);
-void bfs_gpu_td_csc_sc_m_alt(struct Graph * graph,struct bfs * b, struct match * mm,int exec_protocol);
-void bfs_gpu_td_csc_sc_m_alt_w_blossoms(struct Graph * graph,struct bfs * b, struct match * mm,int exec_protocol);
+void bfs_gpu_td_csc_sc(CSRGraph & graph,CSRGraph & graph_d,struct bfs * b, int exec_protocol);
+void bfs_gpu_td_csc_sc_m_alt(CSRGraph & graph,CSRGraph & graph_d,struct bfs * b, struct match * mm,int exec_protocol);
+void bfs_gpu_td_csc_sc_m_alt_w_blossoms(CSRGraph & graph,CSRGraph & graph_d,struct bfs * b, struct match * mm,int exec_protocol);
 
 void simple_graph_builder(FILE *fp, struct Graph* graph, int source_protocol, int exec_protocol);
-Graph_GPU create_graph_gpu_struct(struct Graph * graph);
+Graph_GPU create_graph_gpu_struct(CSRGraph & graph);
 Match_GPU create_match_gpu_struct(int N);
 MIS_GPU create_mis_gpu_struct(int N);
 BFS_GPU create_bfs_gpu_struct(int N);
 Paths_GPU create_paths_gpu_struct(int N);
-void extract_paths_gpu(struct Graph * graph,struct bfs * b,struct match * mm, struct paths * p,int exec_protocol, int pred_protocol);
-void extract_single_path_gpu(struct Graph * graph,struct bfs * b,struct match * mm, struct paths * p,int exec_protocol);
-void extract_single_path_gpu_w_blossoms(struct Graph * graph,struct bfs * b,struct match * mm, struct paths * p,int exec_protocol);
-void process_single_path_gpu_w_blossoms(struct Graph * graph,struct bfs * b,struct match * mm, struct paths * p,int exec_protocol);
-void identify_blossoms_and_launch_bfs_from_inside_vertices(struct Graph * graph,struct bfs * b,struct match * mm, struct paths * p,int exec_protocol);
-int check_graph_gpu(int * CP_d, int * CP_h, int N, int * IC_d, int * IC_h, int nz);
+void extract_paths_gpu(CSRGraph & graph,CSRGraph & graph_d,struct bfs * b,struct match * mm, struct paths * p,int exec_protocol, int pred_protocol);
+void extract_single_path_gpu(CSRGraph & graph,CSRGraph & graph_d,struct bfs * b,struct match * mm, struct paths * p,int exec_protocol);
+void extract_single_path_gpu_w_blossoms(CSRGraph & graph,CSRGraph & graph_d,struct bfs * b,struct match * mm, struct paths * p,int exec_protocol);
+void process_single_path_gpu_w_blossoms(CSRGraph & graph,CSRGraph & graph_d,struct bfs * b,struct match * mm, struct paths * p,int exec_protocol);
+void identify_blossoms_and_launch_bfs_from_inside_vertices(CSRGraph & graph,CSRGraph & graph_d,struct bfs * b,struct match * mm, struct paths * p,int exec_protocol);
+int check_graph_gpu(int * CP_d, int * CP_h, int N, int * IC_d, int * IC_h, int edgeNum);
 
-int mm_gpu_csc(struct Graph * graph,struct match * m, int exec_protocol);
-int mm_gpu_csc_from_mis(struct Graph * graph,struct match * m,struct MIS * mis, int exec_protocol);
-int mis_gpu(struct Graph * graph,struct MIS * mis, int exec_protocol);
-//int  mm_gpu_csc (int *IC_h,int *CP_h,int *m_h,int *_m_d,int *req_h,int *c_h,int nz,int n,int repetition, int exec_protocol);
-void add_edges_to_unmatched_from_last_vertex_cpu_csc(struct Graph * graph,struct match * m,int exec_protocol);
-void add_edges_to_unmatched_from_last_vertex_gpu_csc(struct Graph * graph,struct match * m,int exec_protocol);
-unsigned long mcm_boost(int *IC_h,int *CP_h, int N);
-unsigned long mcm_boost_headstart(int *IC_h,int *CP_h, int *m_h,int N);       // It has a perfect matching of size 8. There are two isolated
-unsigned long mcm_edmonds(int *IC_h,int *CP_h, int *m_h,int N);
+int mm_gpu_csc(CSRGraph & graph,CSRGraph & graph_d,struct match * m, int exec_protocol);
+int mm_gpu_csc_from_mis(CSRGraph & graph,CSRGraph & graph_d,struct match * m,struct MIS * mis, int exec_protocol);
+int mis_gpu(CSRGraph & graph,CSRGraph & graph_d,struct MIS * mis, int exec_protocol);
+//int  mm_gpu_csc (unsigned int *IC_h,unsigned int *CP_h,int *m_h,int *_m_d,int *req_h,int *c_h,int edgeNum,int n,int repetition, int exec_protocol);
+void add_edges_to_unmatched_from_last_vertex_cpu_csc(CSRGraph & graph,CSRGraph & graph_d,struct match * m,int exec_protocol);
+void add_edges_to_unmatched_from_last_vertex_gpu_csc(CSRGraph & graph,CSRGraph & graph_d,struct match * m,int exec_protocol);
+unsigned long mcm_boost(unsigned int *IC_h,unsigned int *CP_h, int N);
+unsigned long mcm_boost_headstart(unsigned int *IC_h,unsigned int *CP_h, int *m_h,int N);       // It has a perfect matching of size 8. There are two isolated
+unsigned long mcm_edmonds(unsigned int *IC_h,unsigned int *CP_h, int *m_h,int N);
 
 
 //int edmonds_mcm();
@@ -259,9 +261,9 @@ unsigned long mcm_edmonds(int *IC_h,int *CP_h, int *m_h,int N);
  * vertex is discovered.
  *  
  */
-void bfs_gpu_td_csc_wa(struct Graph * graph,struct bfs * b, int exec_protocol);
-int  bfs_gpu_td_csc_wa_m_alt  (int *IC_h,int *CP_h,int *S_h,float *sigma_h,int *S_hgpu,float *sigma_hgpu,
-      int *f_h, int *ft_h, int *c_h, int r,int nz,int n,int repetition,int exec_protocol, int seq);
+void bfs_gpu_td_csc_wa(CSRGraph & graph,CSRGraph & graph_d,struct bfs * b, int exec_protocol);
+int  bfs_gpu_td_csc_wa_m_alt  (unsigned int *IC_h,unsigned int *CP_h,int *S_h,float *sigma_h,int *S_hgpu,float *sigma_hgpu,
+      int *f_h, int *ft_h, int *c_h, int r,int edgeNum,int n,int repetition,int exec_protocol, int seq);
 
 
 void set_start_in_blossom_head_seq (int *ft_h,int *base_h,int *blossom_start_h,int n);

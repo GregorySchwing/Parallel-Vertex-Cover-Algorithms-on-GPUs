@@ -14,7 +14,7 @@
 
 #include "graph.h"
 
-void create_mis(struct Graph * graph,struct MIS * mis,int exec_protocol);
-void find_mis(struct Graph * graph,struct MIS * mis, int exec_protocol);
-void check_mis(struct Graph * graph,struct MIS * mis);
+void create_mis(CSRGraph & graph,CSRGraph & graph_d,struct MIS * mis,int exec_protocol);
+void find_mis(CSRGraph & graph,CSRGraph & graph_d,struct MIS * mis, int exec_protocol);
+void check_mis(CSRGraph & graph,CSRGraph & graph_d,struct MIS * mis);
 #endif

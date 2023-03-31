@@ -27,8 +27,8 @@ __global__ void gaSelect_from_mis(int *match, int *dkeepMatching, int *L_d,const
 __global__ void gMatch(int *match, const int *requests, const int nrVertices);
 
 //==== Random greedy matching kernels ====
-__global__ void grRequest(int *CP_d,int *IC_d,int *requests, const int *match, const int nrVertices);
-__global__ void grRespond(int *CP_d,int *IC_d,int *requests, const int *match, const int nrVertices);
+__global__ void grRequest(unsigned int *CP_d,unsigned int *IC_d,int *requests, const int *match, const int nrVertices);
+__global__ void grRespond(unsigned int *CP_d,unsigned int *IC_d,int *requests, const int *match, const int nrVertices);
 
 //==== Weighted greedy matching kernels ====
 __global__ void gwRequest(int *requests, const int *match, const int nrVertices);

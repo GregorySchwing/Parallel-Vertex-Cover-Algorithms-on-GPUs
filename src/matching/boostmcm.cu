@@ -25,7 +25,7 @@ extern "C"{
              #include "bfstdcsc.h"
 }
 
-unsigned long mcm_boost(int *IC_h,int *CP_h, int N){       // It has a perfect matching of size 8. There are two isolated
+unsigned long mcm_boost(unsigned int *IC_h,unsigned int *CP_h, int N){       // It has a perfect matching of size 8. There are two isolated
     // vertices that we'll use later...
 
     my_graph g(N);
@@ -70,7 +70,7 @@ unsigned long mcm_boost(int *IC_h,int *CP_h, int N){       // It has a perfect m
 }
 
 
-unsigned long mcm_boost_headstart(int *IC_h,int *CP_h, int *m_h, int N){       // It has a perfect matching of size 8. There are two isolated
+unsigned long mcm_boost_headstart(unsigned int *IC_h,unsigned int *CP_h, int *m_h, int N){       // It has a perfect matching of size 8. There are two isolated
     // vertices that we'll use later...
 
     my_graph g(N);

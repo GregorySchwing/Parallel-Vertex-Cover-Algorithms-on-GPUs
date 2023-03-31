@@ -24,7 +24,7 @@ __device__ unsigned int h(unsigned int x){
     return x2;
 }
 
-__global__ void set_L(int * CP_d, int * IC_d, int * L_d, int * c, int n){
+__global__ void set_L(unsigned int * CP_d, unsigned int * IC_d, int * L_d, int * c, int n){
   int i = threadIdx.x + blockIdx.x * blockDim.x;
   if(i < n && !L_d[i]){
     int k;
@@ -51,7 +51,7 @@ __global__ void set_L(int * CP_d, int * IC_d, int * L_d, int * c, int n){
   }
 }
 
-__global__ void set_L_unmatched(int * CP_d, int * IC_d, int * L_d, int * m_d, int * c, int n){
+__global__ void set_L_unmatched(unsigned int * CP_d, unsigned int * IC_d, int * L_d, int * m_d, int * c, int n){
   int i = threadIdx.x + blockIdx.x * blockDim.x;
   if(i < n && !L_d[i] && m_d[i] < 3){
     int k;

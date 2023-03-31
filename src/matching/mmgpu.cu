@@ -65,9 +65,9 @@ struct is_less_than_0
  * unweighted graphs represented by sparse adjacency matrices in CSC format.
  *  
  */
-//int  mm_gpu_csc (int *IC_h,int *CP_h,int *m_h,int *_m_d,int *req_h,int *c_h,int nz,int n,int repetition, int exec_protocol){
-int mm_gpu_csc(struct Graph * graph,struct match * m, int exec_protocol){
-//int  mm_gpu_csc (int *IC_h,int *CP_h,int *m_h,int *_m_d,int *req_h,int *c_h,int nz,int n,int repetition, int exec_protocol){
+//int  mm_gpu_csc (unsigned int *IC_h,unsigned int *CP_h,int *m_h,int *_m_d,int *req_h,int *c_h,int edgeNum,int n,int repetition, int exec_protocol){
+int mm_gpu_csc(CSRGraph & graph,CSRGraph & graph_d,struct match * m, int exec_protocol){
+//int  mm_gpu_csc (unsigned int *IC_h,unsigned int *CP_h,int *m_h,int *_m_d,int *req_h,int *c_h,int edgeNum,int n,int repetition, int exec_protocol){
   float t_mm;
   float t_mm_t = 0.0;
   float t_thrust;
@@ -78,16 +78,16 @@ int mm_gpu_csc(struct Graph * graph,struct match * m, int exec_protocol){
   cudaEventCreate(&stop);
 
 
-  int *CP_h = graph->CscA.CP;
-  int *IC_h = graph->CscA.IC;
+  unsigned int *CP_h = graph.srcPtr;
+  unsigned int *IC_h = graph.dst;
   int *m_h = m->m_h;
   int *m_hgpu = m->m_hgpu;
-  int n = graph->N;
-  int nz = graph->nz;
-  int repetition = graph->repet;
+  int n = graph.vertexNum;
+  int edgeNum = graph.edgeNum;
+  int repetition = 1;
 
-  int *CP_d;
-  int *IC_d;
+  unsigned int *CP_d;
+  unsigned int *IC_d;
   int *m_d;
   int *req_d;
   int *c;
@@ -95,8 +95,8 @@ int mm_gpu_csc(struct Graph * graph,struct match * m, int exec_protocol){
 
 
   if (exec_protocol){
-    CP_d = graph->graph_device.CP_d;
-    IC_d = graph->graph_device.IC_d;
+    CP_d = graph_d.srcPtr;
+    IC_d = graph_d.dst;
     m_d = m->match_device.m_d;
     req_d = m->match_device.req_d;
     c = m->match_device.c;
@@ -107,9 +107,9 @@ int mm_gpu_csc(struct Graph * graph,struct match * m, int exec_protocol){
     checkCudaErrors(cudaMemcpy(CP_d,CP_h,(n+1)*sizeof(*CP_d),cudaMemcpyHostToDevice));
 
     /*Allocate device memory for the vector IC_d */
-    checkCudaErrors(cudaMalloc(reinterpret_cast<void **>(&IC_d),sizeof(*IC_d)*nz));
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void **>(&IC_d),sizeof(*IC_d)*edgeNum));
     /*Copy host memory (IC_h) to device memory (IC_d)*/
-    checkCudaErrors(cudaMemcpy(IC_d,IC_h,nz*sizeof(*IC_d),cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(IC_d,IC_h,edgeNum*sizeof(*IC_d),cudaMemcpyHostToDevice));
 
     /*Allocate device memory for the vector m_d, and set m_d to zero. */
     checkCudaErrors(cudaMalloc(reinterpret_cast<void **>(&m_d),sizeof(*m_d)*n));
@@ -185,8 +185,8 @@ int mm_gpu_csc(struct Graph * graph,struct match * m, int exec_protocol){
   return 0;
 }//end bfs_gpu_td_csc_sc
 
-int mm_gpu_csc_from_mis(struct Graph * graph,struct match * m,struct MIS * mis, int exec_protocol){
-//int  mm_gpu_csc (int *IC_h,int *CP_h,int *m_h,int *_m_d,int *req_h,int *c_h,int nz,int n,int repetition, int exec_protocol){
+int mm_gpu_csc_from_mis(CSRGraph & graph,CSRGraph & graph_d,struct match * m,struct MIS * mis, int exec_protocol){
+//int  mm_gpu_csc (unsigned int *IC_h,unsigned int *CP_h,int *m_h,int *_m_d,int *req_h,int *c_h,int edgeNum,int n,int repetition, int exec_protocol){
   float t_mm;
   float t_mm_t = 0.0;
   float t_thrust;
@@ -199,16 +199,16 @@ int mm_gpu_csc_from_mis(struct Graph * graph,struct match * m,struct MIS * mis, 
   cudaEventCreate(&stop);
 
 
-  int *CP_h = graph->CscA.CP;
-  int *IC_h = graph->CscA.IC;
+  unsigned int *CP_h = graph.srcPtr;
+  unsigned int *IC_h = graph.dst;
   int *m_h = m->m_h;
   int *m_hgpu = m->m_hgpu;
-  int n = graph->N;
-  int nz = graph->nz;
-  int repetition = graph->repet;
+  int n = graph.vertexNum;
+  int edgeNum = graph.edgeNum;
+  int repetition = 1;
 
-  int *CP_d;
-  int *IC_d;
+  unsigned int *CP_d;
+  unsigned int *IC_d;
   int *m_d;
   int *req_d;
   int *L_d;
@@ -216,8 +216,8 @@ int mm_gpu_csc_from_mis(struct Graph * graph,struct match * m,struct MIS * mis, 
   int result, resultSum = 0;
 
   if (exec_protocol){
-    CP_d = graph->graph_device.CP_d;
-    IC_d = graph->graph_device.IC_d;
+    CP_d = graph_d.srcPtr;
+    IC_d = graph_d.dst;
     m_d = m->match_device.m_d;
     req_d = m->match_device.req_d;
     L_d = mis->mis_device.L_d;
@@ -229,9 +229,9 @@ int mm_gpu_csc_from_mis(struct Graph * graph,struct match * m,struct MIS * mis, 
     checkCudaErrors(cudaMemcpy(CP_d,CP_h,(n+1)*sizeof(*CP_d),cudaMemcpyHostToDevice));
 
     /*Allocate device memory for the vector IC_d */
-    checkCudaErrors(cudaMalloc(reinterpret_cast<void **>(&IC_d),sizeof(*IC_d)*nz));
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void **>(&IC_d),sizeof(*IC_d)*edgeNum));
     /*Copy host memory (IC_h) to device memory (IC_d)*/
-    checkCudaErrors(cudaMemcpy(IC_d,IC_h,nz*sizeof(*IC_d),cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(IC_d,IC_h,edgeNum*sizeof(*IC_d),cudaMemcpyHostToDevice));
 
     /*Allocate device memory for the vector m_d, and set m_d to zero. */
     checkCudaErrors(cudaMalloc(reinterpret_cast<void **>(&m_d),sizeof(*m_d)*n));
@@ -263,17 +263,17 @@ int mm_gpu_csc_from_mis(struct Graph * graph,struct match * m,struct MIS * mis, 
     result = 0;
     do {
       lastMatch = result;
-      checkCudaErrors(cudaMemset(L_d,0,sizeof(*L_d)*graph->N));
+      checkCudaErrors(cudaMemset(L_d,0,sizeof(*L_d)*graph.vertexNum));
       while(*c){
         *c = 0;
         cudaEventRecord(start);
-        set_L_unmatched<<<dimGrid,THREADS_PER_BLOCK>>>(CP_d, IC_d, L_d, m_d,c, graph->N);
+        set_L_unmatched<<<dimGrid,THREADS_PER_BLOCK>>>(CP_d, IC_d, L_d, m_d,c, graph.vertexNum);
         cudaEventRecord(stop);
         cudaEventSynchronize(stop);
         cudaEventElapsedTime(&t_mis,start,stop);
         t_mis_t += t_mis;
       }
-      L_size = thrust::count(L_vec, L_vec+graph->N, 1);
+      L_size = thrust::count(L_vec, L_vec+graph.vertexNum, 1);
       //printf("\nMIS count::t_sum=%dms \n",L_size);
 
       L_sum += L_size;
@@ -365,7 +365,7 @@ int mm_gpu_csc_from_mis(struct Graph * graph,struct match * m,struct MIS * mis, 
  * unweighted graphs represented by sparse adjacency matrices in CSC format.
  *  
  */
-void add_edges_to_unmatched_from_last_vertex_gpu_csc(struct Graph * graph,struct match * m,int exec_protocol){
+void add_edges_to_unmatched_from_last_vertex_gpu_csc(CSRGraph & graph,CSRGraph & graph_d,struct match * m,int exec_protocol){
 
   cudaEvent_t start, stop;
   cudaEventCreate(&start);
@@ -374,29 +374,29 @@ void add_edges_to_unmatched_from_last_vertex_gpu_csc(struct Graph * graph,struct
   // Local copies are only used when exec_protocol is 0
   // This is turning into a debug mode execution.
   /*Allocate device memory for the vector CP_d */
-  int *CP_d;
+  unsigned int *CP_d;
   /*Allocate device memory for the vector IC_d */
-  int *IC_d;
+  unsigned int *IC_d;
   /*Allocate device memory for the vector m_d, and set m_d to zero. */
   int *m_d;
 
   if (exec_protocol){
-    CP_d = graph->graph_device.CP_d;
-    IC_d = graph->graph_device.IC_d;
+    CP_d = graph_d.srcPtr;
+    IC_d = graph_d.dst;
     m_d = m->match_device.m_d;
   } else {
-    checkCudaErrors(cudaMalloc(reinterpret_cast<void **>(&CP_d),sizeof(*CP_d)*(graph->N_including_supersource+1)));
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void **>(&CP_d),sizeof(*CP_d)*(graph.vertexNum+1+1)));
     /*Copy host memory (CP_h) to device memory (CP_d)*/
-    checkCudaErrors(cudaMemcpy(CP_d,graph->CscA.CP,(graph->N+1)*sizeof(*CP_d),cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(CP_d,graph.srcPtr,(graph.vertexNum+1)*sizeof(*CP_d),cudaMemcpyHostToDevice));
 
 
-    checkCudaErrors(cudaMalloc(reinterpret_cast<void **>(&IC_d),sizeof(*IC_d)*graph->nz_including_supersource));
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void **>(&IC_d),sizeof(*IC_d)*graph.edgeNum*2));
     /*Copy host memory (IC_h) to device memory (IC_d)*/
-    checkCudaErrors(cudaMemcpy(IC_d,graph->CscA.IC,graph->nz*sizeof(*IC_d),cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMemcpy(IC_d,graph.dst,graph.edgeNum*sizeof(*IC_d),cudaMemcpyHostToDevice));
 
 
-    checkCudaErrors(cudaMalloc(reinterpret_cast<void **>(&m_d),sizeof(*m_d)*graph->N));
-    checkCudaErrors(cudaMemcpy(m_d,m->m_h,graph->N*sizeof(*m_d),cudaMemcpyHostToDevice));
+    checkCudaErrors(cudaMalloc(reinterpret_cast<void **>(&m_d),sizeof(*m_d)*graph.vertexNum));
+    checkCudaErrors(cudaMemcpy(m_d,m->m_h,graph.vertexNum*sizeof(*m_d),cudaMemcpyHostToDevice));
   }
 
   thrust::device_ptr<int> m_vec=thrust::device_pointer_cast(m_d);
@@ -405,47 +405,41 @@ void add_edges_to_unmatched_from_last_vertex_gpu_csc(struct Graph * graph,struct
   using namespace thrust::placeholders;
 
  // storage for the nonzero indices
- thrust::device_vector<int> indices(graph->N);
+ thrust::device_vector<int> indices(graph.vertexNum);
  // compute indices of nonzero elements
  typedef thrust::device_vector<int>::iterator IndexIterator;
- IndexIterator indices_end = thrust::copy_if(thrust::make_counting_iterator(0),
-                                             thrust::make_counting_iterator(graph->N),
+ IndexIterator indices_end; /*= thrust::copy_if(thrust::make_counting_iterator(0),
+                                             thrust::make_counting_iterator(graph.vertexNum),
                                              m_vec,
                                              indices.begin(),
-                                             _1 == -1);
+                                             _1 == -1);*/
 
   printf("\nnum unmatched %d\n", indices_end-indices.begin());
-  m->num_matched_h[0] = graph->N-(indices_end-indices.begin());
+  m->num_matched_h[0] = graph.vertexNum-(indices_end-indices.begin());
   // Set number of sources
-  thrust::device_ptr<int> CP_vec=thrust::device_pointer_cast(CP_d);
+  thrust::device_ptr<unsigned int> CP_vec=thrust::device_pointer_cast(CP_d);
 
   // NumSources = (indices_end-indices.begin())
-  // Previous index = nz
+  // Previous index = edgeNum
   // Prefix sum = previous index + NumSources
   thrust::device_vector<int> numSourcesPrefixSum(1);
 
-  numSourcesPrefixSum[0] = graph->nz+(indices_end-indices.begin());
+  numSourcesPrefixSum[0] = graph.edgeNum+(indices_end-indices.begin());
 
-  // CP is int[N+2], N_including_supersource = N+1, CP[N+1]=num unmatched+nz
-  thrust::copy(thrust::device, numSourcesPrefixSum.begin(), numSourcesPrefixSum.end(), CP_vec+graph->N_including_supersource);
+  // CP is int[N+2], vertexNum+1 = N+1, CP[N+1]=num unmatched+edgeNum
+  thrust::copy(thrust::device, numSourcesPrefixSum.begin(), numSourcesPrefixSum.end(), CP_vec+graph.vertexNum+1);
 
   // Set sources
-  thrust::device_ptr<int> IC_vec=thrust::device_pointer_cast(IC_d);
+  thrust::device_ptr<unsigned int> IC_vec=thrust::device_pointer_cast(IC_d);
 
-  // IC is int[nz+((N+1)/2)], 
-  // IC[nz]...IC[nz+num unmatched] = sources
-  //printf("Max edge count %d\n", nz_including_supersource);
-  //printf("Curr edge count %d\n", nz);
-  //printf("New edge count %d\n", nz+(indices_end-indices.begin()));
+  // IC is int[edgeNum+((N+1)/2)], 
+  // IC[edgeNum]...IC[edgeNum+num unmatched] = sources
+  //printf("Max edge count %d\n", edgeNum*2);
+  //printf("Curr edge count %d\n", edgeNum);
+  //printf("New edge count %d\n", edgeNum+(indices_end-indices.begin()));
 
   // Copy sources into column array IC at CP[N] to CP[N+1]
-  thrust::copy(thrust::device, indices.begin(), indices_end, IC_vec+graph->nz);
-
-  if (graph->seq){
-    checkCudaErrors(cudaMemcpy(graph->CscA_hgpu.CP,CP_d,(graph->N_including_supersource+1)*sizeof(*CP_d),cudaMemcpyDeviceToHost));
-    checkCudaErrors(cudaMemcpy(graph->CscA_hgpu.IC,IC_d,graph->nz_including_supersource*sizeof(*IC_d),cudaMemcpyDeviceToHost));
-
-  }
+  thrust::copy(thrust::device, indices.begin(), indices_end, IC_vec+graph.edgeNum);
 
   if (exec_protocol){
 

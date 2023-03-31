@@ -184,7 +184,7 @@ __global__ void gMatch(int *match, const int *requests, const int nrVertices)
 }
 
 //==== Random greedy matching kernels ====
-__global__ void grRequest(int *CP_d,int *IC_d,int *requests, const int *match, const int nrVertices)
+__global__ void grRequest(unsigned int *CP_d,unsigned int *IC_d,int *requests, const int *match, const int nrVertices)
 {
 
 	//Let all blue vertices make requests.
@@ -232,7 +232,7 @@ __global__ void grRequest(int *CP_d,int *IC_d,int *requests, const int *match, c
 
 }
 
-__global__ void grRespond(int *CP_d,int *IC_d,int *requests, const int *match, const int nrVertices)
+__global__ void grRespond(unsigned int *CP_d,unsigned int *IC_d,int *requests, const int *match, const int nrVertices)
 {
 	const int i = blockIdx.x*blockDim.x + threadIdx.x;
 

@@ -1,45 +1,45 @@
 #include "match.h"
 
-void create_match(struct Graph * graph,struct match * m, int exec_protocol){
-  m->m_h = (int *) calloc(graph->N,sizeof(*m->m_h));
-  m->m_hgpu = (int *) calloc(graph->N,sizeof(*m->m_h));
+void create_match(CSRGraph & graph,CSRGraph & graph_d,struct match * m, int exec_protocol){
+  m->m_h = (int *) calloc(graph.vertexNum,sizeof(*m->m_h));
+  m->m_hgpu = (int *) calloc(graph.vertexNum,sizeof(*m->m_h));
   m->num_matched_h = (int *) calloc(1,sizeof(*m->num_matched_h));
-  m->matches_h = (int *) calloc(graph->N,sizeof(*m->m_h));
+  m->matches_h = (int *) calloc(graph.vertexNum,sizeof(*m->m_h));
 
   if(exec_protocol){
-    m->match_device = create_match_gpu_struct(graph->N);
+    m->match_device = create_match_gpu_struct(graph.vertexNum);
   }
 }
 
-void maxmatch(struct Graph * graph,struct match * m, int exec_protocol){
+void maxmatch(CSRGraph & graph,CSRGraph & graph_d,struct match * m, int exec_protocol){
     mm_gpu_csc (graph, m, exec_protocol);
-    if (graph->seq){
+    if (true){
       check_match(graph, m);
     }
 }
 
 
-void maxmatch_from_mis(struct Graph * graph,struct match * m, struct MIS* mis, int exec_protocol){
+void maxmatch_from_mis(CSRGraph & graph,CSRGraph & graph_d,struct match * m, struct MIS* mis, int exec_protocol){
     mm_gpu_csc_from_mis (graph, m, mis,exec_protocol);
-    if (graph->seq){
+    if (true){
       check_match(graph, m);
     }
 }
 
-void add_edges_to_unmatched_from_last_vertex(struct Graph * graph,struct match * m, int exec_protocol){
+void add_edges_to_unmatched_from_last_vertex(CSRGraph & graph,CSRGraph & graph_d,struct match * m, int exec_protocol){
   add_edges_to_unmatched_from_last_vertex_gpu_csc (graph,m,exec_protocol);
-  if (graph->seq)
+  if (true)
     add_edges_to_unmatched_from_last_vertex_cpu_csc (graph,m,exec_protocol);
 
 }
 
-void check_match(struct Graph * graph,struct match * m){
-  int *IC = graph->CscA.IC;
-  int *CP = graph->CscA.CP;
+void check_match(CSRGraph & graph,CSRGraph & graph_d,struct match * m){
+  int *IC = graph.dst;
+  int *CP = graph.srcPtr;
   int start, end, k, counter = 0, found = 1, matchViolations = 0;
-  memset(m->matches_h, 0, graph->N*sizeof(*m->matches_h));
+  memset(m->matches_h, 0, graph.vertexNum*sizeof(*m->matches_h));
   m->match_count_h = 0;
-  for (int i = 0; i < graph->N; ++i){
+  for (int i = 0; i < graph.vertexNum; ++i){
     found = 1;
     //printf("%d %d\n",i,m->m_h[i]);
     if (m->m_h[i]>-1){
@@ -48,12 +48,12 @@ void check_match(struct Graph * graph,struct match * m){
       end = CP[i+1];
       for (k=start; k<end; k++){
         if (IC[k] == m->m_h[i]){
-          //if (graph->p)
+          //if (print_t)
             //printf("%d -> %d found in graph!\n", i, m->m_h[i]);
           found = 0;
         }
       }
-      if (graph->p && found){
+      if (print_t && found){
         printf("%d -> %d not found in graph!\n", i, m->m_h[i]);
       }
       m->matches_h[m->m_h[i]]+=1;
@@ -61,7 +61,7 @@ void check_match(struct Graph * graph,struct match * m){
     }
   }
 
-  for (int i = 0; i < graph->N; ++i){
+  for (int i = 0; i < graph.vertexNum; ++i){
     if (m->matches_h[m->m_h[i]] > 1){
       printf("Match violation v %d u %d c %d\n",i,m->m_h[i],m->matches_h[m->m_h[i]]);
       matchViolations += 1;
@@ -86,13 +86,13 @@ void check_match(struct Graph * graph,struct match * m){
  * unweighted graphs represented by sparse adjacency matrices in CSC format.
  *  
  */
-void add_edges_to_unmatched_from_last_vertex_cpu_csc(struct Graph * graph,struct match * m,int exec_protocol){
+void add_edges_to_unmatched_from_last_vertex_cpu_csc(CSRGraph & graph,CSRGraph & graph_d,struct match * m,int exec_protocol){
 
-    int *IC = graph->CscA.IC;
-    int *CP = graph->CscA.CP;
+    int *IC = graph.dst;
+    int *CP = graph.srcPtr;
     int * m_h = m->m_h;
-    int * IC_hgpu = graph->CscA_hgpu.IC;
-    int * CP_hgpu = graph->CscA_hgpu.CP;
+    int * IC_hgpu = graph.CscA_hgpu.IC;
+    int * CP_hgpu = graph.CscA_hgpu.CP;
 
     /* timing variables  */
     double initial_t;
@@ -100,11 +100,11 @@ void add_edges_to_unmatched_from_last_vertex_cpu_csc(struct Graph * graph,struct
     double total_t = 0.0;
     
     initial_t = get_time();
-    set_unmatched_as_source (IC,CP,m_h,graph->N,graph->nz);
+    set_unmatched_as_source (IC,CP,m_h,graph.vertexNum,graph.edgeNum);
     delta = get_time()-initial_t;
     total_t += delta;
 
-    check_IC_CP (IC,CP,IC_hgpu,CP_hgpu,graph->N_including_supersource,graph->nz_including_supersource);
+    check_IC_CP (IC,CP,IC_hgpu,CP_hgpu,graph.vertexNum+1,graph.edgeNum*2);
 
     //printf("\nbfs_seq_ug_csc_m_alt::d = %d,r = %d \n",d,r);
 
@@ -112,16 +112,16 @@ void add_edges_to_unmatched_from_last_vertex_cpu_csc(struct Graph * graph,struct
     return;
 }//end bfs_gpu_td_csc_sc
 
-void set_unmatched_as_source(int *IC, int *CP, int * m_h, int n, int nz){
+void set_unmatched_as_source(int *IC, int *CP, int * m_h, int n, int edgeNum){
   int counter = 0;
   for (int i = 0; i < n; ++i){
     //printf("%d -> %d\n", i, m_h[i]);
     if (m_h[i]<0){
-      IC[nz+counter]=i;
+      IC[edgeNum+counter]=i;
       counter++;
     }
   }
-  CP[n+1]=nz+counter;
+  CP[n+1]=edgeNum+counter;
 }
 
 void check_IC_CP(int *IC, int *CP, int *IC_hgpu, int *CP_hgpu, int n_ub, int nz_ub){

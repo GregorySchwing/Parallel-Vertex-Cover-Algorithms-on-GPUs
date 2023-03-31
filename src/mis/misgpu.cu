@@ -52,8 +52,8 @@ extern "C"{
  * unweighted graphs represented by sparse adjacency matrices in CSC format.
  *  
  */
-//int  mm_gpu_csc (int *IC_h,int *CP_h,int *m_h,int *_m_d,int *req_h,int *c_h,int nz,int n,int repetition, int exec_protocol){
-int mis_gpu(struct Graph * graph,struct MIS * mis, int exec_protocol){
+//int  mm_gpu_csc (unsigned int *IC_h,unsigned int *CP_h,int *m_h,int *_m_d,int *req_h,int *c_h,int edgeNum,int n,int repetition, int exec_protocol){
+int mis_gpu(CSRGraph & graph,CSRGraph & graph_d,struct MIS * mis, int exec_protocol){
   
   float t_mis;
   float t_mis_t = 0.0;
@@ -64,39 +64,39 @@ int mis_gpu(struct Graph * graph,struct MIS * mis, int exec_protocol){
 
   int *L_h=mis->L_h;
 
-  int *CP_d = graph->graph_device.CP_d;
-  int *IC_d = graph->graph_device.IC_d;
+  unsigned int *CP_d = graph_d.srcPtr;
+  unsigned int *IC_d = graph_d.dst;
   int *L_d = mis->mis_device.L_d;
   int *c = mis->mis_device.c;
-  int n = graph->N;
-  int nz = graph->nz;
-  int repetition = graph->repet;
+  int n = graph.vertexNum;
+  int edgeNum = graph.edgeNum;
+  int repetition = 1;
 
   dimGrid = (n + THREADS_PER_BLOCK)/THREADS_PER_BLOCK;
   thrust::device_ptr<int> L_vec=thrust::device_pointer_cast(L_d);
   int L_size, L_sum=0;
   for (i = 0; i<repetition; i++){
     *c = 1;
-    checkCudaErrors(cudaMemset(L_d,0,sizeof(*L_d)*graph->N));
+    checkCudaErrors(cudaMemset(L_d,0,sizeof(*L_d)*graph.vertexNum));
     while(*c){
       *c = 0;
       cudaEventRecord(start);
-      set_L<<<dimGrid,THREADS_PER_BLOCK>>>(CP_d, IC_d, L_d, c, graph->N);
+      set_L<<<dimGrid,THREADS_PER_BLOCK>>>(CP_d, IC_d, L_d, c, graph.vertexNum);
       cudaEventRecord(stop);
       cudaEventSynchronize(stop);
       cudaEventElapsedTime(&t_mis,start,stop);
       t_mis_t += t_mis;
     }
-    L_size = thrust::count(L_vec, L_vec+graph->N, 1);
+    L_size = thrust::count(L_vec, L_vec+graph.vertexNum, 1);
     L_sum += L_size;
   }
-  if (graph->seq)
-    checkCudaErrors(cudaMemcpy(L_h,L_d, graph->N*sizeof(*L_h),cudaMemcpyDeviceToHost));
+  if (true)
+    checkCudaErrors(cudaMemcpy(L_h,L_d, graph.vertexNum*sizeof(*L_h),cudaMemcpyDeviceToHost));
   int print_t = 1;
-  if (graph->p){
+  if (print_t){
     printf("mis_gpu::total time = %lfms \n",t_mis_t);
-    printf("mis_gpu::average size = %lf \n", (float)L_sum/(float)graph->repet);
-    printf("mis_gpu::average time = %lfms \n",t_mis_t/graph->repet);
+    printf("mis_gpu::average size = %lf \n", (float)L_sum/(float)1);
+    printf("mis_gpu::average time = %lfms \n",t_mis_t/1);
   }
   return 0;
 }//end bfs_gpu_td_csc_sc
