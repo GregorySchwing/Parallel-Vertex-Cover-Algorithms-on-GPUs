@@ -11,8 +11,10 @@
 
 #ifndef MIS_H
 #define MIS_H
+#include "CSRGraphRep.h"
+#include "bfstdcsc.h"
 
-#include "graph.h"
+//#include "graph.h"
 
 void create_mis(CSRGraph & graph,CSRGraph & graph_d,struct MIS * mis,int exec_protocol);
 void find_mis(CSRGraph & graph,CSRGraph & graph_d,struct MIS * mis, int exec_protocol);

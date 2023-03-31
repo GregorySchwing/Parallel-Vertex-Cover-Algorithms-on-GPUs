@@ -21,9 +21,6 @@ using namespace boost;
 typedef adjacency_list<vecS, vecS, undirectedS> my_graph; 
 
 
-extern "C"{
-             #include "bfstdcsc.h"
-}
 
 unsigned long mcm_boost(unsigned int *IC_h,unsigned int *CP_h, int N){       // It has a perfect matching of size 8. There are two isolated
     // vertices that we'll use later...

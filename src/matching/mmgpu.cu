@@ -42,11 +42,7 @@
 #include <thrust/functional.h>
 #include <thrust/device_vector.h>
 #include <thrust/host_vector.h>
-
-extern "C"{
-                 #include "bfstdcsc.h"
-
-}
+#include "bfstdcsc.h"
 
 struct is_less_than_0
 {

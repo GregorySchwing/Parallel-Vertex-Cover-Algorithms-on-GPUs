@@ -20,8 +20,8 @@ set(PROJECT_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
 message(STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
 
 file(GLOB_RECURSE vc-gpu_SOURCES "${PROJECT_SOURCE_DIR}/*.cpp")
-file(GLOB_RECURSE maxmatch_SOURCES "${PROJECT_SOURCE_DIR}/matching/*.c")
-file(GLOB_RECURSE mis_SOURCES "${PROJECT_SOURCE_DIR}/mis/*.c")
+file(GLOB_RECURSE maxmatch_SOURCES "${PROJECT_SOURCE_DIR}/matching/*.cpp")
+file(GLOB_RECURSE mis_SOURCES "${PROJECT_SOURCE_DIR}/mis/*.cpp")
 file(GLOB_RECURSE vc-gpu_HEADERS "${PROJECT_SOURCE_DIR}/*.h")
 
 file(GLOB_RECURSE vc-gpu_CUDA_SOURCES "${PROJECT_SOURCE_DIR}/*.cu")
@@ -50,10 +50,13 @@ list(REMOVE_DUPLICATES vc-gpu_INCLUDE_DIRS)
 
 message(STATUS "PROJECT_SOURCE_DIR: ${PROJECT_SOURCE_DIR}")
 message(STATUS "vc-gpu_SOURCES: ${vc-gpu_SOURCES}")
+message(STATUS "maxmatch_SOURCES: ${maxmatch_SOURCES}")
+message(STATUS "mis_SOURCES: ${mis_SOURCES}")
+
 message(STATUS "pppcsr_INCLUDE_DIRS: ${pppcsr_INCLUDE_DIRS}")
 
 
-add_executable(vc-gpu ${vc-gpu_CUDA_SOURCES} ${vc-gpu_SOURCES})
+add_executable(vc-gpu ${maxmatch_SOURCES} ${mis_SOURCES} ${vc-gpu_CUDA_SOURCES} ${maxmatch_CUDA_SOURCES} ${mis_CUDA_SOURCES} ${vc-gpu_SOURCES})
 target_include_directories(vc-gpu PRIVATE ${vc-gpu_INCLUDE_DIRS} ${pppcsr_INCLUDE_DIRS})
 target_include_directories(vc-gpu SYSTEM PUBLIC ${CUDAToolkit_INCLUDE_DIRS} "${CUDAToolkit_LIBRARY_ROOT}/samples/common/inc/")
 set_target_properties(vc-gpu PROPERTIES

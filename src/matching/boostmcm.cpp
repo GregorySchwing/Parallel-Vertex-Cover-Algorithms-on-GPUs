@@ -1,4 +1,5 @@
 #include "boostmcm.h"
+#include "bfstdcsc.h"
 
 unsigned long create_mcm(CSRGraph & graph){       // It has a perfect matching of size 8. There are two isolated
     // vertices that we'll use later...

@@ -7,9 +7,9 @@
 #ifndef BOOSTMCM_H
 #define BOOSTMCM_H
 
-#include "graph.h"
-#include "bfs.h"
-
+//#include "graph.h"
+//#include "bfs.h"
+#include "CSRGraphRep.h"
 struct mcm {
     int *m_h, *m_d;
     int *req_h, *req_d;

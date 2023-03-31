@@ -25,10 +25,7 @@
 #include <cuda_runtime.h>
 #include <helper_cuda.h>
 #include <helper_functions.h>
-extern "C"{
-                 #include "bfstdcsc.h"
-
-}
+#include "bfstdcsc.h"
 
 
 MIS_GPU create_mis_gpu_struct(int N){

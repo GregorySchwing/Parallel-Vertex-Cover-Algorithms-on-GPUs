@@ -22,7 +22,8 @@
 
 using namespace std;
 
-//#include "matching/match.h"
+#include "matching/match.h"
+#include "bfstdcsc.h"
 //#include <PCSR.h>
 
 
@@ -35,7 +36,14 @@ int main(int argc, char *argv[]) {
 
     CSRGraph graph = createCSRGraphFromFile(config.graphFileName);
     performChecks(graph, config);
-    //maxmatch(graph);
+
+
+    // Allocate GPU graph
+    CSRGraph graph4m_d = allocateGraph(graph);
+    struct match mm;
+    int exec_policy = 1;
+    create_match(graph, graph4m_d,&mm,exec_policy);
+    maxmatch(graph,graph4m_d, &mm,exec_policy);
 
 
 
