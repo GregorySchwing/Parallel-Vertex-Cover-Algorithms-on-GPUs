@@ -404,11 +404,11 @@ void add_edges_to_unmatched_from_last_vertex_gpu_csc(CSRGraph & graph,CSRGraph &
  thrust::device_vector<int> indices(graph.vertexNum);
  // compute indices of nonzero elements
  typedef thrust::device_vector<int>::iterator IndexIterator;
- IndexIterator indices_end; /*= thrust::copy_if(thrust::make_counting_iterator(0),
-                                             thrust::make_counting_iterator(graph.vertexNum),
+ IndexIterator indices_end = thrust::copy_if(thrust::make_counting_iterator(0),
+                                             thrust::make_counting_iterator((int)(graph.vertexNum)),
                                              m_vec,
                                              indices.begin(),
-                                             _1 == -1);*/
+                                             _1 == -1);
 
   printf("\nnum unmatched %d\n", indices_end-indices.begin());
   m->num_matched_h[0] = graph.vertexNum-(indices_end-indices.begin());
