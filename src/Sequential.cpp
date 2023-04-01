@@ -4,6 +4,247 @@
 unsigned int Sequential(CSRGraph graph, unsigned int minimum)
 {
     Stack stack;
+    stack.size = graph.vertexNum + 1;
+
+    stack.stack = (int *)malloc(sizeof(int) * stack.size * graph.vertexNum);
+    stack.stackNumDeletedVertices = (unsigned int *)malloc(sizeof(int) * stack.size);
+
+    for (unsigned int j = 0; j < graph.vertexNum; ++j)
+    {
+        stack.stack[j] = graph.degree[j];
+    }
+    stack.stackNumDeletedVertices[0] = 0;
+
+    stack.top = 0;
+    bool popNextItr = true;
+    int *vertexDegrees = (int *)malloc(sizeof(int) * graph.vertexNum);
+    unsigned int numDeletedVertices;
+
+    while (stack.top != -1)
+    {
+
+        if (popNextItr)
+        {
+            for (unsigned int j = 0; j < graph.vertexNum; ++j)
+            {
+                vertexDegrees[j] = stack.stack[stack.top * graph.vertexNum + j];
+                numDeletedVertices = stack.stackNumDeletedVertices[stack.top];
+            }
+            --stack.top;
+        }
+
+        bool leafHasChanged = false, highDegreeHasChanged = false, triangleHasChanged = false;
+        unsigned int iterationCounter = 0;
+
+        do
+        {
+            leafHasChanged = leafReductionRule(graph, vertexDegrees, &numDeletedVertices);
+            triangleHasChanged = triangleReductionRule(graph, vertexDegrees, &numDeletedVertices);
+            highDegreeHasChanged = highDegreeReductionRule(graph, vertexDegrees, &numDeletedVertices, minimum);
+
+        } while (triangleHasChanged || highDegreeHasChanged);
+
+        unsigned int maxVertex = 0;
+        int maxDegree = 0;
+        unsigned int numEdges = 0;
+
+        for (unsigned int i = 0; i < graph.vertexNum; ++i)
+        {
+            int degree = vertexDegrees[i];
+            if (degree > maxDegree)
+            {
+                maxDegree = degree;
+                maxVertex = i;
+            }
+
+            if (degree > 0)
+            {
+                numEdges += degree;
+            }
+        }
+
+        numEdges /= 2;
+
+        // Prune branch.  Only way to prune in DFS is if all N(i) are visited.
+        if (numDeletedVertices >= minimum || numEdges >= squareSequential(minimum - numDeletedVertices - 1) + 1)
+        {
+            popNextItr = true;
+        }
+        else
+        {
+            // Update best answer before continuing.
+            if (maxDegree == 0)
+            {
+                minimum = numDeletedVertices;
+                popNextItr = true;
+            }
+            // Push degree state onto top and CONTINUE down this branch.
+            else
+            {
+                popNextItr = false;
+                ++stack.top;
+
+                for (unsigned int j = 0; j < graph.vertexNum; ++j)
+                {
+                    stack.stack[stack.top * graph.vertexNum + j] = vertexDegrees[j];
+                }
+                stack.stackNumDeletedVertices[stack.top] = numDeletedVertices;
+
+                for (unsigned int i = graph.srcPtr[maxVertex]; i < graph.degree[maxVertex] + graph.srcPtr[maxVertex]; ++i)
+                {
+                    deleteVertex(graph, graph.dst[i], &stack.stack[stack.top * graph.vertexNum], &stack.stackNumDeletedVertices[stack.top]);
+                }
+
+                deleteVertex(graph, maxVertex, vertexDegrees, &numDeletedVertices);
+            }
+        }
+    }
+
+    graph.del();
+    free(stack.stack);
+    free(vertexDegrees);
+
+    return minimum;
+}
+
+
+// DFS from a single source.
+// For DFSDFS the stack.top corresponds to the depth.
+unsigned int SequentialDFSDFS(CSRGraph graph, unsigned int minimum)
+{
+    Stack stack;
+    stack.foundSolution = false;
+    stack.size = graph.vertexNum + 1;
+    // Number of DFS levels to do before pushing to the stack.
+    //int backtrackingIndices[NUM_LEVELS];
+    int * backtrackingIndices =  new int[graph.vertexNum];
+
+    printf("Entered seq\n");
+    for (int i = 0; i < graph.vertexNum; i++){
+        backtrackingIndices[i]=0;
+    }
+    unsigned int originalStartVertex;
+
+    stack.stack = (int *)malloc(sizeof(int) * stack.size * graph.vertexNum);
+    stack.startVertex = (unsigned int *)malloc(sizeof(int) * stack.size);
+    stack.top = 0;
+    for (unsigned int j = 0; j < graph.vertexNum; ++j)
+    {
+        //stack.stack[j] = graph.visited[j];
+        stack.stack[j] = 0;
+        printf("%d ", j);
+    }
+    printf("\n");
+    for (unsigned int j = 0; j < graph.vertexNum; ++j)
+    {
+        //stack.stack[j] = graph.visited[j];
+        printf("%d ", graph.matching[j]);
+    }
+    printf("\n");
+    for (unsigned int j = 0; j < graph.num_unmatched_vertices; ++j)
+    {
+        //stack.stack[j] = graph.visited[j];
+        printf("%d ",graph.unmatched_vertices[j]);
+    }
+    printf("\n");
+    stack.startVertex[stack.top] = graph.unmatched_vertices[0];
+    originalStartVertex = graph.unmatched_vertices[0];
+    //stack.startVertex[stack.top] = 1;
+
+    bool popNextItr = true;
+    int *visited = (int *)malloc(sizeof(int) * graph.vertexNum);
+    unsigned int startVertex;
+    bool foundSolution = false;
+    while (stack.top != -1 && !foundSolution)
+    {
+
+        if (popNextItr)
+        {
+            for (unsigned int j = 0; j < graph.vertexNum; ++j)
+            {
+                visited[j] = stack.stack[stack.top * graph.vertexNum + j];
+            }
+            startVertex = stack.startVertex[stack.top];
+            printf("Popping %d on the stack top %d\n",startVertex,stack.top);
+            --stack.top;
+        }
+        popNextItr = false;
+        bool leafHasChanged = false, highDegreeHasChanged = false, triangleHasChanged = false;
+        unsigned int depth = stack.top+1;
+        unsigned int iterationCounter = 0;
+        unsigned int neighbor;
+        unsigned int start;
+        unsigned int end;
+        bool foundNeighbor = false;
+        start = graph.srcPtr[startVertex];
+        end = graph.srcPtr[startVertex + 1];
+        for (; backtrackingIndices[depth] < end-start; ++backtrackingIndices[depth])
+        {
+            neighbor = graph.dst[start + backtrackingIndices[depth]];
+            if (!visited[neighbor])
+            {
+                foundNeighbor = true;
+                break;
+            }
+        }
+        // Prune branch.  Only way to prune in DFS is if all N(i) are visited.
+        if (!foundNeighbor)
+        {
+            popNextItr = true;
+            //foundSolution = true;
+        }
+        else
+        {
+            // Found a solution. Terminate.
+            if (graph.matching[neighbor]==-1)
+            {
+                foundSolution = true;
+                printf("Found solution %d\n", neighbor);
+            }
+            // Push degree state onto top and CONTINUE down this branch.
+            else
+            {
+                printf("Pushing %d on the stack top %d\n",neighbor,stack.top);
+
+                popNextItr = false;
+                // Increment starting point of current vertex, 
+                // so when it's popped no redundant work is done.
+                ++backtrackingIndices[stack.top];
+
+                ++stack.top;
+
+                // Push visited onto stack BEFORE setting neighbor as visited.
+                // This way I can pop the visited vertices and take a different route
+                // without needing to unset the visited flag of the unsuccessful branch.
+                for (unsigned int j = 0; j < graph.vertexNum; ++j)
+                {
+                    stack.stack[stack.top * graph.vertexNum + j] = visited[j];
+                }
+                stack.startVertex[stack.top] = neighbor;
+
+                visited[neighbor]=1;
+                startVertex = neighbor;
+            }
+        }
+    }
+    printf("Solution:\n");
+    for (unsigned int j = 0; j <= stack.top; ++j)
+    {
+        //stack.stack[j] = graph.visited[j];
+        printf("%d ",stack.startVertex[j]);
+    }
+    printf("\n");
+    graph.del();
+    free(stack.stack);
+    free(visited);
+
+    return minimum;
+}
+
+// DFS from a single source.
+unsigned int SequentialBFSDFS(CSRGraph graph, unsigned int minimum)
+{
+    Stack stack;
     stack.foundSolution = false;
     stack.size = graph.vertexNum + 1;
     // Number of DFS levels to do before pushing to the stack.

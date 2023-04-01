@@ -141,6 +141,68 @@ __device__ unsigned int leafReductionRule(unsigned int vertexNum, int *vertexDeg
 }
 
 
+__device__ unsigned int DFS(unsigned int vertexNum, int *vertexDegrees_s, CSRGraph graph, int * shared_mem
+    , unsigned int numDeletedVertices, unsigned int minimum){
+
+    __shared__ unsigned int numberDeleted_s;
+    __shared__ bool graphHasChanged;
+
+    volatile int * markedForDeletion = shared_mem;
+    if (threadIdx.x==0){
+        numberDeleted_s = 0;
+    }
+
+    do{
+        volatile int * vertexDegrees_v = vertexDegrees_s;
+        __syncthreads();
+
+        for (unsigned int vertex = threadIdx.x ; vertex < graph.vertexNum; vertex += blockDim.x){
+            markedForDeletion[vertex] = 0;
+        }
+        if (threadIdx.x==0){
+            graphHasChanged = false;
+        }
+        
+        __syncthreads();
+
+        for (unsigned int vertex = threadIdx.x ; vertex < graph.vertexNum; vertex+=blockDim.x){
+            int degree = vertexDegrees_v[vertex];
+            if (degree > 0 && degree + numDeletedVertices + numberDeleted_s >= minimum){
+                markedForDeletion[vertex]=1;
+            }
+        }
+        
+        __syncthreads();
+        
+        for (unsigned int vertex = threadIdx.x; vertex < graph.vertexNum; vertex+=blockDim.x){
+            if(markedForDeletion[vertex]){ 
+                graphHasChanged = true;
+                vertexDegrees_v[vertex] = -1;
+                atomicAdd(&numberDeleted_s,1);
+            }
+        }
+        
+        __syncthreads();
+                    
+        for (unsigned int vertex = threadIdx.x ; vertex < graph.vertexNum; vertex+=blockDim.x){
+            if(markedForDeletion[vertex]){ 
+                for(unsigned int edge = graph.srcPtr[vertex]; edge < graph.srcPtr[vertex + 1]; edge++){
+                    unsigned int neighbor = graph.dst[edge];
+                    if (vertexDegrees_v[neighbor] != -1){
+                        atomicSub(&vertexDegrees_s[neighbor],1);
+                    }
+                }
+            }
+        }
+    
+    }while(graphHasChanged);
+
+    __syncthreads();
+
+    return numberDeleted_s;
+}
+
+
 __device__ unsigned int highDegreeReductionRule(unsigned int vertexNum, int *vertexDegrees_s, CSRGraph graph, int * shared_mem
     , unsigned int numDeletedVertices, unsigned int minimum){
 

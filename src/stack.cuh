@@ -36,7 +36,41 @@ Stacks allocateStacks(int vertexNum, int numBlocks, unsigned int minimum){
 
     volatile int* stacks_d;
     volatile unsigned int* stacksNumDeletedVertices_d;
+
+    /*
+        Not sure what the rationale is here.
+        Seems like every block could solve the entire tree independently
+        in it's respective memory, since the most vertices possible added
+        to the cover is v0 and each block as V*v0 memory.
+        Block 0
+            array 0; [0 1 2 ... V]
+            array 1; [0 1 2 ... V]
+            array 2; [0 1 2 ... V]
+            ...
+            array v0; [0 1 2 ... V] 
+            value 0; 0
+            value 1; 0
+            value 2; 0
+            ...
+            value v0; 0
+
+        Block 1
+            array 0; [0 1 2 ... V]
+            array 1; [0 1 2 ... V]
+            array 2; [0 1 2 ... V]
+            ...
+            array v0; [0 1 2 ... V] 
+            value 0; 0
+            value 1; 0
+            value 2; 0
+            ...
+            value v0; 0
+    
+    */
+
+    // Each active block maintains (minimum+1) copies of the data array [V]
     cudaMalloc((void**) &stacks_d, (minimum + 1) * (vertexNum) * sizeof(int) * numBlocks);
+    // Each active block maintains (minimum+1) values associated with each data array.
     cudaMalloc((void**) &stacksNumDeletedVertices_d, (minimum + 1) * sizeof(unsigned int) * numBlocks);
 
     stacks.stacks = stacks_d;

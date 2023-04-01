@@ -88,7 +88,8 @@ int main(int argc, char *argv[]) {
             elapsed_seconds_mvc = end - begin; 
         } else {
             begin = std::chrono::system_clock::now();
-            minimum = Sequential(graph, minimum);
+            //minimum = Sequential(graph, minimum);
+            minimum = SequentialDFSDFS(graph, minimum);
             end = std::chrono::system_clock::now(); 
             elapsed_seconds_mvc = end - begin; 
         } 
@@ -120,6 +121,7 @@ int main(int argc, char *argv[]) {
         cudaDeviceGetAttribute(&maxSharedMemPerMultiProcessor,cudaDevAttrMaxSharedMemoryPerMultiprocessor,0);
         printf("MaxSharedMemPerMultiProcessor : %d\n",maxSharedMemPerMultiProcessor);
 
+        // Answers Schwiebert's question about max num simulataneous dfs workers.
         setBlockDimAndUseGlobalMemory(config,graph,maxSharedMemPerMultiProcessor,prop.totalGlobalMem, maxThreadsPerMultiProcessor, maxThreadsPerBlock, 
             maxThreadsPerMultiProcessor, numOfMultiProcessors, minimum);
         performChecks(graph, config);
@@ -127,6 +129,7 @@ int main(int argc, char *argv[]) {
         printf("\nOur Config :\n");
         int numThreadsPerBlock = config.blockDim;
         int numBlocksPerSm; 
+        // Answers Schwiebert's question about max num simulataneous dfs workers.
         if (config.useGlobalMemory){
             if (config.version == HYBRID && config.instance==PVC){
                 cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkListParameterized_global_kernel, numThreadsPerBlock, 0);
@@ -149,6 +152,7 @@ int main(int argc, char *argv[]) {
             }
         }
 
+        // Answers Schwiebert's question about max num simulataneous dfs workers.
         unsigned int tempNumBlocks;
         if(config.numBlocks){
             tempNumBlocks = config.numBlocks;
@@ -181,9 +185,14 @@ int main(int argc, char *argv[]) {
 
         // Allocate GPU stack
         Stacks stacks_d;
+        // alloc stacks using vNum, 
+        // max number of active blocks or custom, 
+        // and kernelized min, or num starting v in gpu code
         stacks_d = allocateStacks(graph.vertexNum,numBlocks,minimum);
 
         //Global Entries Memory Allocation
+        // Each block requests 2 more copies of the data array[V]
+        // Perhaps for writing the solution?
         int * global_memory_d;
         if(config.useGlobalMemory){
             cudaMalloc((void**)&global_memory_d, sizeof(int)*graph.vertexNum*numBlocks*2);
