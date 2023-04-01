@@ -107,6 +107,157 @@ unsigned int Sequential(CSRGraph graph, unsigned int minimum)
     return minimum;
 }
 
+// DFS from a single source.
+// For DFSDFS the stack.top corresponds to the depth.
+unsigned int SequentialDFSDFS_M_ALT(CSRGraph graph, unsigned int minimum)
+{
+    Stack stack;
+    stack.foundSolution = false;
+    stack.size = graph.vertexNum + 1;
+    // Number of DFS levels to do before pushing to the stack.
+    //int backtrackingIndices[NUM_LEVELS];
+    int * backtrackingIndices =  new int[graph.vertexNum];
+
+    printf("Entered seq\n");
+    for (int i = 0; i < graph.vertexNum; i++){
+        backtrackingIndices[i]=0;
+    }
+    unsigned int originalStartVertex;
+    stack.stack = (int *) calloc(stack.size * graph.vertexNum,sizeof(int));
+    //stack.stack = (int *)malloc(sizeof(int) * stack.size * graph.vertexNum);
+    stack.startVertex = (unsigned int *) calloc(stack.size,sizeof(unsigned int));
+    //stack.startVertex = (unsigned int *)malloc(sizeof(int) * stack.size);
+    stack.top = 0;
+    for (unsigned int j = 0; j < graph.vertexNum; ++j)
+    {
+        //stack.stack[j] = graph.visited[j];
+        stack.stack[j] = 0;
+        printf("%d ", j);
+    }
+    printf("\n");
+    for (unsigned int j = 0; j < graph.vertexNum; ++j)
+    {
+        //stack.stack[j] = graph.visited[j];
+        printf("%d ", graph.matching[j]);
+    }
+    printf("\n");
+    for (unsigned int j = 0; j < graph.num_unmatched_vertices; ++j)
+    {
+        //stack.stack[j] = graph.visited[j];
+        printf("%d ",graph.unmatched_vertices[j]);
+    }
+    printf("\n");
+    stack.startVertex[stack.top] = graph.unmatched_vertices[0];
+    stack.stack[stack.startVertex[stack.top]]=1;
+
+    originalStartVertex = graph.unmatched_vertices[0];
+    //stack.startVertex[stack.top] = 1;
+
+    bool popNextItr = true;
+    //int *visited = (int *)malloc(sizeof(int) * graph.vertexNum);
+    int *visited = (int *) calloc(graph.vertexNum,sizeof(int));
+
+    unsigned int startVertex = stack.startVertex[stack.top];
+    bool foundSolution = false;
+    unsigned int depth;
+    while (stack.top != -1 && !foundSolution)
+    {
+        if (popNextItr)
+        {
+            printf("Popping %d on the stack top %d\n",stack.startVertex[stack.top],stack.top);
+            printf("resetting depth %d backTrackingindices[%d]=%d to 0\n",stack.top+1, stack.top+1,backtrackingIndices[stack.top+1]);
+            backtrackingIndices[stack.top+1]=0;
+            for (unsigned int j = 0; j < graph.vertexNum; ++j)
+            {
+                visited[j] = stack.stack[stack.top * graph.vertexNum + j];
+            }
+            startVertex = stack.startVertex[stack.top];
+            --stack.top;
+        }
+        popNextItr = false;
+        bool leafHasChanged = false, highDegreeHasChanged = false, triangleHasChanged = false;
+        unsigned int iterationCounter = 0;
+        unsigned int neighbor;
+        unsigned int start;
+        unsigned int end;
+        bool foundNeighbor = false;
+        printf("popNextItr %d stack.top %d sv %d topsv %d counter %d\n", popNextItr, stack.top, startVertex, stack.startVertex[stack.top],backtrackingIndices[stack.top]);
+        printf("depth %d backTrackingindices[%d]=%d sv %d\n",stack.top+1, stack.top+1,backtrackingIndices[stack.top+1],startVertex);
+
+        start = graph.srcPtr[startVertex];
+        end = graph.srcPtr[startVertex + 1];
+        for (; backtrackingIndices[stack.top+1] < end-start; ++backtrackingIndices[stack.top+1])
+        {
+            if (graph.matching[startVertex]>-1 && !visited[graph.matching[startVertex]]){
+                neighbor = graph.matching[startVertex];
+                printf("matched edge %d->%d visited %d\n", startVertex, neighbor, visited[neighbor]);
+            } else {
+                neighbor = graph.dst[start + backtrackingIndices[stack.top+1]];
+                printf("unmatched edge %d->%d visited %d\n", startVertex, neighbor, visited[neighbor]);
+            }
+
+            if (!visited[neighbor])
+            {
+                foundNeighbor = true;
+                break;
+            }
+        }
+        // Prune branch.  Only way to prune in DFS is if all N(i) are visited.
+        if (!foundNeighbor)
+        {
+            popNextItr = true;
+        }
+        else
+        {
+            // Found a solution. Terminate.
+            if (graph.matching[neighbor]==-1)
+            {
+                foundSolution = true;
+                printf("Found solution %d\n", neighbor);
+            }
+            // Push degree state onto top and CONTINUE down this branch.
+            //else
+            {
+
+                popNextItr = false;
+                // Increment starting point of current vertex, 
+                // so when it's popped no redundant work is done.
+                ++backtrackingIndices[stack.top+1];
+
+                ++stack.top;
+                printf("Pushing %d on the stack top %d\n",startVertex,stack.top);
+
+                // Push visited onto stack BEFORE setting neighbor as visited.
+                // This way I can pop the visited vertices and take a different route
+                // without needing to unset the visited flag of the unsuccessful branch.
+                for (unsigned int j = 0; j < graph.vertexNum; ++j)
+                {
+                    stack.stack[stack.top * graph.vertexNum + j] = visited[j];
+                }
+                stack.startVertex[stack.top] = startVertex;
+
+                visited[neighbor]=1;
+                startVertex = neighbor;
+            }
+            if (foundSolution){
+                ++stack.top;
+                stack.startVertex[stack.top] = startVertex;
+            }
+        }
+    }
+    printf("Solution:\n");
+    for (unsigned int j = 0; j < stack.top+1; ++j)
+    {
+        //stack.stack[j] = graph.visited[j];
+        printf("%d ",stack.startVertex[j]);
+    }
+    printf("\n");
+    graph.del();
+    free(stack.stack);
+    free(visited);
+
+    return minimum;
+}
 
 // DFS from a single source.
 // For DFSDFS the stack.top corresponds to the depth.

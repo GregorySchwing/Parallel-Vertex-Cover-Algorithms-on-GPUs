@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
         } else {
             begin = std::chrono::system_clock::now();
             //minimum = Sequential(graph, minimum);
-            minimum = SequentialDFSDFS(graph, minimum);
+            minimum = SequentialDFSDFS_M_ALT(graph, minimum);
             end = std::chrono::system_clock::now(); 
             elapsed_seconds_mvc = end - begin; 
         } 

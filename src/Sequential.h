@@ -9,4 +9,5 @@
 unsigned int Sequential(CSRGraph graph, unsigned int minimum);
 unsigned int SequentialBFSDFS(CSRGraph graph, unsigned int minimum);
 unsigned int SequentialDFSDFS(CSRGraph graph, unsigned int minimum);
+unsigned int SequentialDFSDFS_M_ALT(CSRGraph graph, unsigned int minimum);
 #endif
