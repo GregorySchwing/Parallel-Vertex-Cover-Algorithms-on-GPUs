@@ -166,14 +166,13 @@ unsigned int SequentialDFSDFS(CSRGraph graph, unsigned int minimum)
         if (popNextItr)
         {
             printf("Popping %d on the stack top %d\n",stack.startVertex[stack.top],stack.top);
-            printf("resetting depth %d backTrackingindices[%d]=%d to 0\n",depth, depth,backtrackingIndices[depth]);
-            backtrackingIndices[depth]=0;
+            printf("resetting depth %d backTrackingindices[%d]=%d to 0\n",stack.top+1, stack.top+1,backtrackingIndices[stack.top+1]);
+            backtrackingIndices[stack.top+1]=0;
             for (unsigned int j = 0; j < graph.vertexNum; ++j)
             {
                 visited[j] = stack.stack[stack.top * graph.vertexNum + j];
             }
             startVertex = stack.startVertex[stack.top];
-            depth = stack.top;
             --stack.top;
         }
         popNextItr = false;
@@ -184,13 +183,13 @@ unsigned int SequentialDFSDFS(CSRGraph graph, unsigned int minimum)
         unsigned int end;
         bool foundNeighbor = false;
         printf("popNextItr %d stack.top %d sv %d topsv %d counter %d\n", popNextItr, stack.top, startVertex, stack.startVertex[stack.top],backtrackingIndices[stack.top]);
-        printf("depth %d backTrackingindices[%d]=%d sv %d\n",depth, depth,backtrackingIndices[depth],startVertex);
+        printf("depth %d backTrackingindices[%d]=%d sv %d\n",stack.top+1, stack.top+1,backtrackingIndices[stack.top+1],startVertex);
 
         start = graph.srcPtr[startVertex];
         end = graph.srcPtr[startVertex + 1];
-        for (; backtrackingIndices[depth] < end-start; ++backtrackingIndices[depth])
+        for (; backtrackingIndices[stack.top+1] < end-start; ++backtrackingIndices[stack.top+1])
         {
-            neighbor = graph.dst[start + backtrackingIndices[depth]];
+            neighbor = graph.dst[start + backtrackingIndices[stack.top+1]];
             printf("%d->%d visited %d\n", startVertex, neighbor, visited[neighbor]);
 
             if (!visited[neighbor])
@@ -219,10 +218,9 @@ unsigned int SequentialDFSDFS(CSRGraph graph, unsigned int minimum)
                 popNextItr = false;
                 // Increment starting point of current vertex, 
                 // so when it's popped no redundant work is done.
-                ++backtrackingIndices[depth];
+                ++backtrackingIndices[stack.top+1];
 
                 ++stack.top;
-                depth++;
                 printf("Pushing %d on the stack top %d\n",startVertex,stack.top);
 
                 // Push visited onto stack BEFORE setting neighbor as visited.
@@ -239,13 +237,12 @@ unsigned int SequentialDFSDFS(CSRGraph graph, unsigned int minimum)
             }
             if (foundSolution){
                 ++stack.top;
-                ++depth;
                 stack.startVertex[stack.top] = startVertex;
             }
         }
     }
     printf("Solution:\n");
-    for (unsigned int j = 0; j < depth; ++j)
+    for (unsigned int j = 0; j < stack.top+1; ++j)
     {
         //stack.stack[j] = graph.visited[j];
         printf("%d ",stack.startVertex[j]);
