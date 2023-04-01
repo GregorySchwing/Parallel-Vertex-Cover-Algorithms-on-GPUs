@@ -2,132 +2,100 @@
 Graph file: ../odd.txt
 UUID: 1
 
-bfs_gpu_mm_csc_sc::t_sum=1.154176ms 
-mm_gpu_csc::average time mm = 1.154176ms, avg matched 12.000000, avg unmatched 4.000000, total 16
+bfs_gpu_mm_csc_sc::t_sum=1.304416ms 
+mm_gpu_csc::average time mm = 1.304416ms, avg matched 12.000000, avg unmatched 4.000000, total 16
 Matching is correct.
 Matching is correct.
 Matched vertices 12; matched edges 6
 
 num unmatched 3
 
-Elapsed Time for Boost MCM: 0.000180
+Elapsed Time for Boost MCM: 0.000298
 
 Boost MCM size: 7
 gpu mm starting size 6 ref size 7
 
-Elapsed Time for Approximate Remove Max: 0.000003
+Elapsed Time for Approximate Remove Max: 0.000005
 Approximate Remove Max Minimum is: 8
 Elapsed Time for Approximate Remove Edge: 0.000003
 Approximate Remove Edge Minimum is: 8
 Entered seq
 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 
-2 3 0 1 -1 12 11 8 7 13 -1 6 5 9 -1 -1 Popping 4 on the stack top 0
-Depth 0
-um 4->1
-Pushing 1 on the stack top 0
-Depth 1
-Depth 0
-um 4->8
-Pushing 8 on the stack top 1
-Depth 1
-Depth 0
-Depth 0
-Popping 8 on the stack top 1
-Depth 0
-m 8->7
-Pushing 7 on the stack top 1
-Depth 1
-Popping 7 on the stack top 1
-Depth 0
-um 7->3
-Pushing 3 on the stack top 1
-Depth 1
-Depth 0
-Depth 0
-Popping 3 on the stack top 1
-Depth 0
-m 3->1
+2 3 0 1 -1 12 11 8 7 13 -1 6 5 9 -1 -1 
+4 10 14 
+popNextItr 1 stack.top 0 sv 4 topsv 4 counter 0
+Popping 4 on the stack top 0
+popNextItr 0 stack.top -1 sv 4 topsv 0 counter 0
+depth 0 backTrackingindices[0]=0 sv 4
+4->1 visited 0
+Pushing 4 on the stack top 0
+popNextItr 0 stack.top 0 sv 1 topsv 4 counter 1
+popNextItr 0 stack.top 0 sv 1 topsv 4 counter 1
+depth 1 backTrackingindices[1]=0 sv 1
+1->0 visited 0
 Pushing 1 on the stack top 1
-Depth 1
-Popping 1 on the stack top 1
-Depth 0
-um 1->0
-Pushing 0 on the stack top 1
-Depth 1
-Depth 0
-um 1->2
-Pushing 2 on the stack top 2
-Depth 1
-Depth 0
-Depth 0
-Popping 2 on the stack top 2
-Depth 0
-m 2->0
+popNextItr 0 stack.top 1 sv 0 topsv 1 counter 1
+popNextItr 0 stack.top 1 sv 0 topsv 1 counter 1
+depth 2 backTrackingindices[2]=0 sv 0
+0->1 visited 1
+0->2 visited 0
 Pushing 0 on the stack top 2
-Depth 1
+popNextItr 0 stack.top 2 sv 2 topsv 0 counter 2
+popNextItr 0 stack.top 2 sv 2 topsv 0 counter 2
+depth 3 backTrackingindices[3]=0 sv 2
+2->0 visited 1
+2->1 visited 1
+popNextItr 1 stack.top 2 sv 2 topsv 0 counter 2
 Popping 0 on the stack top 2
-Depth 0
-Depth 0
-Popping 0 on the stack top 1
-Depth 0
-m 0->2
-Pushing 2 on the stack top 1
-Depth 1
-Popping 2 on the stack top 1
-Depth 0
-Depth 0
-Popping 1 on the stack top 0
-Depth 0
-m 1->3
-Pushing 3 on the stack top 0
-Depth 1
-Popping 3 on the stack top 0
-Depth 0
-um 3->7
-Pushing 7 on the stack top 0
-Depth 1
-Depth 0
-um 3->11
-Pushing 11 on the stack top 1
-Depth 1
-Depth 0
-Depth 0
-Popping 11 on the stack top 1
-Depth 0
-m 11->6
-Pushing 6 on the stack top 1
-Depth 1
-Popping 6 on the stack top 1
-Depth 0
-um 6->10
-Pushing 10 on the stack top 1
-Depth 1
-Depth 0
-Depth 0
-Popping 10 on the stack top 1
-Depth 0
-Depth -1
-Popping 7 on the stack top 0
-Depth 0
-m 7->8
-Pushing 8 on the stack top 0
-Depth 1
-Popping 8 on the stack top 0
-Depth 0
-um 8->12
-Pushing 12 on the stack top 0
-Depth 1
-Depth 0
-Depth 0
-Popping 12 on the stack top 0
-Depth 0
-m 12->5
-Pushing 5 on the stack top 0
-Depth 1
-Popping 5 on the stack top 0
-Depth 0
-Depth 0
+popNextItr 0 stack.top 1 sv 0 topsv 1 counter 1
+depth 2 backTrackingindices[2]=2 sv 0
+popNextItr 1 stack.top 1 sv 0 topsv 1 counter 1
+Popping 1 on the stack top 1
+popNextItr 0 stack.top 0 sv 1 topsv 4 counter 1
+depth 1 backTrackingindices[1]=1 sv 1
+1->2 visited 0
+Pushing 1 on the stack top 1
+popNextItr 0 stack.top 1 sv 2 topsv 1 counter 2
+popNextItr 0 stack.top 1 sv 2 topsv 1 counter 2
+depth 2 backTrackingindices[2]=0 sv 2
+2->0 visited 0
+Pushing 2 on the stack top 2
+popNextItr 0 stack.top 2 sv 0 topsv 2 counter 1
+popNextItr 0 stack.top 2 sv 0 topsv 2 counter 1
+depth 3 backTrackingindices[3]=0 sv 0
+0->1 visited 1
+0->2 visited 1
+popNextItr 1 stack.top 2 sv 0 topsv 2 counter 1
+Popping 2 on the stack top 2
+popNextItr 0 stack.top 1 sv 2 topsv 1 counter 2
+depth 2 backTrackingindices[2]=1 sv 2
+2->1 visited 1
+popNextItr 1 stack.top 1 sv 2 topsv 1 counter 2
+Popping 1 on the stack top 1
+popNextItr 0 stack.top 0 sv 1 topsv 4 counter 1
+depth 1 backTrackingindices[1]=2 sv 1
+1->3 visited 0
+Pushing 1 on the stack top 1
+popNextItr 0 stack.top 1 sv 3 topsv 1 counter 3
+popNextItr 0 stack.top 1 sv 3 topsv 1 counter 3
+depth 2 backTrackingindices[2]=0 sv 3
+3->1 visited 1
+3->7 visited 0
+Pushing 3 on the stack top 2
+popNextItr 0 stack.top 2 sv 7 topsv 3 counter 2
+popNextItr 0 stack.top 2 sv 7 topsv 3 counter 2
+depth 3 backTrackingindices[3]=0 sv 7
+7->3 visited 1
+7->8 visited 0
+Pushing 7 on the stack top 3
+popNextItr 0 stack.top 3 sv 8 topsv 7 counter 2
+popNextItr 0 stack.top 3 sv 8 topsv 7 counter 2
+depth 4 backTrackingindices[4]=0 sv 8
+8->4 visited 0
+Found solution 4
+Solution:
+4 1 3 7 
 
-Elapsed time: 0.000016s
+Elapsed time: 0.000023s
 Size of minimum vertex cover: 8
 
