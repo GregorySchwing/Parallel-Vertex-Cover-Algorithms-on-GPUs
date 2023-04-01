@@ -4,6 +4,7 @@
 struct Stacks{
     volatile int * stacks;
     volatile unsigned int * stacksNumDeletedVertices;
+    volatile unsigned int * backtrackingIndices;
     int minimum;
 };
 
@@ -36,7 +37,7 @@ Stacks allocateStacks(int vertexNum, int numBlocks, unsigned int minimum){
 
     volatile int* stacks_d;
     volatile unsigned int* stacksNumDeletedVertices_d;
-
+    volatile unsigned int* backtrackingIndices_d;
     /*
         Not sure what the rationale is here.
         Seems like every block could solve the entire tree independently
@@ -72,9 +73,11 @@ Stacks allocateStacks(int vertexNum, int numBlocks, unsigned int minimum){
     cudaMalloc((void**) &stacks_d, (minimum + 1) * (vertexNum) * sizeof(int) * numBlocks);
     // Each active block maintains (minimum+1) values associated with each data array.
     cudaMalloc((void**) &stacksNumDeletedVertices_d, (minimum + 1) * sizeof(unsigned int) * numBlocks);
+    cudaMalloc((void**) &backtrackingIndices_d, vertexNum * sizeof(unsigned int) * numBlocks);
 
     stacks.stacks = stacks_d;
     stacks.stacksNumDeletedVertices = stacksNumDeletedVertices_d;
+    stacks.backtrackingIndices = backtrackingIndices_d;
     stacks.minimum = minimum;
 
     return stacks;
@@ -83,6 +86,7 @@ Stacks allocateStacks(int vertexNum, int numBlocks, unsigned int minimum){
 void cudaFreeStacks(Stacks stacks){
     cudaFree((void*)stacks.stacks);
     cudaFree((void*)stacks.stacksNumDeletedVertices);
+    cudaFree((void*)stacks.backtrackingIndices);
 }
 
 #endif

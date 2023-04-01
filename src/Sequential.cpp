@@ -116,8 +116,8 @@ unsigned int SequentialDFSDFS_M_ALT(CSRGraph graph, unsigned int minimum)
     stack.size = graph.vertexNum + 1;
     // Number of DFS levels to do before pushing to the stack.
     //int backtrackingIndices[NUM_LEVELS];
-    int * backtrackingIndices =  new int[graph.vertexNum];
-
+    stack.backtrackingIndices =  new unsigned int[graph.vertexNum];
+    unsigned int * backtrackingIndices = stack.backtrackingIndices;
     printf("Entered seq\n");
     for (int i = 0; i < graph.vertexNum; i++){
         backtrackingIndices[i]=0;

@@ -11,6 +11,7 @@ struct Stack
     int *stack;
     unsigned int *startVertex;
     unsigned int *stackNumDeletedVertices;
+    unsigned int *backtrackingIndices;
     void print(int numVertices);
 };
 
