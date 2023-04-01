@@ -203,7 +203,6 @@ unsigned int SequentialDFSDFS(CSRGraph graph, unsigned int minimum)
         if (!foundNeighbor)
         {
             popNextItr = true;
-            //foundSolution = true;
         }
         else
         {
@@ -214,7 +213,7 @@ unsigned int SequentialDFSDFS(CSRGraph graph, unsigned int minimum)
                 printf("Found solution %d\n", neighbor);
             }
             // Push degree state onto top and CONTINUE down this branch.
-            else
+            //else
             {
 
                 popNextItr = false;
@@ -237,6 +236,11 @@ unsigned int SequentialDFSDFS(CSRGraph graph, unsigned int minimum)
 
                 visited[neighbor]=1;
                 startVertex = neighbor;
+            }
+            if (foundSolution){
+                ++stack.top;
+                ++depth;
+                stack.startVertex[stack.top] = startVertex;
             }
         }
     }
