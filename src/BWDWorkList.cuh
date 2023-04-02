@@ -162,6 +162,64 @@ __device__ void putData(int* vertexDegree_s, unsigned int * vcSize, WorkList wor
 	}
 }
 
+
+__device__ void readData_DFS(int* vertexDegree_s, int* backtrackingIndices_s, unsigned int* depth, unsigned int * vcSize, WorkList workList, unsigned int vertexNum){	
+	__shared__ unsigned int P;
+	unsigned int Pos;
+	if (threadIdx.x==0){
+	Pos = atomicAdd(head(const_cast<HT*>(workList.head_tail)), 1);
+	P = Pos % workList.size;
+	waitForTicket(P, 2 * (Pos / workList.size) + 1,workList);
+	}
+	__syncthreads();
+
+	for(unsigned int vertex = threadIdx.x; vertex < vertexNum; vertex += blockDim.x) {
+		vertexDegree_s[vertex] = workList.list[P*vertexNum + vertex];
+		backtrackingIndices_s[vertex] = workList.backtrackingIndices[P*vertexNum + vertex];
+
+	}
+
+	*vcSize = workList.listNumDeletedVertices[P];
+	*depth = workList.depth[P];
+
+	__syncthreads();
+	if (threadIdx.x==0){
+	workList.tickets[P] = 2 * ((Pos + workList.size) / workList.size);
+	}
+}
+
+__device__ void putData_DFS(int* vertexDegree_s, int* backtrackingIndices_s, unsigned int * depth, unsigned int * vcSize, WorkList workList,unsigned int vertexNum){
+	__shared__ unsigned int P;
+	unsigned int Pos;
+	unsigned int B;
+	if (threadIdx.x==0){
+	Pos = atomicAdd(tail(const_cast<HT*>(workList.head_tail)), 1);
+	P = Pos % workList.size;
+	B = 2 * (Pos /workList.size);
+	waitForTicket(P, B, workList);
+	}
+
+	__syncthreads();
+
+	for(unsigned int i = threadIdx.x; i < vertexNum; i += blockDim.x) {
+		workList.list[i + (P)*(vertexNum)] = vertexDegree_s[i];
+		workList.backtrackingIndices[i + (P)*(vertexNum)] = backtrackingIndices_s[i];
+	}
+
+	if(threadIdx.x == 0) {
+		workList.listNumDeletedVertices[P] = *vcSize;
+		workList.depth[P] = *depth;
+	}
+	__threadfence();
+	__syncthreads();
+	if (threadIdx.x==0){
+		workList.tickets[P] = B + 1;
+		atomicAdd(&workList.counter->numEnqueued,1);
+	}
+}
+
+
+
 __device__ inline bool enqueue(int* vertexDegree_s, WorkList workList, unsigned int vertexNum,unsigned int * vcSize){
 	__shared__  bool writeData;
 	if (threadIdx.x==0){
