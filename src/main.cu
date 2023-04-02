@@ -193,7 +193,10 @@ int main(int argc, char *argv[]) {
 
         bool DFS = true;
         if (DFS){
-            stacks_d = allocateStacks_DFS(graph.vertexNum,numBlocks,minimum);
+            // Technically minimum is numberMatched+2, since only 2 of the unmatched
+            // mm.num_matched_h[0] is matched edges.  I need to double to get vertices.
+            // may be present in a path.
+            stacks_d = allocateStacks_DFS(graph.vertexNum,numBlocks,2*(mm.num_matched_h[0])+2);
         } else {
             stacks_d = allocateStacks(graph.vertexNum,numBlocks,minimum);
         }
