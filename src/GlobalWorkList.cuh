@@ -230,10 +230,14 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
     #if USE_GLOBAL_MEMORY
     int * vertexDegrees_s = &global_memory[graph.vertexNum*(2*blockIdx.x)];
     int * vertexDegrees_s2 = &global_memory[graph.vertexNum*(2*blockIdx.x + 1)];
+    int * backtrackingIndices_s = &global_memory[graph.vertexNum*(2*blockIdx.x + 2)];
+    int * backtrackingIndices_s2 = &global_memory[graph.vertexNum*(2*blockIdx.x + 3)];
     #else
     extern __shared__ int shared_mem[];
     int * vertexDegrees_s = shared_mem;
     int * vertexDegrees_s2 = &shared_mem[graph.vertexNum];
+    int * backtrackingIndices_s = &shared_mem[2*graph.vertexNum];
+    int * backtrackingIndices_s2 = &shared_mem[3*graph.vertexNum];
     #endif
 
     bool dequeueOrPopNextItr = true; 
@@ -251,6 +255,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
     if (first_to_dequeue){
         for(unsigned int vertex = threadIdx.x; vertex < graph.vertexNum; vertex += blockDim.x) {
             vertexDegrees_s[vertex]=workList.list[vertex];
+            //backtrackingIndices_s[vertex]=workList.list[vertex];
         }
         numDeletedVertices = workList.listNumDeletedVertices[0];
         dequeueOrPopNextItr = false;

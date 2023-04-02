@@ -190,7 +190,13 @@ int main(int argc, char *argv[]) {
         // alloc stacks using vNum, 
         // max number of active blocks or custom, 
         // and kernelized min, or num starting v in gpu code
-        stacks_d = allocateStacks(graph.vertexNum,numBlocks,minimum);
+
+        bool DFS = true;
+        if (DFS){
+            stacks_d = allocateStacks_DFS(graph.vertexNum,numBlocks,minimum);
+        } else {
+            stacks_d = allocateStacks(graph.vertexNum,numBlocks,minimum);
+        }
 
         //Global Entries Memory Allocation
         // Each block requests 2 more copies of the data array[V]
@@ -229,21 +235,41 @@ int main(int argc, char *argv[]) {
         // STACKONLY
         unsigned int * pathCounter_d;
         unsigned int pathCounter = 0;
-        if(config.version == HYBRID){
-            cudaMalloc((void**)&first_to_dequeue_global_d, sizeof(int));
-            cudaMemcpy(first_to_dequeue_global_d, &first_to_dequeue_global, sizeof(int), cudaMemcpyHostToDevice);
-            workList_d =  allocateWorkList(graph, config, numBlocks);    
+        if (DFS){
+            if(config.version == HYBRID){
+                cudaMalloc((void**)&first_to_dequeue_global_d, sizeof(int));
+                cudaMemcpy(first_to_dequeue_global_d, &first_to_dequeue_global, sizeof(int), cudaMemcpyHostToDevice);
+                workList_d =  allocateWorkList_DFS(graph, config, numBlocks);    
+            } else {
+                cudaMalloc((void**)&pathCounter_d, sizeof(unsigned int));
+                cudaMemcpy(pathCounter_d, &pathCounter, sizeof(unsigned int), cudaMemcpyHostToDevice);
+            }
         } else {
-            cudaMalloc((void**)&pathCounter_d, sizeof(unsigned int));
-            cudaMemcpy(pathCounter_d, &pathCounter, sizeof(unsigned int), cudaMemcpyHostToDevice);
+            if(config.version == HYBRID){
+                cudaMalloc((void**)&first_to_dequeue_global_d, sizeof(int));
+                cudaMemcpy(first_to_dequeue_global_d, &first_to_dequeue_global, sizeof(int), cudaMemcpyHostToDevice);
+                workList_d =  allocateWorkList(graph, config, numBlocks);    
+            } else {
+                cudaMalloc((void**)&pathCounter_d, sizeof(unsigned int));
+                cudaMemcpy(pathCounter_d, &pathCounter, sizeof(unsigned int), cudaMemcpyHostToDevice);
+            }  
         }
 
         int sharedMemNeeded = graph.vertexNum;
-        if(graph.vertexNum > numThreadsPerBlock*2){
-            sharedMemNeeded+=graph.vertexNum;
+        if (DFS){
+            if(graph.vertexNum > numThreadsPerBlock*2){
+                sharedMemNeeded+=3*(graph.vertexNum);
+            } else {
+                sharedMemNeeded+=3*(numThreadsPerBlock*2);
+            }
         } else {
-            sharedMemNeeded+=numThreadsPerBlock*2;
+            if(graph.vertexNum > numThreadsPerBlock*2){
+                sharedMemNeeded+=graph.vertexNum;
+            } else {
+                sharedMemNeeded+=numThreadsPerBlock*2;
+            }
         }
+
         sharedMemNeeded *= sizeof(int);
         
         cudaEvent_t start, stop;
@@ -251,6 +277,29 @@ int main(int argc, char *argv[]) {
         cudaEventCreate(&start);
         cudaEventCreate(&stop);
         cudaEventRecord(start);
+        if (DFS){
+            if (config.useGlobalMemory){
+                if (config.version == HYBRID && config.instance==PVC){
+                    GlobalWorkListParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, k_d, kFound_d, NODES_PER_SM_d);
+                } else if(config.version == HYBRID && config.instance==MVC) {
+                    GlobalWorkList_global_DFS_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, NODES_PER_SM_d);
+                } else if(config.version == STACK_ONLY && config.instance==PVC){
+                    LocalStacksParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, graph_d, global_memory_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
+                } else if(config.version == STACK_ONLY && config.instance==MVC) {
+                    LocalStacks_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, graph_d, minimum_d, global_memory_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
+                }
+            } else {
+                if (config.version == HYBRID && config.instance==PVC){
+                    GlobalWorkListParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, k_d, kFound_d, NODES_PER_SM_d);
+                } else if(config.version == HYBRID && config.instance==MVC) {
+                    GlobalWorkList_shared_DFS_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
+                } else if(config.version == STACK_ONLY && config.instance==PVC){
+                    LocalStacksParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, graph_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
+                } else if(config.version == STACK_ONLY && config.instance==MVC) {
+                    LocalStacks_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, graph_d, minimum_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
+                }
+            }
+        } else {
         if (config.useGlobalMemory){
             if (config.version == HYBRID && config.instance==PVC){
                 GlobalWorkListParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, k_d, kFound_d, NODES_PER_SM_d);
@@ -271,6 +320,7 @@ int main(int argc, char *argv[]) {
             } else if(config.version == STACK_ONLY && config.instance==MVC) {
                 LocalStacks_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, graph_d, minimum_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
             }
+        }
         }
         cudaEventRecord(stop);
         cudaEventSynchronize(stop);
