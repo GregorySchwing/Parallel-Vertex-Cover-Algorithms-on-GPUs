@@ -283,7 +283,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
             } else { // Local stack is empty, read from the global workList
                 startTime(TERMINATE,&blockCounters);
                 startTime(DEQUEUE,&blockCounters);
-                if(!dequeue(vertexDegrees_s, workList, graph.vertexNum, &numDeletedVertices)) {   
+                if(!dequeue_DFS(vertexDegrees_s, backtrackingIndices_s, &depth, workList, graph.vertexNum, &numDeletedVertices)) {   
                     endTime(TERMINATE,&blockCounters);
                     break;
                 }
@@ -370,7 +370,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
                 bool enqueueSuccess;
                 if(checkThreshold(workList)){
                     startTime(ENQUEUE,&blockCounters);
-                    enqueueSuccess = enqueue(vertexDegrees_s2, workList, graph.vertexNum, &numDeletedVertices2);
+                    enqueueSuccess = enqueue_DFS(vertexDegrees_s2, backtrackingIndices_s2,&depth2,workList, graph.vertexNum, &numDeletedVertices2);
                 } else  {
                     enqueueSuccess = false;
                 }
