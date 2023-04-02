@@ -62,6 +62,8 @@ __global__ void LocalStacks_shared_DFS_kernel(Stacks stacks, CSRGraph graph, uns
         
         // Perform first few levels to get all leaves to certain depth.
         // s.t. number of leaf nodes == numBlocks.
+        // Will have to do breadth-first DFS until a sufficient number of trees exist.
+        // Will do redundant work in each block to avoid inter-block communication. 
         for(unsigned int k = 0; k < startingDepth && !vcFound && !minExceeded; ++k) {
             #if USE_COUNTERS
                 if (threadIdx.x==0){
