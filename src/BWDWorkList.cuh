@@ -16,6 +16,7 @@ struct WorkList{
     volatile int* list;
     volatile unsigned int* listNumDeletedVertices;
 	volatile unsigned int* backtrackingIndices;
+	volatile unsigned int* depth;
     volatile Ticket *tickets;
     HT *head_tail;
 	int* count;
@@ -314,6 +315,7 @@ WorkList allocateWorkList_DFS(CSRGraph graph, Config config, unsigned int numBlo
 
 	volatile int* list_d;
 	volatile unsigned int * listNumDeletedVertices_d;
+	volatile unsigned int * depth_d;
 	volatile unsigned int * backtrackingIndices_d;
 	volatile Ticket *tickets_d;
 	HT *head_tail_d;
@@ -321,6 +323,8 @@ WorkList allocateWorkList_DFS(CSRGraph graph, Config config, unsigned int numBlo
 	Counter * counter_d;
 	cudaMalloc((void**) &list_d, (graph.vertexNum) * sizeof(int) * workList.size);
 	cudaMalloc((void**) &listNumDeletedVertices_d, sizeof(unsigned int) * workList.size);
+	cudaMalloc((void**) &depth_d, sizeof(unsigned int) * workList.size);
+
 	cudaMalloc((void**) &backtrackingIndices_d, (graph.vertexNum) * sizeof(int) * workList.size);
 
 	cudaMalloc((void**) &tickets_d, sizeof(Ticket) * workList.size);
@@ -330,6 +334,7 @@ WorkList allocateWorkList_DFS(CSRGraph graph, Config config, unsigned int numBlo
 	
 	workList.list = list_d;
 	workList.listNumDeletedVertices = listNumDeletedVertices_d;
+	workList.depth = depth_d;
 	workList.backtrackingIndices = backtrackingIndices_d;
 	workList.tickets = tickets_d;
 	workList.head_tail = head_tail_d;
@@ -343,7 +348,7 @@ WorkList allocateWorkList_DFS(CSRGraph graph, Config config, unsigned int numBlo
 	//cudaMemcpy((void*)list_d, graph.degree, (graph.vertexNum) * sizeof(int), cudaMemcpyHostToDevice);
     cudaMemset((void*)list_d,0,(graph.vertexNum) * sizeof(int));
     cudaMemset((void*)&list_d[graph.unmatched_vertices[0]],1,sizeof(int));
-	//cudaMemset((void*)&listNumDeletedVertices_d[0], 0, sizeof(unsigned int));
+	cudaMemset((void*)&depth_d[0], 0, sizeof(unsigned int));
 	cudaMemcpy((void*)&listNumDeletedVertices_d[0], &graph.unmatched_vertices[0], sizeof(int), cudaMemcpyHostToDevice);
 	cudaMemset((void*)backtrackingIndices_d, 0, sizeof(unsigned int));
 
@@ -367,5 +372,6 @@ void cudaFreeWorkList(WorkList workList){
 void cudaFreeWorkList_DFS(WorkList workList){
 	cudaFreeWorkList(workList);
 	cudaFree((void*)workList.backtrackingIndices);
+	cudaFree((void*)workList.depth);
 }
 #endif

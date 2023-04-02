@@ -3,8 +3,9 @@
 
 struct Stacks{
     volatile int * stacks;
-    // Will double as depth.
+    // Will double as startingVertex
     volatile unsigned int * stacksNumDeletedVertices;
+    volatile unsigned int * depth;
     volatile unsigned int * backtrackingIndices;
     int minimum;
 };
@@ -34,8 +35,8 @@ __device__ void pushStack(unsigned int vertexNum, int* vertexDegrees_s, unsigned
 }
 
 
-__device__ void popStack_DFS(unsigned int vertexNum, int* vertexDegrees_s, unsigned int* numDeletedVertices, unsigned int* backtrackingIndices, volatile int * stackVertexDegrees, 
-    volatile unsigned int* stackNumDeletedVertices, volatile unsigned int* stackBacktrackingIndices, int * stackTop){
+__device__ void popStack_DFS(unsigned int vertexNum, int* vertexDegrees_s, unsigned int* numDeletedVertices,unsigned int* depth, unsigned int* backtrackingIndices, volatile int * stackVertexDegrees, 
+    volatile unsigned int* stackNumDeletedVertices,volatile unsigned int* stackDepth, volatile unsigned int* stackBacktrackingIndices, int * stackTop){
 
     for(unsigned int vertex = threadIdx.x; vertex < vertexNum; vertex += blockDim.x) {
         vertexDegrees_s[vertex] = stackVertexDegrees[(*stackTop)*vertexNum + vertex];
@@ -43,7 +44,8 @@ __device__ void popStack_DFS(unsigned int vertexNum, int* vertexDegrees_s, unsig
     }
 
     *numDeletedVertices = stackNumDeletedVertices[*stackTop];
-    
+    *depth = stackDepth[*stackTop];
+
     --(*stackTop);
 }
 
@@ -52,8 +54,8 @@ __device__ void popStack_DFS(unsigned int vertexNum, int* vertexDegrees_s, unsig
 // Backtracking indices are new for DFS.
 // It is possible to generate the visited array from the starting vertex, depth, and backtracking indices
 // though this is an optimization and will be tested after prototyping.
-__device__ void pushStack_DFS(unsigned int vertexNum, int* vertexDegrees_s, unsigned int* numDeletedVertices, unsigned int* backtrackingIndices,  volatile int * stackVertexDegrees, 
-    volatile unsigned int* stackNumDeletedVertices, volatile unsigned int* stackBacktrackingIndices, int * stackTop){
+__device__ void pushStack_DFS(unsigned int vertexNum, int* vertexDegrees_s, unsigned int* numDeletedVertices,unsigned int* depth, unsigned int* backtrackingIndices,  volatile int * stackVertexDegrees, 
+    volatile unsigned int* stackNumDeletedVertices, volatile unsigned int* stackDepth, volatile unsigned int* stackBacktrackingIndices, int * stackTop){
 
     ++(*stackTop);
     for(unsigned int vertex = threadIdx.x; vertex < vertexNum ; vertex += blockDim.x) {
@@ -63,6 +65,7 @@ __device__ void pushStack_DFS(unsigned int vertexNum, int* vertexDegrees_s, unsi
     }
     if(threadIdx.x == 0) {
         stackNumDeletedVertices[*stackTop] = *numDeletedVertices;
+        stackDepth[*stackTop] = *depth;
     }
 }
 
@@ -122,6 +125,7 @@ Stacks allocateStacks_DFS(int vertexNum, int numBlocks, unsigned int minimum){
 
     volatile int* stacks_d;
     volatile unsigned int* stacksNumDeletedVertices_d;
+    volatile unsigned int* depth_d;
     volatile unsigned int* backtrackingIndices_d;
 
     /*
@@ -159,10 +163,13 @@ Stacks allocateStacks_DFS(int vertexNum, int numBlocks, unsigned int minimum){
     cudaMalloc((void**) &stacks_d, (minimum + 1) * (vertexNum) * sizeof(int) * numBlocks);
     // Each active block maintains (minimum+1) values associated with each data array.
     cudaMalloc((void**) &stacksNumDeletedVertices_d, (minimum + 1) * sizeof(unsigned int) * numBlocks);
+    cudaMalloc((void**) &depth_d, (minimum + 1) * sizeof(unsigned int) * numBlocks);
     cudaMalloc((void**) &backtrackingIndices_d, vertexNum * sizeof(unsigned int) * numBlocks);
 
     stacks.stacks = stacks_d;
     stacks.stacksNumDeletedVertices = stacksNumDeletedVertices_d;
+    stacks.depth = depth_d;
+
     stacks.backtrackingIndices = backtrackingIndices_d;
     stacks.minimum = minimum;
 

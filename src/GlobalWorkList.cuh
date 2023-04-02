@@ -223,21 +223,25 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
     volatile int * stackVertexDegrees = &stacks.stacks[blockIdx.x * stackSize * graph.vertexNum];
     volatile unsigned int * stackNumDeletedVertices = &stacks.stacksNumDeletedVertices[blockIdx.x * stackSize];
     volatile unsigned int * stackBacktrackingIndices = &stacks.backtrackingIndices[blockIdx.x * stackSize * graph.vertexNum];
+    volatile unsigned int * stackDepth = &stacks.depth[blockIdx.x * stackSize];
+
     // Define the vertexDegree_s
     unsigned int numDeletedVertices;
     unsigned int numDeletedVertices2;
-    unsigned int * backtrackingIndices;
+    unsigned int depth;
+    unsigned int depth2;
+    //unsigned int * backtrackingIndices;
     #if USE_GLOBAL_MEMORY
     int * vertexDegrees_s = &global_memory[graph.vertexNum*(2*blockIdx.x)];
     int * vertexDegrees_s2 = &global_memory[graph.vertexNum*(2*blockIdx.x + 1)];
-    int * backtrackingIndices_s = &global_memory[graph.vertexNum*(2*blockIdx.x + 2)];
-    int * backtrackingIndices_s2 = &global_memory[graph.vertexNum*(2*blockIdx.x + 3)];
+    unsigned int * backtrackingIndices_s = (unsigned int *)&global_memory[graph.vertexNum*(2*blockIdx.x + 2)];
+    unsigned int * backtrackingIndices_s2 = (unsigned int *)&global_memory[graph.vertexNum*(2*blockIdx.x + 3)];
     #else
     extern __shared__ int shared_mem[];
     int * vertexDegrees_s = shared_mem;
     int * vertexDegrees_s2 = &shared_mem[graph.vertexNum];
-    int * backtrackingIndices_s = &shared_mem[2*graph.vertexNum];
-    int * backtrackingIndices_s2 = &shared_mem[3*graph.vertexNum];
+    unsigned int * backtrackingIndices_s = (unsigned int *)&shared_mem[2*graph.vertexNum];
+    unsigned int * backtrackingIndices_s2 = (unsigned int *)&shared_mem[3*graph.vertexNum];
     #endif
 
     bool dequeueOrPopNextItr = true; 
@@ -255,7 +259,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
     if (first_to_dequeue){
         for(unsigned int vertex = threadIdx.x; vertex < graph.vertexNum; vertex += blockDim.x) {
             vertexDegrees_s[vertex]=workList.list[vertex];
-            //backtrackingIndices_s[vertex]=workList.list[vertex];
+            backtrackingIndices_s[vertex]=workList.backtrackingIndices[vertex];
         }
         numDeletedVertices = workList.listNumDeletedVertices[0];
         dequeueOrPopNextItr = false;
@@ -267,7 +271,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
         if(dequeueOrPopNextItr) {
             if(stackTop != -1) { // Local stack is not empty, pop from the local stack
                 startTime(POP_FROM_STACK,&blockCounters);
-                popStack_DFS(graph.vertexNum, vertexDegrees_s, &numDeletedVertices, backtrackingIndices, stackVertexDegrees, stackNumDeletedVertices, stackBacktrackingIndices, &stackTop);               
+                popStack_DFS(graph.vertexNum, vertexDegrees_s, &numDeletedVertices, &depth, backtrackingIndices_s, stackVertexDegrees, stackNumDeletedVertices, stackDepth, stackBacktrackingIndices, &stackTop);               
                 endTime(POP_FROM_STACK,&blockCounters);
 
                 #if USE_COUNTERS
@@ -375,7 +379,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
                 
                 if(!enqueueSuccess) {
                     startTime(PUSH_TO_STACK,&blockCounters);
-                    pushStack_DFS(graph.vertexNum, vertexDegrees_s2, &numDeletedVertices2, backtrackingIndices, stackVertexDegrees, stackNumDeletedVertices, stackBacktrackingIndices, &stackTop);                    
+                    pushStack_DFS(graph.vertexNum, vertexDegrees_s2, &numDeletedVertices2, &depth2, backtrackingIndices_s2, stackVertexDegrees, stackNumDeletedVertices, stackDepth, stackBacktrackingIndices, &stackTop);                    
                     maxDepth(stackTop, &blockCounters);
                     endTime(PUSH_TO_STACK,&blockCounters);
                     __syncthreads(); 

@@ -205,10 +205,15 @@ int main(int argc, char *argv[]) {
         // Each block requests 2 more copies of the data array[V]
         // Perhaps for writing the solution?
         int * global_memory_d;
-        if(config.useGlobalMemory){
-            cudaMalloc((void**)&global_memory_d, sizeof(int)*graph.vertexNum*numBlocks*2);
+        if (DFS){
+            if(config.useGlobalMemory){
+                cudaMalloc((void**)&global_memory_d, sizeof(int)*graph.vertexNum*numBlocks*4);
+            }
+        }else{
+            if(config.useGlobalMemory){
+                cudaMalloc((void**)&global_memory_d, sizeof(int)*graph.vertexNum*numBlocks*2);
+            }
         }
-
         unsigned int * minimum_d;
         cudaMalloc((void**) &minimum_d, sizeof(unsigned int));
 
