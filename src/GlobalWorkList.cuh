@@ -352,7 +352,13 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
             endTime(MAX_DEGREE,&blockCounters);
 
             __syncthreads();
-            if(maxDegree == 0) { // Reached the bottom of the tree, minimum vertex cover possibly found
+            // Reached the bottom of the tree
+            // LOGIC -> dequeueOrPopNextItr = true
+
+            // Found unmatched vertex
+            // LOGIC -> set all blocks to terminate.
+
+            if(maxDegree == 0) { 
                 if(threadIdx.x==0){
                     atomicMin(minimum, numDeletedVertices);
                 }
