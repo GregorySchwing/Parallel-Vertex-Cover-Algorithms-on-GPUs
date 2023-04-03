@@ -263,6 +263,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
             backtrackingIndices_s[vertex]=workList.backtrackingIndices[vertex];
         }
         startingVertex = workList.listNumDeletedVertices[0];
+        depth = 0;
         dequeueOrPopNextItr = false;
     }
 
@@ -313,7 +314,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
         if (minimum_s){
             if(threadIdx.x == 0) 
                 printf("BLOCK %d RETURNING\n", blockIdx.x);
-            return;
+            //return;
         } else {
             //printf("BLOCK %d NOT RETURNING\n", blockIdx.x);
         }

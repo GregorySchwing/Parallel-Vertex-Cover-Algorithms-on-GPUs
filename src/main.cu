@@ -131,26 +131,59 @@ int main(int argc, char *argv[]) {
         printf("\nOur Config :\n");
         int numThreadsPerBlock = config.blockDim;
         int numBlocksPerSm; 
+            int sharedMemNeeded = graph.vertexNum;
+        if(graph.vertexNum > numThreadsPerBlock*2){
+            sharedMemNeeded+=graph.vertexNum;
+        } else {
+            sharedMemNeeded+=numThreadsPerBlock*2;
+        }
+
+        sharedMemNeeded *= sizeof(int);
+        
         // Answers Schwiebert's question about max num simulataneous dfs workers.
-        if (config.useGlobalMemory){
-            if (config.version == HYBRID && config.instance==PVC){
-                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkListParameterized_global_kernel, numThreadsPerBlock, 0);
-            } else if(config.version == HYBRID && config.instance==MVC) {
-                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkList_global_kernel, numThreadsPerBlock, 0);
-            } else if(config.version == STACK_ONLY && config.instance==PVC){
-                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacksParameterized_global_kernel, numThreadsPerBlock, 0);
-            } else if(config.version == STACK_ONLY && config.instance==MVC) {
-                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacks_global_kernel, numThreadsPerBlock, 0);
+        if (DFS){
+            if (config.useGlobalMemory){
+                if (config.version == HYBRID && config.instance==PVC){
+                    cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkListParameterized_global_kernel, numThreadsPerBlock, 0);
+                } else if(config.version == HYBRID && config.instance==MVC) {
+                    cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkList_global_DFS_kernel, numThreadsPerBlock, 0);
+                } else if(config.version == STACK_ONLY && config.instance==PVC){
+                    cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacksParameterized_global_kernel, numThreadsPerBlock, 0);
+                } else if(config.version == STACK_ONLY && config.instance==MVC) {
+                    cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacks_global_kernel, numThreadsPerBlock, 0);
+                }
+            } else {
+                if (config.version == HYBRID && config.instance==PVC){
+                    cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkListParameterized_shared_kernel, numThreadsPerBlock, sharedMemNeeded);
+                } else if(config.version == HYBRID && config.instance==MVC) {
+                    cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkList_shared_DFS_kernel, numThreadsPerBlock, sharedMemNeeded);
+                } else if(config.version == STACK_ONLY && config.instance==PVC){
+                    cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacksParameterized_shared_kernel, numThreadsPerBlock, sharedMemNeeded);
+                } else if(config.version == STACK_ONLY && config.instance==MVC) {
+                    cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacks_shared_kernel, numThreadsPerBlock, sharedMemNeeded);
+                }
             }
         } else {
-            if (config.version == HYBRID && config.instance==PVC){
-                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkListParameterized_shared_kernel, numThreadsPerBlock, 0);
-            } else if(config.version == HYBRID && config.instance==MVC) {
-                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkList_shared_kernel, numThreadsPerBlock, 0);
-            } else if(config.version == STACK_ONLY && config.instance==PVC){
-                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacksParameterized_shared_kernel, numThreadsPerBlock, 0);
-            } else if(config.version == STACK_ONLY && config.instance==MVC) {
-                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacks_shared_kernel, numThreadsPerBlock, 0);
+            if (config.useGlobalMemory){
+                if (config.version == HYBRID && config.instance==PVC){
+                    cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkListParameterized_global_kernel, numThreadsPerBlock, 0);
+                } else if(config.version == HYBRID && config.instance==MVC) {
+                    cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkList_global_kernel, numThreadsPerBlock, 0);
+                } else if(config.version == STACK_ONLY && config.instance==PVC){
+                    cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacksParameterized_global_kernel, numThreadsPerBlock, 0);
+                } else if(config.version == STACK_ONLY && config.instance==MVC) {
+                    cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacks_global_kernel, numThreadsPerBlock, 0);
+                }
+            } else {
+                if (config.version == HYBRID && config.instance==PVC){
+                    cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkListParameterized_shared_kernel, numThreadsPerBlock, sharedMemNeeded);
+                } else if(config.version == HYBRID && config.instance==MVC) {
+                    cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkList_shared_kernel, numThreadsPerBlock, sharedMemNeeded);
+                } else if(config.version == STACK_ONLY && config.instance==PVC){
+                    cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacksParameterized_shared_kernel, numThreadsPerBlock, sharedMemNeeded);
+                } else if(config.version == STACK_ONLY && config.instance==MVC) {
+                    cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacks_shared_kernel, numThreadsPerBlock, sharedMemNeeded);
+                }
             }
         }
 
@@ -265,15 +298,6 @@ int main(int argc, char *argv[]) {
             }  
         }
 
-        int sharedMemNeeded = graph.vertexNum;
-        if(graph.vertexNum > numThreadsPerBlock*2){
-            sharedMemNeeded+=graph.vertexNum;
-        } else {
-            sharedMemNeeded+=numThreadsPerBlock*2;
-        }
-
-        sharedMemNeeded *= sizeof(int);
-        
         cudaEvent_t start, stop;
         cudaDeviceSynchronize();
         cudaEventCreate(&start);

@@ -66,5 +66,7 @@ CUDA_ARCHITECTURES "35;60;70;80")
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 message("-- Debug build type detected, GPU_NPT setting CUDA_RESOLVE_DEVICE_SYMBOLS ON")
 set_property(TARGET vc-gpu PROPERTY CUDA_RESOLVE_DEVICE_SYMBOLS ON)
+target_compile_options(vc-gpu PRIVATE "$<$<AND:$<CONFIG:Debug>,$<COMPILE_LANGUAGE:CUDA>>:-G;-src-in-ptx>")
+
 endif()
 #target_link_libraries(vc-gpu parallel-packed-csr cuda)
