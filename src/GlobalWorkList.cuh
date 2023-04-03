@@ -302,14 +302,14 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
         if(threadIdx.x == 0) {
             minimum_s = atomicOr(minimum,graph.matching[startingVertex]==-1&&depth>0);
         }
+        // END VC PRE-WORK.
+        __syncthreads();
         if (minimum_s){
             if(threadIdx.x == 0) 
                 printf("BLOCK %d RETURNING\n", blockIdx.x);
-            return;
+            break;
         }
-
-        // END VC PRE-WORK.
-        __syncthreads();
+        printf("Block %d waiting depth %d startingVertex %d bti %d \n",blockIdx.x, depth, backtrackingIndices_s[depth], startingVertex);
 
         // Reached the bottom of the tree, no minimum vertex cover found
         if(backtrackingIndices_s[depth]>=graph.srcPtr[startingVertex+1]-graph.srcPtr[startingVertex]) {
