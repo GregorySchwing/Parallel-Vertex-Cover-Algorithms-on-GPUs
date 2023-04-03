@@ -298,10 +298,18 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
             }
         }
 
-        // END VC PRE-WORK.
+        __shared__ unsigned int minimum_s;
+        if(threadIdx.x == 0) {
+            minimum_s = atomicOr(minimum,graph.matching[startingVertex]==-1&&depth>0);
+        }
+        if (minimum_s){
+            if(threadIdx.x == 0) 
+                printf("BLOCK %d RETURNING\n", blockIdx.x);
+            return;
+        }
 
+        // END VC PRE-WORK.
         __syncthreads();
-        //printf("Block %d startingVertex %d start %d end %d depth %d startingVertex2 %d start %d end %d depth2 %d\n", blockIdx.x, startingVertex2, graph.srcPtr[startingVertex2],graph.srcPtr[startingVertex2+1], depth2);
 
         // Reached the bottom of the tree, no minimum vertex cover found
         if(backtrackingIndices_s[depth]>=graph.srcPtr[startingVertex+1]-graph.srcPtr[startingVertex]) {
@@ -323,8 +331,8 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
             // LOGIC -> set all blocks to terminate.
 
             if(!foundNeighbor) {
-                            if (threadIdx.x==0)
-                printf("didnt find neighbor, set pop\n");
+                if (threadIdx.x==0)
+                    printf("didnt find neighbor, set pop\n");
                 dequeueOrPopNextItr = true;
 
             } else { // Vertex cover not found, need to branch

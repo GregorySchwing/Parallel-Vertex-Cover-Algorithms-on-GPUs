@@ -2,100 +2,329 @@
 Graph file: ../odd.txt
 UUID: 1
 
-bfs_gpu_mm_csc_sc::t_sum=1.304416ms 
-mm_gpu_csc::average time mm = 1.304416ms, avg matched 12.000000, avg unmatched 4.000000, total 16
+bfs_gpu_mm_csc_sc::t_sum=7.483104ms 
+mm_gpu_csc::average time mm = 7.483104ms, avg matched 12.000000, avg unmatched 4.000000, total 16
 Matching is correct.
 Matching is correct.
 Matched vertices 12; matched edges 6
 
 num unmatched 3
 
-Elapsed Time for Boost MCM: 0.000298
+Elapsed Time for Boost MCM: 0.001905
 
 Boost MCM size: 7
 gpu mm starting size 6 ref size 7
 
-Elapsed Time for Approximate Remove Max: 0.000005
+Elapsed Time for Approximate Remove Max: 0.000004
 Approximate Remove Max Minimum is: 8
-Elapsed Time for Approximate Remove Edge: 0.000003
+Elapsed Time for Approximate Remove Edge: 0.000004
 Approximate Remove Edge Minimum is: 8
-Entered seq
-0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 
-2 3 0 1 -1 12 11 8 7 13 -1 6 5 9 -1 -1 
-4 10 14 
-popNextItr 1 stack.top 0 sv 4 topsv 4 counter 0
-Popping 4 on the stack top 0
-popNextItr 0 stack.top -1 sv 4 topsv 0 counter 0
-depth 0 backTrackingindices[0]=0 sv 4
-4->1 visited 0
-Pushing 4 on the stack top 0
-popNextItr 0 stack.top 0 sv 1 topsv 4 counter 1
-popNextItr 0 stack.top 0 sv 1 topsv 4 counter 1
-depth 1 backTrackingindices[1]=0 sv 1
-1->0 visited 0
-Pushing 1 on the stack top 1
-popNextItr 0 stack.top 1 sv 0 topsv 1 counter 1
-popNextItr 0 stack.top 1 sv 0 topsv 1 counter 1
-depth 2 backTrackingindices[2]=0 sv 0
-0->1 visited 1
-0->2 visited 0
-Pushing 0 on the stack top 2
-popNextItr 0 stack.top 2 sv 2 topsv 0 counter 2
-popNextItr 0 stack.top 2 sv 2 topsv 0 counter 2
-depth 3 backTrackingindices[3]=0 sv 2
-2->0 visited 1
-2->1 visited 1
-popNextItr 1 stack.top 2 sv 2 topsv 0 counter 2
-Popping 0 on the stack top 2
-popNextItr 0 stack.top 1 sv 0 topsv 1 counter 1
-depth 2 backTrackingindices[2]=2 sv 0
-popNextItr 1 stack.top 1 sv 0 topsv 1 counter 1
-Popping 1 on the stack top 1
-popNextItr 0 stack.top 0 sv 1 topsv 4 counter 1
-depth 1 backTrackingindices[1]=1 sv 1
-1->2 visited 0
-Pushing 1 on the stack top 1
-popNextItr 0 stack.top 1 sv 2 topsv 1 counter 2
-popNextItr 0 stack.top 1 sv 2 topsv 1 counter 2
-depth 2 backTrackingindices[2]=0 sv 2
-2->0 visited 0
-Pushing 2 on the stack top 2
-popNextItr 0 stack.top 2 sv 0 topsv 2 counter 1
-popNextItr 0 stack.top 2 sv 0 topsv 2 counter 1
-depth 3 backTrackingindices[3]=0 sv 0
-0->1 visited 1
-0->2 visited 1
-popNextItr 1 stack.top 2 sv 0 topsv 2 counter 1
-Popping 2 on the stack top 2
-popNextItr 0 stack.top 1 sv 2 topsv 1 counter 2
-depth 2 backTrackingindices[2]=1 sv 2
-2->1 visited 1
-popNextItr 1 stack.top 1 sv 2 topsv 1 counter 2
-Popping 1 on the stack top 1
-popNextItr 0 stack.top 0 sv 1 topsv 4 counter 1
-depth 1 backTrackingindices[1]=2 sv 1
-1->3 visited 0
-Pushing 1 on the stack top 1
-popNextItr 0 stack.top 1 sv 3 topsv 1 counter 3
-popNextItr 0 stack.top 1 sv 3 topsv 1 counter 3
-depth 2 backTrackingindices[2]=0 sv 3
-3->1 visited 1
-3->7 visited 0
-Pushing 3 on the stack top 2
-popNextItr 0 stack.top 2 sv 7 topsv 3 counter 2
-popNextItr 0 stack.top 2 sv 7 topsv 3 counter 2
-depth 3 backTrackingindices[3]=0 sv 7
-7->3 visited 1
-7->8 visited 0
-Pushing 7 on the stack top 3
-popNextItr 0 stack.top 3 sv 8 topsv 7 counter 2
-popNextItr 0 stack.top 3 sv 8 topsv 7 counter 2
-depth 4 backTrackingindices[4]=0 sv 8
-8->4 visited 0
-Found solution 4
-Solution:
-4 1 3 7 
 
-Elapsed time: 0.000023s
-Size of minimum vertex cover: 8
+Device name: Quadro RTX 5000 with Max-Q Design
 
+NumOfMultiProcessors : 48
+MaxThreadsPerMultiProcessor : 1024
+MaxThreadsPerBlock : 1024
+MaxSharedMemPerMultiProcessor : 65536
+
+Optimal BlockDim : 64
+
+Use Shared Mem : 1
+
+Our Config :
+NumOfThreadPerBlocks : 64
+NumOfBlocks : 768
+NumOfBlockPerSM : 16
+NumOfThreadsPerSM : 1024
+
+Block 151 Neighbors left of vertex 4 start 11 end 13 bti 0 depth 0
+unmatched edge 4->1 visited 0
+matched edge 4->1 visited 0 breaking
+found neighbor, branch
+After PRC Block 151 Neighbors left of vertex 4 start 11 end 13 bti 1 depth 0
+After PLC Block 151 Neighbors left of vertex 1 start 2 end 6 bti 0 depth 1
+Block 151 Neighbors left of vertex 1 start 2 end 6 bti 0 depth 1
+Block 424 Neighbors left of vertex 4 start 11 end 13 bti 1 depth 0
+matched edge 1->3 visited 0
+matched edge 1->3 visited 0 breaking
+unmatched edge 4->8 visited 0
+found neighbor, branch
+matched edge 4->8 visited 0 breaking
+After PRC Block 151 Neighbors left of vertex 1 start 2 end 6 bti 1 depth 1
+found neighbor, branch
+After PRC Block 424 Neighbors left of vertex 4 start 11 end 13 bti 2 depth 0
+After PLC Block 151 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 2
+Block 572 Neighbors left of vertex 1 start 2 end 6 bti 1 depth 1
+Block 151 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 2
+After PLC Block 424 Neighbors left of vertex 8 start 18 end 21 bti 0 depth 1
+matched edge 1->3 visited 0
+Block 212 No Neighbors left of vertex 4 start 11 end 13 bti 2 depth 0
+matched edge 1->3 visited 0 breaking
+Block 424 Neighbors left of vertex 8 start 18 end 21 bti 0 depth 1
+unmatched edge 3->1 visited 1
+found neighbor, branch
+unmatched edge 3->7 visited 0
+matched edge 3->7 visited 0 breaking
+After PRC Block 572 Neighbors left of vertex 1 start 2 end 6 bti 2 depth 1
+matched edge 8->7 visited 0
+found neighbor, branch
+matched edge 8->7 visited 0 breaking
+After PRC Block 151 Neighbors left of vertex 3 start 8 end 11 bti 2 depth 2
+found neighbor, branch
+After PRC Block 424 Neighbors left of vertex 8 start 18 end 21 bti 1 depth 1
+After PLC Block 572 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 2
+After PLC Block 151 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 3
+Block 212 Neighbors left of vertex 1 start 2 end 6 bti 2 depth 1
+Block 572 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 2
+After PLC Block 424 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 2
+Block 151 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 3
+Block 48 Neighbors left of vertex 3 start 8 end 11 bti 2 depth 2
+matched edge 1->3 visited 0
+unmatched edge 3->1 visited 1
+Block 424 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 2
+matched edge 1->3 visited 0 breaking
+unmatched edge 3->7 visited 0
+unmatched edge 3->11 visited 0
+matched edge 7->8 visited 0
+matched edge 3->7 visited 0 breaking
+found neighbor, branch
+matched edge 7->8 visited 0 breaking
+matched edge 3->11 visited 0 breaking
+Block 589 Neighbors left of vertex 8 start 18 end 21 bti 1 depth 1
+found neighbor, branch
+found neighbor, branch
+found neighbor, branch
+After PRC Block 212 Neighbors left of vertex 1 start 2 end 6 bti 3 depth 1
+unmatched edge 7->3 visited 0
+After PRC Block 572 Neighbors left of vertex 3 start 8 end 11 bti 2 depth 2
+After PRC Block 151 Neighbors left of vertex 7 start 16 end 18 bti 1 depth 3
+After PRC Block 48 Neighbors left of vertex 3 start 8 end 11 bti 3 depth 2
+matched edge 7->3 visited 0 breaking
+matched edge 8->7 visited 0
+found neighbor, branch
+matched edge 8->7 visited 0 breaking
+After PRC Block 424 Neighbors left of vertex 7 start 16 end 18 bti 1 depth 2
+found neighbor, branch
+After PRC Block 589 Neighbors left of vertex 8 start 18 end 21 bti 2 depth 1
+After PLC Block 151 Neighbors left of vertex 8 start 18 end 21 bti 0 depth 4
+After PLC Block 572 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 3
+After PLC Block 212 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 2
+After PLC Block 48 Neighbors left of vertex 11 start 25 end 29 bti 0 depth 3
+Block 151 Neighbors left of vertex 8 start 18 end 21 bti 0 depth 4
+Block 48 Neighbors left of vertex 11 start 25 end 29 bti 0 depth 3
+Block 572 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 3
+Block 212 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 2
+After PLC Block 424 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 3
+Block 262 Neighbors left of vertex 1 start 2 end 6 bti 3 depth 1
+Block 172 Neighbors left of vertex 7 start 16 end 18 bti 1 depth 3
+Block 170 No Neighbors left of vertex 3 start 8 end 11 bti 3 depth 2
+Block 418 Neighbors left of vertex 3 start 8 end 11 bti 2 depth 2
+After PLC Block 589 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 2
+matched edge 11->6 visited 0
+unmatched edge 8->4 visited 16843009
+matched edge 7->8 visited 0
+unmatched edge 3->1 visited 1
+Block 633 Neighbors left of vertex 7 start 16 end 18 bti 1 depth 2
+Block 424 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 3
+matched edge 11->6 visited 0 breaking
+matched edge 7->8 visited 0 breaking
+unmatched edge 8->7 visited 1
+unmatched edge 3->7 visited 0
+matched edge 1->3 visited 0
+Block 589 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 2
+found neighbor, branch
+matched edge 7->8 visited 0
+found neighbor, branch
+matched edge 1->3 visited 0 breaking
+matched edge 3->7 visited 0 breaking
+unmatched edge 3->11 visited 0
+unmatched edge 8->12 visited 0
+matched edge 7->8 visited 0 breaking
+After PRC Block 572 Neighbors left of vertex 7 start 16 end 18 bti 1 depth 3
+matched edge 3->1 visited 0
+matched edge 8->12 visited 0 breaking
+After PRC Block 48 Neighbors left of vertex 11 start 25 end 29 bti 1 depth 3
+matched edge 3->11 visited 0 breaking
+unmatched edge 7->8 visited 1
+found neighbor, branch
+found neighbor, branch
+matched edge 3->1 visited 0 breaking
+found neighbor, branch
+found neighbor, branch
+found neighbor, branch
+didnt find neighbor, set pop
+After PRC Block 262 Neighbors left of vertex 1 start 2 end 6 bti 4 depth 1
+unmatched edge 7->3 visited 0
+After PRC Block 212 Neighbors left of vertex 3 start 8 end 11 bti 2 depth 2
+found neighbor, branch
+After PRC Block 172 Neighbors left of vertex 7 start 16 end 18 bti 2 depth 3
+Block 348 Neighbors left of vertex 8 start 18 end 21 bti 2 depth 1
+matched edge 7->3 visited 0 breaking
+After PRC Block 151 Neighbors left of vertex 8 start 18 end 21 bti 3 depth 4
+After PRC Block 418 Neighbors left of vertex 3 start 8 end 11 bti 3 depth 2
+After PRC Block 424 Neighbors left of vertex 3 start 8 end 11 bti 1 depth 3
+found neighbor, branch
+After PRC Block 589 Neighbors left of vertex 7 start 16 end 18 bti 1 depth 2
+matched edge 8->7 visited 0
+matched edge 8->7 visited 0 breaking
+found neighbor, branch
+After PRC Block 348 Neighbors left of vertex 8 start 18 end 21 bti 3 depth 1
+After PLC Block 572 Neighbors left of vertex 8 start 18 end 21 bti 0 depth 4
+After PLC Block 48 Neighbors left of vertex 6 start 14 end 16 bti 0 depth 4
+After PLC Block 212 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 3
+After PLC Block 262 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 2
+After PLC Block 424 Neighbors left of vertex 1 start 2 end 6 bti 0 depth 4
+Block 48 Neighbors left of vertex 6 start 14 end 16 bti 0 depth 4
+Block 623 Neighbors left of vertex 7 start 16 end 18 bti 1 depth 3
+Block 312 Neighbors left of vertex 11 start 25 end 29 bti 1 depth 3
+Block 572 Neighbors left of vertex 8 start 18 end 21 bti 0 depth 4
+After PLC Block 151 Neighbors left of vertex 12 start 29 end 32 bti 0 depth 5
+Block 183 No Neighbors left of vertex 1 start 2 end 6 bti 4 depth 1
+Block 262 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 2
+Block 150 Neighbors left of vertex 3 start 8 end 11 bti 1 depth 3
+Block 212 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 3
+Block 424 Neighbors left of vertex 1 start 2 end 6 bti 0 depth 4
+Block 185 No Neighbors left of vertex 8 start 18 end 21 bti 3 depth 4
+After PLC Block 172 Neighbors left of vertex 8 start 18 end 21 bti 0 depth 4
+Block 577 Neighbors left of vertex 3 start 8 end 11 bti 2 depth 2
+Block 151 Neighbors left of vertex 12 start 29 end 32 bti 0 depth 5
+unmatched edge 6->10 visited 0
+matched edge 11->6 visited 0
+matched edge 7->8 visited 0
+unmatched edge 8->4 visited 16843009
+After PLC Block 418 Neighbors left of vertex 11 start 25 end 29 bti 0 depth 3
+matched edge 6->10 visited 0 breaking
+Block 624 No Neighbors left of vertex 7 start 16 end 18 bti 2 depth 3
+Block 172 Neighbors left of vertex 8 start 18 end 21 bti 0 depth 4
+matched edge 11->6 visited 0 breaking
+After PLC Block 589 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 3
+unmatched edge 3->1 visited 1
+unmatched edge 1->0 visited 0
+matched edge 7->8 visited 0
+matched edge 7->8 visited 0 breaking
+matched edge 3->1 visited 0
+matched edge 1->0 visited 0 breaking
+found neighbor, branch
+Block 585 No Neighbors left of vertex 3 start 8 end 11 bti 3 depth 2
+found neighbor, branch
+unmatched edge 3->7 visited 0
+unmatched edge 8->7 visited 1
+matched edge 3->1 visited 0 breaking
+matched edge 7->8 visited 0 breaking
+matched edge 3->7 visited 0 breaking
+matched edge 12->5 visited 0
+unmatched edge 3->11 visited 0
+found neighbor, branch
+found neighbor, branch
+Block 411 Neighbors left of vertex 7 start 16 end 18 bti 1 depth 2
+Block 418 Neighbors left of vertex 11 start 25 end 29 bti 0 depth 3
+Block 589 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 3
+After PRC Block 48 Neighbors left of vertex 6 start 14 end 16 bti 1 depth 4
+After PRC Block 312 Neighbors left of vertex 11 start 25 end 29 bti 2 depth 3
+matched edge 12->5 visited 0 breaking
+matched edge 3->11 visited 0 breaking
+found neighbor, branch
+found neighbor, branch
+unmatched edge 8->12 visited 0
+unmatched edge 8->4 visited 16843009
+found neighbor, branch
+found neighbor, branch
+After PRC Block 623 Neighbors left of vertex 7 start 16 end 18 bti 2 depth 3
+matched edge 8->12 visited 0 breaking
+After PRC Block 424 Neighbors left of vertex 1 start 2 end 6 bti 1 depth 4
+found neighbor, branch
+After PRC Block 150 Neighbors left of vertex 3 start 8 end 11 bti 2 depth 3
+After PRC Block 212 Neighbors left of vertex 7 start 16 end 18 bti 1 depth 3
+unmatched edge 8->7 visited 1
+found neighbor, branch
+After PRC Block 262 Neighbors left of vertex 3 start 8 end 11 bti 2 depth 2
+After PRC Block 151 Neighbors left of vertex 12 start 29 end 32 bti 1 depth 5
+After PRC Block 577 Neighbors left of vertex 3 start 8 end 11 bti 3 depth 2
+matched edge 3->1 visited 0
+matched edge 11->6 visited 0
+unmatched edge 7->8 visited 1
+matched edge 3->1 visited 0 breaking
+unmatched edge 8->12 visited 0
+After PRC Block 572 Neighbors left of vertex 8 start 18 end 21 bti 3 depth 4
+matched edge 8->12 visited 0 breaking
+matched edge 11->6 visited 0 breaking
+After PLC Block 348 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 2
+found neighbor, branch
+didnt find neighbor, set pop
+found neighbor, branch
+found neighbor, branch
+After PRC Block 589 Neighbors left of vertex 3 start 8 end 11 bti 1 depth 3
+Block 226 No Neighbors left of vertex 8 start 18 end 21 bti 3 depth 1
+After PRC Block 172 Neighbors left of vertex 8 start 18 end 21 bti 3 depth 4
+After PRC Block 418 Neighbors left of vertex 11 start 25 end 29 bti 1 depth 3
+Block 348 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 2
+unmatched edge 7->3 visited 0
+matched edge 7->3 visited 0 breaking
+After PLC Block 150 Neighbors left of vertex 1 start 2 end 6 bti 0 depth 4
+After PLC Block 48 Neighbors left of vertex 10 start 23 end 25 bti 0 depth 5
+After PLC Block 623 Neighbors left of vertex 8 start 18 end 21 bti 0 depth 4
+found neighbor, branch
+After PLC Block 312 Neighbors left of vertex 6 start 14 end 16 bti 0 depth 4
+Block 150 Neighbors left of vertex 1 start 2 end 6 bti 0 depth 4
+After PLC Block 151 Neighbors left of vertex 5 start 13 end 14 bti 0 depth 6
+After PRC Block 348 Neighbors left of vertex 7 start 16 end 18 bti 1 depth 2
+Block 349 No Neighbors left of vertex 7 start 16 end 18 bti 2 depth 3
+Block 517 Neighbors left of vertex 3 start 8 end 11 bti 2 depth 3
+Block 567 Neighbors left of vertex 6 start 14 end 16 bti 1 depth 4
+BLOCK 623 RETURNING
+BLOCK 436 RETURNING
+BLOCK 312 RETURNING
+Block 48 Neighbors left of vertex 10 start 23 end 25 bti 0 depth 5
+After PLC Block 262 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 3
+After PLC Block 577 Neighbors left of vertex 11 start 25 end 29 bti 0 depth 3
+BLOCK 136 RETURNING
+After PLC Block 424 Neighbors left of vertex 0 start 0 end 2 bti 0 depth 5
+BLOCK 151 RETURNING
+BLOCK 298 RETURNING
+BLOCK 577 RETURNING
+BLOCK 262 RETURNING
+BLOCK 464 RETURNING
+BLOCK 424 RETURNING
+unmatched edge 1->0 visited 0
+After PLC Block 589 Neighbors left of vertex 1 start 2 end 6 bti 0 depth 4
+unmatched edge 10->6 visited 1
+unmatched edge 6->11 visited 1
+matched edge 1->0 visited 0 breaking
+matched edge 3->1 visited 0
+After PLC Block 572 Neighbors left of vertex 12 start 29 end 32 bti 0 depth 5
+BLOCK 177 RETURNING
+BLOCK 380 RETURNING
+After PLC Block 212 Neighbors left of vertex 8 start 18 end 21 bti 0 depth 4
+matched edge 3->1 visited 0 breaking
+BLOCK 330 RETURNING
+After PLC Block 172 Neighbors left of vertex 12 start 29 end 32 bti 0 depth 5
+unmatched edge 10->13 visited 0
+BLOCK 589 RETURNING
+didnt find neighbor, set pop
+found neighbor, branch
+BLOCK 572 RETURNING
+matched edge 10->13 visited 0 breaking
+found neighbor, branch
+BLOCK 172 RETURNING
+BLOCK 622 RETURNING
+BLOCK 212 RETURNING
+After PRC Block 150 Neighbors left of vertex 1 start 2 end 6 bti 1 depth 4
+BLOCK 133 RETURNING
+After PLC Block 418 Neighbors left of vertex 6 start 14 end 16 bti 0 depth 4
+found neighbor, branch
+BLOCK 430 RETURNING
+After PRC Block 517 Neighbors left of vertex 3 start 8 end 11 bti 3 depth 3
+BLOCK 418 RETURNING
+After PRC Block 48 Neighbors left of vertex 10 start 23 end 25 bti 2 depth 5
+After PLC Block 348 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 3
+BLOCK 348 RETURNING
+BLOCK 606 RETURNING
+After PLC Block 150 Neighbors left of vertex 0 start 0 end 2 bti 0 depth 5
+BLOCK 389 RETURNING
+BLOCK 150 RETURNING
+After PLC Block 48 Neighbors left of vertex 13 start 32 end 35 bti 0 depth 6
+After PLC Block 517 Neighbors left of vertex 1 start 2 end 6 bti 0 depth 4
+BLOCK 48 RETURNING
+BLOCK 517 RETURNING
+BLOCK 63 RETURNING
+BLOCK 249 RETURNING

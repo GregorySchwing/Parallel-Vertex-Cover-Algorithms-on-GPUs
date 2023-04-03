@@ -222,6 +222,8 @@ int main(int argc, char *argv[]) {
         cudaMalloc((void**)&counters_d, numBlocks*sizeof(Counters));
 
         // Copy minimum
+        if (DFS)
+            minimum = 0;
         cudaMemcpy(minimum_d, &minimum, sizeof(unsigned int), cudaMemcpyHostToDevice);
 
         unsigned int *k_d = NULL;
