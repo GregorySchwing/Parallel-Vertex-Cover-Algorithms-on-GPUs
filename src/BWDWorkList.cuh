@@ -244,6 +244,8 @@ __device__ inline bool dequeue(int* vertexDegree_s, WorkList workList, unsigned 
 	if (threadIdx.x==0){
 		isWorkDone = false;
 		atomicAdd(&workList.counter->numWaiting,1);
+		printf("BlockID %d no work done num waiting %d gridDim.x %d numEnqueued %d\n", blockIdx.x,workList.counter->numWaiting, gridDim.x, workList.counter->numEnqueued);
+
 	}
 	__syncthreads();
 
