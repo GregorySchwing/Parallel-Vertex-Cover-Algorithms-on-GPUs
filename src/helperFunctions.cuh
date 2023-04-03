@@ -55,49 +55,61 @@ __device__ void deleteNeighborsOfMaxDegreeVertex(CSRGraph graph,int* vertexDegre
 }
 
 // Set foundNeighbor, this variable will determine whether I pop off the stack or push and continue.
-__device__ void findNextVertexAndVisit(CSRGraph graph,int* vertexDegrees_s, unsigned int* numDeletedVertices, unsigned int* backtrackingIndices_s,unsigned int* depth,int* vertexDegrees_s2, 
-    unsigned int* numDeletedVertices2, unsigned int* backtrackingIndices_s2, unsigned int* depth2,bool & foundNeighbor, unsigned int maxVertex){
+__device__ void findNextVertex(CSRGraph graph,int* visited_s, unsigned int* startingVertex, unsigned int* backtrackingIndices_s,unsigned int* depth, 
+    unsigned int* startingVertex2, unsigned int* depth2,bool* foundNeighbor){
 
-    *numDeletedVertices2 = *numDeletedVertices;
+    *startingVertex2 = *startingVertex;
     *depth2 = *depth;
 
-    for(unsigned int vertex = threadIdx.x; vertex<graph.vertexNum; vertex+=blockDim.x){
-        vertexDegrees_s2[vertex] = vertexDegrees_s[vertex];
-        backtrackingIndices_s2[vertex] = backtrackingIndices_s[vertex];
-    }
     __syncthreads();
-    unsigned int start = graph.srcPtr[maxVertex];
-    unsigned int end = graph.srcPtr[maxVertex + 1];
+    unsigned int start = graph.srcPtr[*startingVertex];
+    unsigned int end = graph.srcPtr[*startingVertex + 1];
     unsigned int neighbor;
-    foundNeighbor = false;
     // All threads perform same work.  It would be possible to use warp shuffles to load
     // the warp with all the neighbors and find the first valid neighbor.
     // This is the key - use the first valid neighbor, that way the linear
     // counter can be used to generate all search trees.
     if (threadIdx.x==0){
-        for(; backtrackingIndices_s2[*depth2] < end-start; backtrackingIndices_s2[*depth2]++) { // Delete Neighbors of maxVertex
-            if (graph.matching[maxVertex]>-1 && !vertexDegrees_s2[graph.matching[maxVertex]]){
-                neighbor = graph.matching[maxVertex];
-                printf("matched edge %d->%d visited %d\n", maxVertex, neighbor, vertexDegrees_s2[neighbor]);
+        *foundNeighbor = false;
+        for(; backtrackingIndices_s[*depth] < end-start; backtrackingIndices_s[*depth]++) { // Delete Neighbors of startingVertex
+            if (graph.matching[*startingVertex]>-1 && !visited_s[graph.matching[*startingVertex]]){
+                neighbor = graph.matching[*startingVertex];
+                printf("matched edge %d->%d visited %d\n", *startingVertex, neighbor, visited_s[neighbor]);
             } else {
-                neighbor = graph.dst[start + backtrackingIndices_s2[*depth2]];
-                printf("unmatched edge %d->%d visited %d\n", maxVertex, neighbor, vertexDegrees_s2[neighbor]);
+                neighbor = graph.dst[start + backtrackingIndices_s[*depth]];
+                printf("unmatched edge %d->%d visited %d\n", *startingVertex, neighbor, visited_s[neighbor]);
             }
-            if (!vertexDegrees_s2[neighbor])
+            if (!visited_s[neighbor])
             {
-                foundNeighbor = true;
+                printf("matched edge %d->%d visited %d breaking\n", *startingVertex, neighbor, visited_s[neighbor]);
+                *foundNeighbor = true;
+                *startingVertex2 = neighbor;
+                *depth2 += 1;
                 break;
             }
         }
-        
-        *numDeletedVertices2 += 1;
     }
     __syncthreads();
+}
 
-    for(unsigned int edge = graph.srcPtr[maxVertex] + threadIdx.x; edge < graph.srcPtr[maxVertex + 1] ; edge += blockDim.x) {
-        unsigned int neighbor = graph.dst[edge];
-        vertexDegrees_s2[neighbor] = -1;
+// Set foundNeighbor, this variable will determine whether I pop off the stack or push and continue.
+__device__ void prepare_right_child_DFS(unsigned int* startingVertex, unsigned int* backtrackingIndices_s,unsigned int* depth){
+    if (threadIdx.x==0){
+        backtrackingIndices_s[*depth]+=1;
     }
+    __syncthreads();
+}
+
+
+// Set foundNeighbor, this variable will determine whether I pop off the stack or push and continue.
+__device__ void prepare_left_child_DFS(int* visited_s, unsigned int* backtrackingIndices_s,unsigned int* startingVertex, unsigned int* depth, unsigned int* startingVertex2, unsigned int* depth2){
+    if (threadIdx.x==0){
+        backtrackingIndices_s[*depth]-=1;
+        visited_s[*startingVertex2]=1;
+        *depth=*depth2;
+        *startingVertex = *startingVertex2;
+    }
+    __syncthreads();
 }
 
 __device__ void deleteMaxDegreeVertex(CSRGraph graph,int* vertexDegrees_s, unsigned int* numDeletedVertices, unsigned int maxVertex){

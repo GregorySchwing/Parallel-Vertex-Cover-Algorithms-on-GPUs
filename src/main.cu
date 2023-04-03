@@ -264,18 +264,10 @@ int main(int argc, char *argv[]) {
         }
 
         int sharedMemNeeded = graph.vertexNum;
-        if (DFS){
-            if(graph.vertexNum > numThreadsPerBlock*2){
-                sharedMemNeeded+=3*(graph.vertexNum);
-            } else {
-                sharedMemNeeded+=3*(numThreadsPerBlock*2);
-            }
+        if(graph.vertexNum > numThreadsPerBlock*2){
+            sharedMemNeeded+=graph.vertexNum;
         } else {
-            if(graph.vertexNum > numThreadsPerBlock*2){
-                sharedMemNeeded+=graph.vertexNum;
-            } else {
-                sharedMemNeeded+=numThreadsPerBlock*2;
-            }
+            sharedMemNeeded+=numThreadsPerBlock*2;
         }
 
         sharedMemNeeded *= sizeof(int);
