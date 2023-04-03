@@ -306,12 +306,12 @@ __device__ inline bool dequeue_DFS(int* vertexDegree_s, unsigned int* backtracki
 	if (threadIdx.x==0){
 		isWorkDone = false;
 		atomicAdd(&workList.counter->numWaiting,1);
+		printf("BlockID %d no work done num waiting %d gridDim.x %d numEnqueued %d\n", blockIdx.x,workList.counter->numWaiting, gridDim.x, workList.counter->numEnqueued);
 	}
 	__syncthreads();
 
 	__shared__  bool hasData;
 	while (!isWorkDone) {
-
 		if (threadIdx.x==0){
 			hasData = ensureDequeue(workList);
 		}
@@ -469,10 +469,11 @@ WorkList allocateWorkList_DFS(CSRGraph graph, Config config, unsigned int numBlo
 	cudaMemcpy(head_tail_d,&head_tail,sizeof(HT),cudaMemcpyHostToDevice);
 	//cudaMemcpy((void*)list_d, graph.degree, (graph.vertexNum) * sizeof(int), cudaMemcpyHostToDevice);
     cudaMemset((void*)list_d,0,(graph.vertexNum) * sizeof(int));
+	cudaMemset((void*)backtrackingIndices_d, 0, (graph.vertexNum) * sizeof(unsigned int));
+
     cudaMemset((void*)&list_d[graph.unmatched_vertices[0]],1,sizeof(int));
 	cudaMemset((void*)&depth_d[0], 0, sizeof(unsigned int));
 	cudaMemcpy((void*)&listNumDeletedVertices_d[0], &graph.unmatched_vertices[0], sizeof(int), cudaMemcpyHostToDevice);
-	cudaMemset((void*)backtrackingIndices_d, 0, sizeof(unsigned int));
 
 
 	cudaMemset((void*)&tickets_d[0], 0, workList.size * sizeof(Ticket));

@@ -256,6 +256,8 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
     }
     __syncthreads();
     if (first_to_dequeue){
+        if (threadIdx.x==0)
+            printf("Block ID %d first to dequue\n",blockIdx.x);
         for(unsigned int vertex = threadIdx.x; vertex < graph.vertexNum; vertex += blockDim.x) {
             visited_s[vertex]=workList.list[vertex];
             backtrackingIndices_s[vertex]=workList.backtrackingIndices[vertex];
@@ -265,7 +267,8 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
     }
 
     __syncthreads();
-    
+    if (threadIdx.x==0)
+    printf("BlockID %d\n", blockIdx.x);
     while(true){
         if(dequeueOrPopNextItr) {
             if(stackTop != -1) { // Local stack is not empty, pop from the local stack
@@ -284,10 +287,13 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
                 startTime(DEQUEUE,&blockCounters);
                 
                 if(!dequeue_DFS(visited_s, backtrackingIndices_s, &depth, workList, graph.vertexNum, &startingVertex)) {   
+                                if(threadIdx.x == 0) 
+                    printf("Block %d breaking after dequeue_DFS pop %d stackTop %d depth %d startingVertex %d bti %d \n",blockIdx.x, dequeueOrPopNextItr, stackTop, depth, startingVertex,backtrackingIndices_s[depth]);
                     endTime(TERMINATE,&blockCounters);
                     break;
                 }
-                
+                            if(threadIdx.x == 0) 
+                printf("Block %d continuing after dequeue_DFS pop %d stackTop %d depth %d startingVertex %d bti %d \n",blockIdx.x, dequeueOrPopNextItr, stackTop, depth, startingVertex,backtrackingIndices_s[depth]);
                 endTime(DEQUEUE,&blockCounters);
 
                 #if USE_COUNTERS
@@ -307,12 +313,15 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
         if (minimum_s){
             if(threadIdx.x == 0) 
                 printf("BLOCK %d RETURNING\n", blockIdx.x);
-            break;
+            return;
+        } else {
+            //printf("BLOCK %d NOT RETURNING\n", blockIdx.x);
         }
-        printf("Block %d waiting depth %d startingVertex %d bti %d \n",blockIdx.x, depth, backtrackingIndices_s[depth], startingVertex);
+        if(threadIdx.x == 0) 
+            printf("Block %d waiting after return depth %d startingVertex %d bti %d \n",blockIdx.x, depth, startingVertex,backtrackingIndices_s[depth]);
 
         // Reached the bottom of the tree, no minimum vertex cover found
-        if(backtrackingIndices_s[depth]>=graph.srcPtr[startingVertex+1]-graph.srcPtr[startingVertex]) {
+        if(minimum_s || backtrackingIndices_s[depth]>=graph.srcPtr[startingVertex+1]-graph.srcPtr[startingVertex]) {
             dequeueOrPopNextItr = true;
             if (threadIdx.x==0)
             printf("Block %d No Neighbors left of vertex %d start %d end %d bti %d depth %d\n", blockIdx.x, startingVertex, graph.srcPtr[startingVertex],graph.srcPtr[startingVertex+1], backtrackingIndices_s[depth], depth);
@@ -370,6 +379,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
                 startTime(PREPARE_LEFT_CHILD,&blockCounters);
                 // Decrements the current depth's bti and sets the next vertex as visited.
                 prepare_left_child_DFS(visited_s, backtrackingIndices_s, &startingVertex, &depth, &startingVertex2,&depth2);
+                __syncthreads(); 
                 if (threadIdx.x==0)
                 printf("After PLC Block %d Neighbors left of vertex %d start %d end %d bti %d depth %d\n", blockIdx.x, startingVertex, graph.srcPtr[startingVertex],graph.srcPtr[startingVertex+1], backtrackingIndices_s[depth], depth);
                 //deleteMaxDegreeVertex(graph, visited_s, &numDeletedVertices, maxVertex);
