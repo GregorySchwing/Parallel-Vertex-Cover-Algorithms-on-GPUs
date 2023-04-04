@@ -32,12 +32,14 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
     volatile int * stackVertexDegrees = &stacks.stacks[blockIdx.x * stackSize * graph.vertexNum];
     volatile uint64_t* stackNumDeletedVertices = &stacks.stacksNumDeletedVertices[blockIdx.x * stackSize];
 
-    // Define the vertexDegree_s
+    // stored in the lower 32 bits of the stackNumDel
     unsigned int numDeletedVertices;
     unsigned int numDeletedVertices2;
-    // Define the vertexDegree_s
+    // stored in the upper 32 bits of the stackNumDel
     unsigned int edgeIndex;
     unsigned int edgeIndex2;
+
+    // Define the vertexDegree_s
 
     #if USE_GLOBAL_MEMORY
     int * vertexDegrees_s = &global_memory[graph.vertexNum*(2*blockIdx.x)];
@@ -64,7 +66,8 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
         for(unsigned int vertex = threadIdx.x; vertex < graph.vertexNum; vertex += blockDim.x) {
             vertexDegrees_s[vertex]=workList.list[vertex];
         }
-        numDeletedVertices = workList.listNumDeletedVertices[0];
+        numDeletedVertices = (uint32_t)workList.listNumDeletedVertices[0];
+        edgeIndex = (workList.listNumDeletedVertices[0] >> 32);
         dequeueOrPopNextItr = false;
     }
 
@@ -74,7 +77,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
         if(dequeueOrPopNextItr) {
             if(stackTop != -1) { // Local stack is not empty, pop from the local stack
                 startTime(POP_FROM_STACK,&blockCounters);
-                popStack(graph.vertexNum, vertexDegrees_s, &numDeletedVertices, stackVertexDegrees, stackNumDeletedVertices, &stackTop);               
+                popStack_DFS(graph.vertexNum, vertexDegrees_s, &numDeletedVertices, &edgeIndex, stackVertexDegrees, stackNumDeletedVertices, &stackTop);               
                 endTime(POP_FROM_STACK,&blockCounters);
 
                 #if USE_COUNTERS
@@ -86,7 +89,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
             } else { // Local stack is empty, read from the global workList
                 startTime(TERMINATE,&blockCounters);
                 startTime(DEQUEUE,&blockCounters);
-                if(!dequeue(vertexDegrees_s, workList, graph.vertexNum, &numDeletedVertices)) {   
+                if(!dequeue_DFS(vertexDegrees_s, workList, graph.vertexNum, &numDeletedVertices, &edgeIndex)) {   
                     endTime(TERMINATE,&blockCounters);
                     break;
                 }
@@ -168,7 +171,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
                 bool enqueueSuccess;
                 if(checkThreshold(workList)){
                     startTime(ENQUEUE,&blockCounters);
-                    enqueueSuccess = enqueue(vertexDegrees_s2, workList, graph.vertexNum, &numDeletedVertices2);
+                    enqueueSuccess = enqueue_DFS(vertexDegrees_s2, workList, graph.vertexNum, &numDeletedVertices2,&edgeIndex2);
                 } else  {
                     enqueueSuccess = false;
                 }
@@ -177,7 +180,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
                 
                 if(!enqueueSuccess) {
                     startTime(PUSH_TO_STACK,&blockCounters);
-                    pushStack(graph.vertexNum, vertexDegrees_s2, &numDeletedVertices2, stackVertexDegrees, stackNumDeletedVertices, &stackTop);                    
+                    pushStack_DFS(graph.vertexNum, vertexDegrees_s2, &numDeletedVertices2, stackVertexDegrees, stackNumDeletedVertices, &stackTop);                    
                     maxDepth(stackTop, &blockCounters);
                     endTime(PUSH_TO_STACK,&blockCounters);
                     __syncthreads(); 
