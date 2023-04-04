@@ -290,6 +290,8 @@ __global__ void GlobalWorkList_shared_DFS_2_kernel(Stacks stacks, unsigned int *
                     endTime(TERMINATE,&blockCounters);
                     break;
                 }
+                //if (backtrackingIndices_s[threadIdx.x]>0)
+                //    printf("after popping blockid %d thread ID %d bti %d depth %d numDeletedVertices %d\n", blockIdx.x, threadIdx.x, backtrackingIndices_s[threadIdx.x], depth, numDeletedVertices);
                 endTime(DEQUEUE,&blockCounters);
 
                 #if USE_COUNTERS
@@ -313,9 +315,11 @@ __global__ void GlobalWorkList_shared_DFS_2_kernel(Stacks stacks, unsigned int *
             minimum_s = atomicOr(minimum,graph.matching[numDeletedVertices]==-1&&depth>0);
         }
         __syncthreads();
-
+        
         // Either another block found a path or this block reached a dead-end
         if(minimum_s||backtrackingIndices_s[depth]>=(graph.srcPtr[numDeletedVertices+1]-graph.srcPtr[numDeletedVertices])) { // Reached the bottom of the tree, no minimum vertex cover found
+            if (backtrackingIndices_s[depth]>0)
+                printf("blockID %d dequeueOrPopNextItr\n", blockIdx.x);
             dequeueOrPopNextItr = true;
         } else {
             //unsigned int maxVertex;

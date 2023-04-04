@@ -489,6 +489,7 @@ __device__ void findUnmatchedNeighbor(CSRGraph graph,unsigned int startingVertex
     // This is the key - use the first valid neighbor, that way the linear
     // counter can be used to generate all search trees.
     if (threadIdx.x==0){
+        printf("inside findUnmatchedNeighbor blockid %d thread ID %d bti %d depth %d startingVertex %d\n", blockIdx.x, threadIdx.x, backtrackingIndices_s[depth], depth, startingVertex);
         unsigned int start = graph.srcPtr[startingVertex];
         unsigned int end = graph.srcPtr[startingVertex + 1];
         for(; backtrackingIndices_s[depth] < end-start; backtrackingIndices_s[depth]++) { // Delete Neighbors of startingVertex

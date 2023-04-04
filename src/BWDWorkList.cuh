@@ -176,7 +176,8 @@ __device__ void readData_DFS(int* vertexDegree_s, int* backtrackingIndices_s, un
 	for(unsigned int vertex = threadIdx.x; vertex < vertexNum; vertex += blockDim.x) {
 		vertexDegree_s[vertex] = workList.list[P*vertexNum + vertex];
 		backtrackingIndices_s[vertex] = workList.backtrackingIndices[P*vertexNum + vertex];
-
+		if (backtrackingIndices_s[vertex]>0)
+			printf("blockid %d thread ID %d bti %d depth %d \n", blockIdx.x, vertex, backtrackingIndices_s[vertex], workList.depth[P]);
 	}
 
 	*vcSize = workList.listNumDeletedVertices[P];
@@ -203,6 +204,7 @@ __device__ void putData_DFS(int* vertexDegree_s, int* backtrackingIndices_s, uns
 
 	for(unsigned int i = threadIdx.x; i < vertexNum; i += blockDim.x) {
 		workList.list[i + (P)*(vertexNum)] = vertexDegree_s[i];
+		//printf("thread %d pushing %d \n",i,backtrackingIndices_s[i]);
 		workList.backtrackingIndices[i + (P)*(vertexNum)] = backtrackingIndices_s[i];
 	}
 
