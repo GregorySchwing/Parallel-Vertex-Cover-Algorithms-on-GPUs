@@ -30,6 +30,16 @@ using namespace std;
 //#include <PCSR.h>
 
 
+inline void checkLastErrorCUDA(const char *file, int line)
+{
+  cudaError_t code = cudaGetLastError();
+  if (code != cudaSuccess) {
+    fprintf(stderr, "GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+    exit(code);
+  }
+}
+
+
 int main(int argc, char *argv[]) {
 
     Config config = parseArgs(argc,argv);
@@ -272,6 +282,7 @@ int main(int argc, char *argv[]) {
         cudaEventSynchronize(stop);
 
         cudaError_t err = cudaDeviceSynchronize();
+        checkLastErrorCUDA(__FILE__, __LINE__);
         if(err != cudaSuccess) {
             printf("GPU Error: %s\n", cudaGetErrorString(err));
             exit(1);
