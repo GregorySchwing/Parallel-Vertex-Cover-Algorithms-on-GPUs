@@ -455,7 +455,9 @@ WorkList allocateWorkList_DFS(CSRGraph graph, Config config, unsigned int numBlo
 	uint32_t leastSignificantWord = graph.unmatched_vertices[0];
 	uint32_t mostSignificantWord = 0;
 	uint64_t edgePair = (uint64_t) mostSignificantWord << 32 | leastSignificantWord;
-	cudaMemset((void*)&listNumDeletedVertices_d[0], edgePair, sizeof(uint64_t));
+	//cudaMemset((void*)&listNumDeletedVertices_d[0], edgePair, sizeof(uint64_t));
+	cudaMemcpy((void*)listNumDeletedVertices_d, &edgePair ,sizeof(uint64_t),cudaMemcpyHostToDevice);
+
 	cudaMemset((void*)&tickets_d[0], 0, workList.size * sizeof(Ticket));
 	cudaMemset(count_d, 0, sizeof(int));
 	cudaMemcpy(counter_d, &counter ,sizeof(Counter),cudaMemcpyHostToDevice);

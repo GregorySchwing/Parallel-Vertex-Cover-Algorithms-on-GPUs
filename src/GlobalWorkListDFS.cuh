@@ -68,6 +68,8 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
         }
         numDeletedVertices = (uint32_t)workList.listNumDeletedVertices[0];
         edgeIndex = (workList.listNumDeletedVertices[0] >> 32);
+        if (threadIdx.x == 0)
+            printf("numDeletedVertices %d edgeIndex %d \n", numDeletedVertices, edgeIndex);
         dequeueOrPopNextItr = false;
     }
 
@@ -106,7 +108,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
 
         __shared__ unsigned int minimum_s;
         if(threadIdx.x == 0) {
-            minimum_s = atomicOr(minimum,graph.matching[numDeletedVertices]==-1&&numDeletedVertices!=graph.unmatched_vertices[0]);
+            minimum_s = atomicOr(minimum,graph.matching[numDeletedVertices]==-1&&!vertexDegrees_s[numDeletedVertices]);
         }
 
         __syncthreads();
@@ -114,7 +116,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
         //unsigned int numOfEdges = findNumOfEdges(graph.vertexNum, vertexDegrees_s, vertexDegrees_s2);
 
         if(threadIdx.x == 0) {
-            minimum_s = atomicOr(minimum,graph.matching[numDeletedVertices]==-1&&numDeletedVertices!=graph.unmatched_vertices[0]);
+            minimum_s = atomicOr(minimum,graph.matching[numDeletedVertices]==-1&&!vertexDegrees_s[numDeletedVertices]);
         }
         /*
         if(threadIdx.x == 0) {
