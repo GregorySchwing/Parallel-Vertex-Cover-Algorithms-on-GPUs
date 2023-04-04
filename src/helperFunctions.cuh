@@ -325,6 +325,66 @@ __device__ void findMaxDegree(unsigned int vertexNum, unsigned int *maxVertex, i
     *maxDegree = degree_s[0];
 }
 
+
+
+__device__ void findUnmatchedNeighbor(CSRGraph graph,unsigned int startingVertex, unsigned int *edgeIndex, unsigned int *neighbor, unsigned int *foundNeighbor,int *visited_s) {
+    // All threads perform same work.  It would be possible to use warp shuffles to load
+    // the warp with all the neighbors and find the first valid neighbor.
+    // This is the key - use the first valid neighbor, that way the linear
+    // counter can be used to generate all search trees.
+    if (threadIdx.x==0){
+        unsigned int start = graph.srcPtr[startingVertex];
+        unsigned int end = graph.srcPtr[startingVertex + 1];
+        for(; *edgeIndex < end-start; *edgeIndex++) { // Delete Neighbors of startingVertex
+            if (graph.matching[startingVertex]>-1 && !visited_s[graph.matching[startingVertex]]){
+                    *neighbor = graph.matching[startingVertex];
+                    printf("matched edge %d->%d \n", startingVertex, *neighbor);
+                    *foundNeighbor=1;
+                    break;
+            } else {
+                if (!visited_s[graph.dst[start + *edgeIndex]]){
+                    *neighbor = graph.dst[start + *edgeIndex];
+                    *foundNeighbor=1;
+                    printf("unmatched edge %d->%d \n", startingVertex, *neighbor);
+                    break;
+                }
+            }
+        }
+    }
+    __syncthreads();
+}
+
+__device__ void prepareRightChild(CSRGraph graph,int* vertexDegrees_s, unsigned int* numDeletedVertices, unsigned int * edgeIndex, int* vertexDegrees_s2, 
+    unsigned int* numDeletedVertices2, unsigned int * edgeIndex2){
+    if (threadIdx.x==0){
+        *numDeletedVertices2 = *numDeletedVertices;
+        *edgeIndex2 = *edgeIndex;
+    }
+    for(unsigned int vertex = threadIdx.x; vertex<graph.vertexNum; vertex+=blockDim.x){
+        vertexDegrees_s2[vertex] = vertexDegrees_s[vertex];
+    }
+
+    __syncthreads();
+
+    if (threadIdx.x==0){
+        *edgeIndex2+=1;
+    }
+    __syncthreads();
+
+}
+
+__device__ void prepareLeftChild(int* vertexDegrees_s, unsigned int* numDeletedVertices, unsigned int* edgeIndex, unsigned int* neighbor){
+
+    if (threadIdx.x==0){
+        vertexDegrees_s[*neighbor]=1;
+        *numDeletedVertices=*neighbor;
+        *edgeIndex=0;
+    }
+
+    __syncthreads();
+
+}
+
 __device__ unsigned int findNumOfEdges(unsigned int vertexNum, int *vertexDegrees_s, int * shared_mem){
     int sumDegree = 0;
     for(unsigned int vertex = threadIdx.x; vertex < vertexNum; vertex += blockDim.x) {

@@ -103,68 +103,67 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
             }
         }
 
+
         __shared__ unsigned int minimum_s;
         if(threadIdx.x == 0) {
-            minimum_s = atomicOr(minimum,0);
+            minimum_s = atomicOr(minimum,graph.matching[numDeletedVertices]==-1&&numDeletedVertices!=graph.unmatched_vertices[0]);
         }
 
         __syncthreads();
-
-        unsigned int iterationCounter = 0, numDeletedVerticesLeaf, numDeletedVerticesTriangle, numDeletedVerticesHighDegree;
-        do{
-            startTime(LEAF_REDUCTION,&blockCounters);
-            numDeletedVerticesLeaf = leafReductionRule(graph.vertexNum, vertexDegrees_s, graph, vertexDegrees_s2);
-            endTime(LEAF_REDUCTION,&blockCounters);
-            numDeletedVertices += numDeletedVerticesLeaf;
-            if(iterationCounter==0 || numDeletedVerticesLeaf > 0 || numDeletedVerticesHighDegree > 0){
-                startTime(TRIANGLE_REDUCTION,&blockCounters);
-                numDeletedVerticesTriangle = triangleReductionRule(graph.vertexNum, vertexDegrees_s, graph, vertexDegrees_s2);
-                endTime(TRIANGLE_REDUCTION,&blockCounters);
-                numDeletedVertices += numDeletedVerticesTriangle;
-            } else {
-                numDeletedVerticesTriangle = 0;
-            }
-            if(iterationCounter==0 || numDeletedVerticesLeaf > 0 || numDeletedVerticesTriangle > 0){
-                startTime(HIGH_DEGREE_REDUCTION,&blockCounters);
-                numDeletedVerticesHighDegree = highDegreeReductionRule(graph.vertexNum, vertexDegrees_s, graph, vertexDegrees_s2,numDeletedVertices,minimum_s);
-                endTime(HIGH_DEGREE_REDUCTION,&blockCounters);
-                numDeletedVertices += numDeletedVerticesHighDegree;
-            }else {
-                numDeletedVerticesHighDegree = 0;
-            }
-            ++iterationCounter;
-        }while(numDeletedVerticesTriangle > 0 || numDeletedVerticesHighDegree > 0);
         
-        unsigned int numOfEdges = findNumOfEdges(graph.vertexNum, vertexDegrees_s, vertexDegrees_s2);
+        //unsigned int numOfEdges = findNumOfEdges(graph.vertexNum, vertexDegrees_s, vertexDegrees_s2);
 
         if(threadIdx.x == 0) {
-            minimum_s = atomicOr(minimum,0);
+            minimum_s = atomicOr(minimum,graph.matching[numDeletedVertices]==-1&&numDeletedVertices!=graph.unmatched_vertices[0]);
         }
+        /*
+        if(threadIdx.x == 0) {
+            if(graph.matching[numDeletedVertices]==-1&&depth>0){
+                if(0 == atomicCAS(solution_mutex, 0, 1)){
+                    // Write stack of starting vertices to solution array.
+                    copySolution(graph.vertexNum,graph.solution,graph.solution_length,graph.solution_last_vertex,&numDeletedVertices,vertexDegrees_s,&depth);
+                    printf("Found solution of length %d starting with %d and ending with %d\n",graph.solution_length,graph.unmatched_vertices[0],graph.solution_last_vertex);
+                }
+            }
+        }
+        */
         __syncthreads();
 
-        if(numDeletedVertices >= minimum_s || numOfEdges>=square(minimum_s-numDeletedVertices-1)+1) { // Reached the bottom of the tree, no minimum vertex cover found
+        // Either another block found a path or 
+        // this block reached a dead-end
+        if(minimum_s||edgeIndex>=(graph.srcPtr[numDeletedVertices+1]-graph.srcPtr[numDeletedVertices])) { // Reached the bottom of the tree, no minimum vertex cover found
             dequeueOrPopNextItr = true;
-
         } else {
             unsigned int maxVertex;
             int maxDegree;
+            __shared__ unsigned int neighbor;
+            __shared__ unsigned int foundNeighbor;
+            foundNeighbor = 0;
             startTime(MAX_DEGREE,&blockCounters);
-            findMaxDegree(graph.vertexNum, &maxVertex, &maxDegree, vertexDegrees_s, vertexDegrees_s2);
+            //findMaxDegree(graph.vertexNum, &maxVertex, &maxDegree, vertexDegrees_s, vertexDegrees_s2);
+            findUnmatchedNeighbor(graph,numDeletedVertices,&edgeIndex,&neighbor,&foundNeighbor,vertexDegrees_s);
             endTime(MAX_DEGREE,&blockCounters);
 
             __syncthreads();
-            if(maxDegree == 0) { // Reached the bottom of the tree, minimum vertex cover possibly found
+            if(!foundNeighbor) { // Reached the bottom of the tree, minimum vertex cover possibly found
+                /*
                 if(threadIdx.x==0){
                     atomicMin(minimum, numDeletedVertices);
                 }
-
+                */
                 dequeueOrPopNextItr = true;
 
             } else { // Vertex cover not found, need to branch
 
+
                 startTime(PREPARE_RIGHT_CHILD,&blockCounters);
-                deleteNeighborsOfMaxDegreeVertex(graph,vertexDegrees_s, &numDeletedVertices, vertexDegrees_s2, &numDeletedVertices2, maxDegree, maxVertex);
+                // Right child increments backtracking indices without incrementing depth
+                // this doesnt set any visited flags
+                //deleteNeighborsOfMaxDegreeVertex(graph,vertexDegrees_s, &numDeletedVertices, vertexDegrees_s2, &numDeletedVertices2, maxDegree, maxVertex);
+                //deleteNeighborsOfMaxDegreeVertex(graph,vertexDegrees_s, &numDeletedVertices, vertexDegrees_s2, &numDeletedVertices2, maxDegree, maxVertex);
+                prepareRightChild(graph,vertexDegrees_s,&numDeletedVertices,&edgeIndex,vertexDegrees_s2,&numDeletedVertices2,&edgeIndex2);
                 endTime(PREPARE_RIGHT_CHILD,&blockCounters);
+
 
                 __syncthreads();
 
@@ -190,7 +189,11 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
 
                 startTime(PREPARE_LEFT_CHILD,&blockCounters);
                 // Prepare the child that removes the neighbors of the max vertex to be processed on the next iteration
-                deleteMaxDegreeVertex(graph, vertexDegrees_s, &numDeletedVertices, maxVertex);
+                //deleteMaxDegreeVertex(graph, vertexDegrees_s, &numDeletedVertices, maxVertex);
+                // Left child increments leaves backtracking indices as is
+                // sets foundNeighbor flag, increments depth, and sets startVertex to neighbor
+                //deleteMaxDegreeVertex(graph, vertexDegrees_s, &numDeletedVertices, maxVertex);
+                prepareLeftChild(vertexDegrees_s,&numDeletedVertices,&edgeIndex,&neighbor);
                 endTime(PREPARE_LEFT_CHILD,&blockCounters);
 
                 dequeueOrPopNextItr = false;
