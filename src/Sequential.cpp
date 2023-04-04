@@ -24,7 +24,13 @@ unsigned int Sequential(CSRGraph graph, unsigned int minimum)
         //stack.stack[j] = graph.visited[j];
         stack.stack[j] = 0;
     }
-    stack.startVertex[stack.top] = 1;
+    for (unsigned int j = 0; j < graph.num_unmatched_vertices; ++j)
+    {
+        //stack.stack[j] = graph.visited[j];
+        printf("%d ",graph.unmatched_vertices[j]);
+    }
+    stack.startVertex[stack.top] = graph.unmatched_vertices[0];
+    //stack.startVertex[stack.top] = 1;
 
     bool popNextItr = true;
     int *visited = (int *)malloc(sizeof(int) * graph.vertexNum);

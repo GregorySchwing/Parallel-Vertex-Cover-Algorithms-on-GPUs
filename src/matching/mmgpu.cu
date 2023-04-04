@@ -42,6 +42,9 @@
 #include <thrust/functional.h>
 #include <thrust/device_vector.h>
 #include <thrust/host_vector.h>
+#include <thrust/complex.h>
+#include <thrust/transform.h>
+//using mt = thrust::complex<int>;
 #include "bfstdcsc.h"
 
 struct is_less_than_0
@@ -396,7 +399,10 @@ void add_edges_to_unmatched_from_last_vertex_gpu_csc(CSRGraph & graph,CSRGraph &
   }
 
   thrust::device_ptr<int> m_vec=thrust::device_pointer_cast(m_d);
+  thrust::device_ptr<int> deg_vec=thrust::device_pointer_cast(graph_d.degree);
+  thrust::device_vector<int> masked_matching(graph.vertexNum);
 
+  thrust::transform(m_vec, m_vec+graph.vertexNum, deg_vec, masked_matching.begin(), thrust::multiplies<int>());
   using namespace thrust;
   using namespace thrust::placeholders;
 
@@ -404,29 +410,29 @@ void add_edges_to_unmatched_from_last_vertex_gpu_csc(CSRGraph & graph,CSRGraph &
  thrust::device_vector<int> indices(graph.vertexNum);
  // compute indices of nonzero elements
  typedef thrust::device_vector<int>::iterator IndexIterator;
- IndexIterator indices_end; /*= thrust::copy_if(thrust::make_counting_iterator(0),
-                                             thrust::make_counting_iterator(graph.vertexNum),
-                                             m_vec,
+ IndexIterator indices_end = thrust::copy_if(thrust::make_counting_iterator(0),
+                                             thrust::make_counting_iterator((int)(graph.vertexNum)),
+                                             &masked_matching[0],
                                              indices.begin(),
-                                             _1 == -1);*/
+                                             _1 < 0);
 
   printf("\nnum unmatched %d\n", indices_end-indices.begin());
   m->num_matched_h[0] = graph.vertexNum-(indices_end-indices.begin());
   // Set number of sources
-  thrust::device_ptr<unsigned int> CP_vec=thrust::device_pointer_cast(CP_d);
+  //thrust::device_ptr<unsigned int> CP_vec=thrust::device_pointer_cast(CP_d);
 
   // NumSources = (indices_end-indices.begin())
   // Previous index = edgeNum
   // Prefix sum = previous index + NumSources
-  thrust::device_vector<int> numSourcesPrefixSum(1);
+  //thrust::device_vector<int> numSourcesPrefixSum(1);
 
-  numSourcesPrefixSum[0] = graph.edgeNum+(indices_end-indices.begin());
+  //numSourcesPrefixSum[0] = graph.edgeNum+(indices_end-indices.begin());
 
   // CP is int[N+2], vertexNum+1 = N+1, CP[N+1]=num unmatched+edgeNum
-  thrust::copy(thrust::device, numSourcesPrefixSum.begin(), numSourcesPrefixSum.end(), CP_vec+graph.vertexNum+1);
+  //thrust::copy(thrust::device, numSourcesPrefixSum.begin(), numSourcesPrefixSum.end(), CP_vec+graph.vertexNum+1);
 
   // Set sources
-  thrust::device_ptr<unsigned int> IC_vec=thrust::device_pointer_cast(IC_d);
+  //thrust::device_ptr<unsigned int> IC_vec=thrust::device_pointer_cast(IC_d);
 
   // IC is int[edgeNum+((N+1)/2)], 
   // IC[edgeNum]...IC[edgeNum+num unmatched] = sources
@@ -435,7 +441,11 @@ void add_edges_to_unmatched_from_last_vertex_gpu_csc(CSRGraph & graph,CSRGraph &
   //printf("New edge count %d\n", edgeNum+(indices_end-indices.begin()));
 
   // Copy sources into column array IC at CP[N] to CP[N+1]
-  thrust::copy(thrust::device, indices.begin(), indices_end, IC_vec+graph.edgeNum);
+  //thrust::copy(thrust::device, indices.begin(), indices_end, IC_vec+graph.edgeNum);
+  graph.num_unmatched_vertices=(indices_end-indices.begin());
+  cudaMemcpy(graph.unmatched_vertices, thrust::raw_pointer_cast(&indices[0]), graph.num_unmatched_vertices*sizeof(*graph.unmatched_vertices), cudaMemcpyDeviceToHost);
+  cudaMemcpy(graph.matching, m_d, graph.num_unmatched_vertices*sizeof(*graph.unmatched_vertices), cudaMemcpyDeviceToHost);
+  cudaMemcpy(graph_d.matching, m_d, graph.num_unmatched_vertices*sizeof(*graph.unmatched_vertices), cudaMemcpyDeviceToHost);
 
   if (exec_protocol){
 

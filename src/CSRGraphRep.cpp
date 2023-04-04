@@ -17,6 +17,7 @@ void CSRGraph::create(unsigned int xn,unsigned int xm){
         srcPtr = (unsigned int*)malloc(sizeof(unsigned int)*(vertexNum+1));
         degree = (int*)malloc(sizeof(int)*vertexNum);
         matching = (int*)malloc(sizeof(int)*vertexNum);
+        unmatched_vertices = (unsigned int*)malloc(sizeof(unsigned int)*((vertexNum/2)+1));
 
         for(unsigned int i=0;i<vertexNum;i++){
             degree[i]=0;
@@ -31,6 +32,8 @@ void CSRGraph::copy(CSRGraph g){
     dst = (unsigned int*)malloc(sizeof(unsigned int)*2*edgeNum);
     srcPtr = (unsigned int*)malloc(sizeof(unsigned int)*(vertexNum+1));
     degree = (int*)malloc(sizeof(int)*vertexNum);
+    matching = (int*)malloc(sizeof(int)*vertexNum);
+    unmatched_vertices = (unsigned int*)malloc(sizeof(unsigned int)*((vertexNum/2)+1));
 
     for(unsigned int i = 0;i<vertexNum;i++){
         srcPtr[i] = g.srcPtr[i];
@@ -101,4 +104,8 @@ void CSRGraph::del(){
     srcPtr = NULL;
     free(degree);
     degree = NULL;
+    free(matching);
+    matching = NULL;
+    free(unmatched_vertices);
+    unmatched_vertices = NULL;
 }
