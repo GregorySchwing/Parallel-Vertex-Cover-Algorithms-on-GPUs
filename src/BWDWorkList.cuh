@@ -163,7 +163,7 @@ __device__ void putData(int* vertexDegree_s, unsigned int * vcSize, WorkList wor
 }
 
 
-__device__ void readData_DFS(int* vertexDegree_s, unsigned int* backtrackingIndices_s, unsigned int* depth, unsigned int * vcSize, WorkList workList, unsigned int vertexNum){	
+__device__ void readData_DFS(int* vertexDegree_s, int* backtrackingIndices_s, unsigned int* depth, unsigned int * vcSize, WorkList workList, unsigned int vertexNum){	
 	__shared__ unsigned int P;
 	unsigned int Pos;
 	if (threadIdx.x==0){
@@ -244,8 +244,6 @@ __device__ inline bool dequeue(int* vertexDegree_s, WorkList workList, unsigned 
 	if (threadIdx.x==0){
 		isWorkDone = false;
 		atomicAdd(&workList.counter->numWaiting,1);
-		printf("BlockID %d no work done num waiting %d gridDim.x %d numEnqueued %d\n", blockIdx.x,workList.counter->numWaiting, gridDim.x, workList.counter->numEnqueued);
-
 	}
 	__syncthreads();
 
@@ -301,14 +299,13 @@ __device__ inline bool enqueue_DFS(int* vertexDegree_s, unsigned int* backtracki
 }
 
 
-__device__ inline bool dequeue_DFS(int* vertexDegree_s, unsigned int* backtrackingIndices_s, unsigned int* depth, WorkList workList, unsigned int vertexNum,unsigned int * vcSize){	
+__device__ inline bool dequeue_DFS(int* vertexDegree_s, int* backtrackingIndices_s, unsigned int* depth, WorkList workList, unsigned int vertexNum,unsigned int * vcSize){	
 	unsigned int expoBackOff = 0;
 
 	__shared__  bool isWorkDone;
 	if (threadIdx.x==0){
 		isWorkDone = false;
 		atomicAdd(&workList.counter->numWaiting,1);
-		printf("BlockID %d no work done num waiting %d gridDim.x %d numEnqueued %d\n", blockIdx.x,workList.counter->numWaiting, gridDim.x, workList.counter->numEnqueued);
 	}
 	__syncthreads();
 

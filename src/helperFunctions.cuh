@@ -54,6 +54,40 @@ __device__ void deleteNeighborsOfMaxDegreeVertex(CSRGraph graph,int* vertexDegre
     }
 }
 
+
+__device__ void prepareRightChild(CSRGraph graph,int* vertexDegrees_s, unsigned int* numDeletedVertices, int * backtrackingIndices_s, unsigned int* depth, int* vertexDegrees_s2, 
+    unsigned int* numDeletedVertices2, int * backtrackingIndices_s2, unsigned int* depth2){
+    if (threadIdx.x==0){
+        *numDeletedVertices2 = *numDeletedVertices;
+        *depth2 = *depth;
+    }
+    for(unsigned int vertex = threadIdx.x; vertex<graph.vertexNum; vertex+=blockDim.x){
+        vertexDegrees_s2[vertex] = vertexDegrees_s[vertex];
+        backtrackingIndices_s2[vertex] = backtrackingIndices_s[vertex];
+    }
+
+    __syncthreads();
+
+    if (threadIdx.x==0){
+        int v = *depth2;
+        backtrackingIndices_s2[v]=backtrackingIndices_s2[v]+1;
+    }
+    __syncthreads();
+
+}
+
+
+__device__ void prepareLeftChild(int* vertexDegrees_s, unsigned int* numDeletedVertices, unsigned int* depth, unsigned int* neighbor){
+
+    if (threadIdx.x==0){
+        *depth+=1;
+        vertexDegrees_s[*neighbor]=1;
+    }
+
+    __syncthreads();
+
+}
+
 // Set foundNeighbor, this variable will determine whether I pop off the stack or push and continue.
 __device__ void findNextVertex(CSRGraph graph,int* visited_s, unsigned int* startingVertex, unsigned int* backtrackingIndices_s,unsigned int* depth, 
     unsigned int* startingVertex2, unsigned int* depth2,bool* foundNeighbor){
@@ -443,6 +477,34 @@ __device__ void findMaxDegree(unsigned int vertexNum, unsigned int *maxVertex, i
     }
     *maxVertex = vertex_s[0];
     *maxDegree = degree_s[0];
+}
+
+
+__device__ void findUnmatchedNeighbor(CSRGraph graph,unsigned int startingVertex, unsigned int depth, unsigned int *neighbor, unsigned int *foundNeighbor,int *visited_s, int* backtrackingIndices_s) {
+    // All threads perform same work.  It would be possible to use warp shuffles to load
+    // the warp with all the neighbors and find the first valid neighbor.
+    // This is the key - use the first valid neighbor, that way the linear
+    // counter can be used to generate all search trees.
+    if (threadIdx.x==0){
+        unsigned int start = graph.srcPtr[startingVertex];
+        unsigned int end = graph.srcPtr[startingVertex + 1];
+        for(; backtrackingIndices_s[depth] < end-start; backtrackingIndices_s[depth]++) { // Delete Neighbors of startingVertex
+            if (graph.matching[startingVertex]>-1 && !visited_s[graph.matching[startingVertex]]){
+                    *neighbor = graph.matching[startingVertex];
+                    printf("matched edge %d->%d \n", startingVertex, *neighbor);
+                    *foundNeighbor=1;
+                    break;
+            } else {
+                if (!visited_s[graph.dst[start + backtrackingIndices_s[depth]]]){
+                    *neighbor = graph.dst[start + backtrackingIndices_s[depth]];
+                    *foundNeighbor=1;
+                    printf("unmatched edge %d->%d \n", startingVertex, *neighbor);
+                    break;
+                }
+            }
+        }
+    }
+    //__syncthreads();
 }
 
 __device__ unsigned int findNumOfEdges(unsigned int vertexNum, int *vertexDegrees_s, int * shared_mem){

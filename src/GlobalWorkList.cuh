@@ -230,14 +230,17 @@ __global__ void GlobalWorkList_shared_DFS_2_kernel(Stacks stacks, unsigned int *
     unsigned int numDeletedVertices2;
     unsigned int depth;
     unsigned int depth2;
-    int * backtrackingIndices;
     #if USE_GLOBAL_MEMORY
     int * vertexDegrees_s = &global_memory[graph.vertexNum*(2*blockIdx.x)];
     int * vertexDegrees_s2 = &global_memory[graph.vertexNum*(2*blockIdx.x + 1)];
+    int * backtrackingIndices_s = &global_memory[graph.vertexNum*(2*blockIdx.x + 2)];
+    int * backtrackingIndices_s2 = &global_memory[graph.vertexNum*(2*blockIdx.x + 3)];
     #else
     extern __shared__ int shared_mem[];
     int * vertexDegrees_s = shared_mem;
     int * vertexDegrees_s2 = &shared_mem[graph.vertexNum];
+    int * backtrackingIndices_s = &shared_mem[graph.vertexNum*2];
+    int * backtrackingIndices_s2 = &shared_mem[graph.vertexNum*3];
     #endif
 
     bool dequeueOrPopNextItr = true; 
@@ -252,11 +255,16 @@ __global__ void GlobalWorkList_shared_DFS_2_kernel(Stacks stacks, unsigned int *
         }
     }
     __syncthreads();
+
     if (first_to_dequeue){
+        if (threadIdx.x==0)
+            printf("Block ID %d first to dequue\n",blockIdx.x);
         for(unsigned int vertex = threadIdx.x; vertex < graph.vertexNum; vertex += blockDim.x) {
             vertexDegrees_s[vertex]=workList.list[vertex];
+            backtrackingIndices_s[vertex]=workList.backtrackingIndices[vertex];
         }
         numDeletedVertices = workList.listNumDeletedVertices[0];
+        depth = workList.depth[0];
         dequeueOrPopNextItr = false;
     }
 
@@ -266,7 +274,7 @@ __global__ void GlobalWorkList_shared_DFS_2_kernel(Stacks stacks, unsigned int *
         if(dequeueOrPopNextItr) {
             if(stackTop != -1) { // Local stack is not empty, pop from the local stack
                 startTime(POP_FROM_STACK,&blockCounters);
-                popStack_DFS(graph.vertexNum, vertexDegrees_s, &numDeletedVertices, &depth, backtrackingIndices, stackVertexDegrees, stackNumDeletedVertices, stackDepth, stackBacktrackingIndices, &stackTop);               
+                popStack_DFS(graph.vertexNum, vertexDegrees_s, &numDeletedVertices, &depth, backtrackingIndices_s, stackVertexDegrees, stackNumDeletedVertices, stackDepth, stackBacktrackingIndices, &stackTop);               
                 endTime(POP_FROM_STACK,&blockCounters);
 
                 #if USE_COUNTERS
@@ -278,7 +286,7 @@ __global__ void GlobalWorkList_shared_DFS_2_kernel(Stacks stacks, unsigned int *
             } else { // Local stack is empty, read from the global workList
                 startTime(TERMINATE,&blockCounters);
                 startTime(DEQUEUE,&blockCounters);
-                if(!dequeue(vertexDegrees_s, workList, graph.vertexNum, &numDeletedVertices)) {   
+                if(!dequeue_DFS(vertexDegrees_s, backtrackingIndices_s, &depth, workList, graph.vertexNum, &numDeletedVertices)) {   
                     endTime(TERMINATE,&blockCounters);
                     break;
                 }
@@ -294,7 +302,7 @@ __global__ void GlobalWorkList_shared_DFS_2_kernel(Stacks stacks, unsigned int *
 
         __shared__ unsigned int minimum_s;
         if(threadIdx.x == 0) {
-            minimum_s = atomicOr(minimum,0);
+            minimum_s = atomicOr(minimum,graph.matching[numDeletedVertices]==-1&&depth>0);
         }
 
         __syncthreads();
@@ -302,32 +310,40 @@ __global__ void GlobalWorkList_shared_DFS_2_kernel(Stacks stacks, unsigned int *
         unsigned int numOfEdges = findNumOfEdges(graph.vertexNum, vertexDegrees_s, vertexDegrees_s2);
 
         if(threadIdx.x == 0) {
-            minimum_s = atomicOr(minimum,0);
+            minimum_s = atomicOr(minimum,graph.matching[numDeletedVertices]==-1&&depth>0);
         }
         __syncthreads();
 
-        if(numDeletedVertices >= minimum_s || numOfEdges>=square(minimum_s-numDeletedVertices-1)+1) { // Reached the bottom of the tree, no minimum vertex cover found
+        // Either another block found a path or this block reached a dead-end
+        if(minimum_s||backtrackingIndices_s[depth]>=(graph.srcPtr[numDeletedVertices+1]-graph.srcPtr[numDeletedVertices])) { // Reached the bottom of the tree, no minimum vertex cover found
             dequeueOrPopNextItr = true;
-
         } else {
-            unsigned int maxVertex;
-            int maxDegree;
+            //unsigned int maxVertex;
+            __shared__ unsigned int neighbor;
+            __shared__ unsigned int foundNeighbor;
+            foundNeighbor = 0;
+            //int maxDegree;
             startTime(MAX_DEGREE,&blockCounters);
-            findMaxDegree(graph.vertexNum, &maxVertex, &maxDegree, vertexDegrees_s, vertexDegrees_s2);
+            findUnmatchedNeighbor(graph,numDeletedVertices,depth,&neighbor,&foundNeighbor,vertexDegrees_s,backtrackingIndices_s);
+            //findMaxDegree(graph.vertexNum, &maxVertex, &maxDegree, vertexDegrees_s, vertexDegrees_s2);
             endTime(MAX_DEGREE,&blockCounters);
 
             __syncthreads();
-            if(maxDegree == 0) { // Reached the bottom of the tree, minimum vertex cover possibly found
+            if(!foundNeighbor) { // Reached the bottom of the tree, minimum vertex cover possibly found
+                /*
                 if(threadIdx.x==0){
                     atomicMin(minimum, numDeletedVertices);
                 }
-
+                */
                 dequeueOrPopNextItr = true;
 
             } else { // Vertex cover not found, need to branch
 
                 startTime(PREPARE_RIGHT_CHILD,&blockCounters);
-                deleteNeighborsOfMaxDegreeVertex(graph,vertexDegrees_s, &numDeletedVertices, vertexDegrees_s2, &numDeletedVertices2, maxDegree, maxVertex);
+                // Right child increments backtracking indices without incrementing depth
+                // this doesnt set any visited flags
+                //deleteNeighborsOfMaxDegreeVertex(graph,vertexDegrees_s, &numDeletedVertices, vertexDegrees_s2, &numDeletedVertices2, maxDegree, maxVertex);
+                prepareRightChild(graph,vertexDegrees_s,&numDeletedVertices,backtrackingIndices_s,&depth,vertexDegrees_s2,&numDeletedVertices2,backtrackingIndices_s2,&depth2);
                 endTime(PREPARE_RIGHT_CHILD,&blockCounters);
 
                 __syncthreads();
@@ -344,7 +360,7 @@ __global__ void GlobalWorkList_shared_DFS_2_kernel(Stacks stacks, unsigned int *
                 
                 if(!enqueueSuccess) {
                     startTime(PUSH_TO_STACK,&blockCounters);
-                    pushStack(graph.vertexNum, vertexDegrees_s2, &numDeletedVertices2, stackVertexDegrees, stackNumDeletedVertices, &stackTop);                    
+                    pushStack_DFS(graph.vertexNum, vertexDegrees_s2, &numDeletedVertices2, &depth2,backtrackingIndices_s2,stackVertexDegrees, stackNumDeletedVertices, stackDepth,stackBacktrackingIndices,&stackTop);                    
                     maxDepth(stackTop, &blockCounters);
                     endTime(PUSH_TO_STACK,&blockCounters);
                     __syncthreads(); 
@@ -353,8 +369,10 @@ __global__ void GlobalWorkList_shared_DFS_2_kernel(Stacks stacks, unsigned int *
                 }
 
                 startTime(PREPARE_LEFT_CHILD,&blockCounters);
-                // Prepare the child that removes the neighbors of the max vertex to be processed on the next iteration
-                deleteMaxDegreeVertex(graph, vertexDegrees_s, &numDeletedVertices, maxVertex);
+                // Left child increments leaves backtracking indices as is
+                // sets foundNeighbor flag and increments depth,
+                //deleteMaxDegreeVertex(graph, vertexDegrees_s, &numDeletedVertices, maxVertex);
+                prepareLeftChild(vertexDegrees_s,&numDeletedVertices,&depth,&neighbor);
                 endTime(PREPARE_LEFT_CHILD,&blockCounters);
 
                 dequeueOrPopNextItr = false;

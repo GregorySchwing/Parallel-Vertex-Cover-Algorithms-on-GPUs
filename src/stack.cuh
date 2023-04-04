@@ -54,8 +54,8 @@ __device__ void popStack_DFS(unsigned int vertexNum, int* vertexDegrees_s, unsig
 // Backtracking indices are new for DFS.
 // It is possible to generate the visited array from the starting vertex, depth, and backtracking indices
 // though this is an optimization and will be tested after prototyping.
-__device__ void pushStack_DFS(unsigned int vertexNum, int* vertexDegrees_s, unsigned int* numDeletedVertices,unsigned int* depth, unsigned int* backtrackingIndices,  volatile int * stackVertexDegrees, 
-    volatile unsigned int* stackNumDeletedVertices, volatile unsigned int* stackDepth, volatile unsigned int* stackBacktrackingIndices, int * stackTop){
+__device__ void pushStack_DFS(unsigned int vertexNum, int* vertexDegrees_s, unsigned int* numDeletedVertices,unsigned int* depth, int* backtrackingIndices,  volatile int * stackVertexDegrees, 
+    volatile unsigned int* stackNumDeletedVertices, volatile unsigned int* stackDepth, volatile int* stackBacktrackingIndices, int * stackTop){
 
     ++(*stackTop);
     for(unsigned int vertex = threadIdx.x; vertex < vertexNum ; vertex += blockDim.x) {

@@ -131,11 +131,17 @@ int main(int argc, char *argv[]) {
         printf("\nOur Config :\n");
         int numThreadsPerBlock = config.blockDim;
         int numBlocksPerSm; 
-            int sharedMemNeeded = graph.vertexNum;
-        if(graph.vertexNum > numThreadsPerBlock*2){
-            sharedMemNeeded+=graph.vertexNum;
-        } else {
-            sharedMemNeeded+=numThreadsPerBlock*2;
+        int sharedMemNeeded = graph.vertexNum;
+        if (DFS){
+            if(graph.vertexNum > numThreadsPerBlock*2){
+                sharedMemNeeded+=graph.vertexNum*3;
+            } 
+        }else{
+            if(graph.vertexNum > numThreadsPerBlock*2){
+                sharedMemNeeded+=graph.vertexNum;
+            } else {
+                sharedMemNeeded+=numThreadsPerBlock*2;
+            }
         }
 
         sharedMemNeeded *= sizeof(int);
