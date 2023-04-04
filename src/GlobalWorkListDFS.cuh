@@ -33,12 +33,15 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
     volatile uint64_t* stackNumDeletedVertices = &stacks.stacksNumDeletedVertices[blockIdx.x * stackSize];
 
     // stored in the lower 32 bits of the stackNumDel
-    unsigned int numDeletedVertices;
-    unsigned int numDeletedVertices2;
+    __shared__ unsigned int numDeletedVertices;
+    __shared__ unsigned int numDeletedVertices2;
     // stored in the upper 32 bits of the stackNumDel
-    unsigned int edgeIndex;
-    unsigned int edgeIndex2;
-
+    __shared__ unsigned int edgeIndex;
+    __shared__ unsigned int edgeIndex2;
+    numDeletedVertices = 0;
+    numDeletedVertices2 = 0;
+    edgeIndex = 0;
+    edgeIndex2 = 0;
     // Define the vertexDegree_s
 
     #if USE_GLOBAL_MEMORY
@@ -149,6 +152,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
             int maxDegree;
             __shared__ unsigned int neighbor;
             __shared__ unsigned int foundNeighbor;
+            neighbor = 0;
             foundNeighbor = 0;
             startTime(MAX_DEGREE,&blockCounters);
             //findMaxDegree(graph.vertexNum, &maxVertex, &maxDegree, vertexDegrees_s, vertexDegrees_s2);
@@ -165,8 +169,9 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
                 dequeueOrPopNextItr = true;
 
             } else { // Vertex cover not found, need to branch
+                if (true){
 
-                if (foundNeighbor==2){
+                //if (foundNeighbor==2){
 
                     startTime(PREPARE_RIGHT_CHILD,&blockCounters);
                     // Right child increments backtracking indices without incrementing depth
