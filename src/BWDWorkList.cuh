@@ -14,7 +14,7 @@ struct WorkList{
 	unsigned int size;
 	unsigned int threshold;
     volatile int* list;
-    volatile unsigned int* listNumDeletedVertices;
+    volatile uint64_t* listNumDeletedVertices;
     volatile Ticket *tickets;
     HT *head_tail;
 	int* count;
@@ -271,7 +271,7 @@ WorkList allocateWorkList(CSRGraph graph, Config config, unsigned int numBlocks)
 	workList.threshold = config.globalListThreshold * workList.size;
 
 	volatile int* list_d;
-	volatile unsigned int * listNumDeletedVertices_d;
+	volatile uint64_t* listNumDeletedVertices_d;
 	volatile Ticket *tickets_d;
 	HT *head_tail_d;
 	int* count_d;
