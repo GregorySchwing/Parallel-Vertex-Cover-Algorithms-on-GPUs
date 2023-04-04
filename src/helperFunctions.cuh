@@ -344,7 +344,7 @@ __device__ void findUnmatchedNeighbor(CSRGraph graph,unsigned int startingVertex
             } else {
                 if (!visited_s[graph.dst[start + *edgeIndex]]){
                     *neighbor = graph.dst[start + *edgeIndex];
-                    *foundNeighbor=1;
+                    *foundNeighbor=2;
                     printf("bid %d unmatched edge %d->%d \n", blockIdx.x,startingVertex, *neighbor);
                     break;
                 }

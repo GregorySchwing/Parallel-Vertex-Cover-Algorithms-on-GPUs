@@ -166,36 +166,39 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
 
             } else { // Vertex cover not found, need to branch
 
+                if (foundNeighbor==2){
 
-                startTime(PREPARE_RIGHT_CHILD,&blockCounters);
-                // Right child increments backtracking indices without incrementing depth
-                // this doesnt set any visited flags
-                //deleteNeighborsOfMaxDegreeVertex(graph,vertexDegrees_s, &numDeletedVertices, vertexDegrees_s2, &numDeletedVertices2, maxDegree, maxVertex);
-                //deleteNeighborsOfMaxDegreeVertex(graph,vertexDegrees_s, &numDeletedVertices, vertexDegrees_s2, &numDeletedVertices2, maxDegree, maxVertex);
-                prepareRightChild(graph,vertexDegrees_s,&numDeletedVertices,&edgeIndex,vertexDegrees_s2,&numDeletedVertices2,&edgeIndex2);
-                endTime(PREPARE_RIGHT_CHILD,&blockCounters);
+                    startTime(PREPARE_RIGHT_CHILD,&blockCounters);
+                    // Right child increments backtracking indices without incrementing depth
+                    // this doesnt set any visited flags
+                    //deleteNeighborsOfMaxDegreeVertex(graph,vertexDegrees_s, &numDeletedVertices, vertexDegrees_s2, &numDeletedVertices2, maxDegree, maxVertex);
+                    //deleteNeighborsOfMaxDegreeVertex(graph,vertexDegrees_s, &numDeletedVertices, vertexDegrees_s2, &numDeletedVertices2, maxDegree, maxVertex);
+                    prepareRightChild(graph,vertexDegrees_s,&numDeletedVertices,&edgeIndex,vertexDegrees_s2,&numDeletedVertices2,&edgeIndex2);
+                    endTime(PREPARE_RIGHT_CHILD,&blockCounters);
 
 
-                __syncthreads();
+                    __syncthreads();
 
-                bool enqueueSuccess;
-                if(checkThreshold(workList)){
-                    startTime(ENQUEUE,&blockCounters);
-                    enqueueSuccess = enqueue_DFS(vertexDegrees_s2, workList, graph.vertexNum, &numDeletedVertices2,&edgeIndex2);
-                } else  {
-                    enqueueSuccess = false;
-                }
-                
-                __syncthreads();
-                
-                if(!enqueueSuccess) {
-                    startTime(PUSH_TO_STACK,&blockCounters);
-                    pushStack_DFS(graph.vertexNum, vertexDegrees_s2, &numDeletedVertices2, &edgeIndex2,stackVertexDegrees, stackNumDeletedVertices, &stackTop);                    
-                    maxDepth(stackTop, &blockCounters);
-                    endTime(PUSH_TO_STACK,&blockCounters);
-                    __syncthreads(); 
-                } else {
-                    endTime(ENQUEUE,&blockCounters);
+                    bool enqueueSuccess;
+                    if(checkThreshold(workList)){
+                        startTime(ENQUEUE,&blockCounters);
+                        enqueueSuccess = enqueue_DFS(vertexDegrees_s2, workList, graph.vertexNum, &numDeletedVertices2,&edgeIndex2);
+                    } else  {
+                        enqueueSuccess = false;
+                    }
+                    
+                    __syncthreads();
+                    
+                    if(!enqueueSuccess) {
+                        startTime(PUSH_TO_STACK,&blockCounters);
+                        pushStack_DFS(graph.vertexNum, vertexDegrees_s2, &numDeletedVertices2, &edgeIndex2,stackVertexDegrees, stackNumDeletedVertices, &stackTop);                    
+                        maxDepth(stackTop, &blockCounters);
+                        endTime(PUSH_TO_STACK,&blockCounters);
+                        __syncthreads(); 
+                    } else {
+                        endTime(ENQUEUE,&blockCounters);
+                    }
+
                 }
 
                 startTime(PREPARE_LEFT_CHILD,&blockCounters);
