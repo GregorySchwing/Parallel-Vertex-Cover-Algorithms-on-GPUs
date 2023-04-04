@@ -179,7 +179,7 @@ int main(int argc, char *argv[]) {
         #endif
 
         // Allocate GPU graph
-        CSRGraph graph_d = allocateGraph(graph);
+        CSRGraph graph_d = allocateGraph(graph4m_d);
 
         // Allocate GPU stack
         Stacks stacks_d;
