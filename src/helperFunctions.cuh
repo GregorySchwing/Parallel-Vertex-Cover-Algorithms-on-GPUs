@@ -54,7 +54,16 @@ __device__ void deleteNeighborsOfMaxDegreeVertex(CSRGraph graph,int* vertexDegre
     }
 }
 
-
+__device__ void copySolution(int vertexNum, unsigned int* solution, unsigned int* solution_length, 
+    unsigned int* solution_last_vertex, unsigned int* numDeletedVertices, int* vertexDegrees_s, unsigned int* depth){
+    if (threadIdx.x==0){
+        *solution_length = *depth;
+        *solution_length = *numDeletedVertices;
+        for(unsigned int vertex = threadIdx.x; vertex<vertexNum; vertex+=blockDim.x){
+            solution[vertex] = vertexDegrees_s[vertex];
+        }
+    }
+}
 __device__ void prepareRightChild(CSRGraph graph,int* vertexDegrees_s, unsigned int* numDeletedVertices, int * backtrackingIndices_s, unsigned int* depth, int* vertexDegrees_s2, 
     unsigned int* numDeletedVertices2, int * backtrackingIndices_s2, unsigned int* depth2){
     if (threadIdx.x==0){

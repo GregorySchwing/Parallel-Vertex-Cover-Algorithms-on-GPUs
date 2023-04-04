@@ -201,10 +201,10 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * minim
 }
 
 #if USE_GLOBAL_MEMORY
-__global__ void GlobalWorkList_global_DFS_2_kernel(Stacks stacks, unsigned int * minimum, WorkList workList, CSRGraph graph, Counters* counters, 
+__global__ void GlobalWorkList_global_DFS_2_kernel(Stacks stacks, unsigned int * minimum, unsigned int * solution_mutex,WorkList workList, CSRGraph graph, Counters* counters, 
     int* first_to_dequeue_global, int* global_memory, int* NODES_PER_SM) {
 #else
-__global__ void GlobalWorkList_shared_DFS_2_kernel(Stacks stacks, unsigned int * minimum, WorkList workList, CSRGraph graph, Counters* counters, 
+__global__ void GlobalWorkList_shared_DFS_2_kernel(Stacks stacks, unsigned int * minimum, unsigned int * solution_mutex, WorkList workList, CSRGraph graph, Counters* counters, 
     int* first_to_dequeue_global, int* NODES_PER_SM) {
 #endif
 
@@ -312,6 +312,17 @@ __global__ void GlobalWorkList_shared_DFS_2_kernel(Stacks stacks, unsigned int *
         if(threadIdx.x == 0) {
             minimum_s = atomicOr(minimum,graph.matching[numDeletedVertices]==-1&&depth>0);
         }
+        /*
+        if(threadIdx.x == 0) {
+            if(graph.matching[numDeletedVertices]==-1&&depth>0){
+                if(0 == atomicCAS(solution_mutex, 0, 1)){
+                    // Write stack of starting vertices to solution array.
+                    copySolution(graph.vertexNum,graph.solution,graph.solution_length,graph.solution_last_vertex,&numDeletedVertices,vertexDegrees_s,&depth);
+                    printf("Found solution of length %d starting with %d and ending with %d\n",graph.solution_length,graph.unmatched_vertices[0],graph.solution_last_vertex);
+                }
+            }
+        }
+        */
         __syncthreads();
 
         // Either another block found a path or this block reached a dead-end
