@@ -180,7 +180,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
                 
                 if(!enqueueSuccess) {
                     startTime(PUSH_TO_STACK,&blockCounters);
-                    pushStack_DFS(graph.vertexNum, vertexDegrees_s2, &numDeletedVertices2, stackVertexDegrees, stackNumDeletedVertices, &stackTop);                    
+                    pushStack_DFS(graph.vertexNum, vertexDegrees_s2, &numDeletedVertices2, &edgeIndex2,stackVertexDegrees, stackNumDeletedVertices, &stackTop);                    
                     maxDepth(stackTop, &blockCounters);
                     endTime(PUSH_TO_STACK,&blockCounters);
                     __syncthreads(); 
