@@ -188,7 +188,7 @@ __device__ void readData_DFS(int* vertexDegree_s, int* backtrackingIndices_s, un
 	}
 }
 
-__device__ void putData_DFS(int* vertexDegree_s, unsigned int* backtrackingIndices_s, unsigned int * depth, unsigned int * vcSize, WorkList workList,unsigned int vertexNum){
+__device__ void putData_DFS(int* vertexDegree_s, int* backtrackingIndices_s, unsigned int * depth, unsigned int * vcSize, WorkList workList,unsigned int vertexNum){
 	__shared__ unsigned int P;
 	unsigned int Pos;
 	unsigned int B;
@@ -282,7 +282,7 @@ __device__ inline bool dequeue(int* vertexDegree_s, WorkList workList, unsigned 
 
 
 
-__device__ inline bool enqueue_DFS(int* vertexDegree_s, unsigned int* backtrackingIndices_s, unsigned int * depth, WorkList workList, unsigned int vertexNum, unsigned int * vcSize){
+__device__ inline bool enqueue_DFS(int* vertexDegree_s, int* backtrackingIndices_s, unsigned int * depth, WorkList workList, unsigned int vertexNum, unsigned int * vcSize){
 	__shared__  bool writeData;
 	if (threadIdx.x==0){
 		writeData = ensureEnqueue(workList);
@@ -472,7 +472,7 @@ WorkList allocateWorkList_DFS(CSRGraph graph, Config config, unsigned int numBlo
 
     cudaMemset((void*)&list_d[graph.unmatched_vertices[0]],1,sizeof(int));
 	cudaMemset((void*)&depth_d[0], 0, sizeof(unsigned int));
-	cudaMemcpy((void*)&listNumDeletedVertices_d[0], &graph.unmatched_vertices[0], sizeof(int), cudaMemcpyHostToDevice);
+	cudaMemcpy((void*)&listNumDeletedVertices_d[0], &graph.unmatched_vertices[0], sizeof(unsigned int), cudaMemcpyHostToDevice);
 
 
 	cudaMemset((void*)&tickets_d[0], 0, workList.size * sizeof(Ticket));

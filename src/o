@@ -2,22 +2,22 @@
 Graph file: ../odd.txt
 UUID: 1
 
-bfs_gpu_mm_csc_sc::t_sum=8.845407ms 
-mm_gpu_csc::average time mm = 8.845407ms, avg matched 12.000000, avg unmatched 4.000000, total 16
+bfs_gpu_mm_csc_sc::t_sum=1.854336ms 
+mm_gpu_csc::average time mm = 1.854336ms, avg matched 12.000000, avg unmatched 4.000000, total 16
 Matching is correct.
 Matching is correct.
 Matched vertices 12; matched edges 6
 
 num unmatched 3
 
-Elapsed Time for Boost MCM: 0.002891
+Elapsed Time for Boost MCM: 0.000177
 
 Boost MCM size: 7
 gpu mm starting size 6 ref size 7
 
-Elapsed Time for Approximate Remove Max: 0.000004
+Elapsed Time for Approximate Remove Max: 0.000003
 Approximate Remove Max Minimum is: 8
-Elapsed Time for Approximate Remove Edge: 0.000004
+Elapsed Time for Approximate Remove Edge: 0.000003
 Approximate Remove Edge Minimum is: 8
 
 Device name: Quadro RTX 5000 with Max-Q Design
@@ -33,1852 +33,1953 @@ Use Shared Mem : 1
 
 Our Config :
 NumOfThreadPerBlocks : 64
-NumOfBlocks : 672
-NumOfBlockPerSM : 14
-NumOfThreadsPerSM : 896
+NumOfBlocks : 576
+NumOfBlockPerSM : 12
+NumOfThreadsPerSM : 768
 
-BlockID 82
-Block ID 44 first to dequue
-BlockID 93
-BlockID 166
-BlockID 58
-BlockID 165
-BlockID 170
-BlockID 385
-BlockID 81
-BlockID 133
-BlockID 236
-BlockID 188
-BlockID 344
-BlockID 72
-BlockID 263
-BlockID 156
-BlockID 323
-BlockID 159
-BlockID 372
-BlockID 325
-BlockID 130
-BlockID 51
-BlockID 77
-BlockID 168
-BlockID 249
-BlockID 185
-BlockID 331
-BlockID 407
-BlockID 186
-BlockID 46
-BlockID 142
-BlockID 238
-BlockID 580
-BlockID 476
-BlockID 60
-BlockID 154
-BlockID 39
-BlockID 112
-BlockID 91
-BlockID 456
-BlockID 78
-BlockID 416
-BlockID 175
-BlockID 42
-BlockID 365
-BlockID 127
-BlockID 182
-BlockID 271
-BlockID 74
-BlockID 89
-BlockID 244
-BlockID 404
-BlockID 14
-BlockID 206
-BlockID 70
-BlockID 293
-BlockID 132
-BlockID 178
-BlockID 464
-BlockID 352
-BlockID 267
-BlockID 285
-BlockID 187
-BlockID 171
-BlockID 395
-BlockID 189
-BlockID 208
-BlockID 516
-BlockID 343
-BlockID 49
-BlockID 53
-BlockID 59
-BlockID 147
-BlockID 29
-BlockID 35
-BlockID 153
-BlockID 86
-BlockID 553
-BlockID 16
-BlockID 52
-BlockID 69
-BlockID 342
-BlockID 500
-BlockID 25
-BlockID 43
-BlockID 139
-BlockID 123
-BlockID 228
-BlockID 145
-BlockID 524
-BlockID 106
-BlockID 34
-BlockID 20
-BlockID 225
-BlockID 366
-BlockID 505
-BlockID 37
-BlockID 252
-BlockID 47
-BlockID 392
-BlockID 164
-BlockID 336
-BlockID 161
-BlockID 359
-BlockID 487
-BlockID 518
-BlockID 470
-BlockID 55
-BlockID 144
-BlockID 586
-BlockID 92
-BlockID 273
-BlockID 138
-BlockID 115
-BlockID 131
-BlockID 36
-BlockID 61
-BlockID 155
-BlockID 84
-BlockID 313
-BlockID 141
-BlockID 627
-BlockID 172
-BlockID 9
-BlockID 66
-BlockID 232
-BlockID 146
-BlockID 351
-BlockID 283
-BlockID 116
-BlockID 333
-BlockID 405
-BlockID 347
-BlockID 491
-BlockID 173
-BlockID 537
-BlockID 50
-BlockID 13
-BlockID 90
-BlockID 258
-BlockID 136
-BlockID 367
-BlockID 65
-BlockID 465
-BlockID 88
-BlockID 320
-BlockID 26
-BlockID 184
-BlockID 403
-BlockID 585
-BlockID 241
-BlockID 192
-BlockID 330
-BlockID 311
-BlockID 57
-BlockID 450
-BlockID 393
-BlockID 27
-BlockID 302
-BlockID 233
-BlockID 384
-BlockID 239
-BlockID 353
-BlockID 10
-BlockID 364
-BlockID 124
-BlockID 337
-BlockID 435
-BlockID 68
-BlockID 481
-BlockID 433
-BlockID 15
-BlockID 250
-BlockID 356
-BlockID 495
-BlockID 269
-BlockID 591
-BlockID 245
-BlockID 446
-BlockID 624
-BlockID 453
-BlockID 312
-BlockID 23
-BlockID 287
-BlockID 24
-BlockID 229
-BlockID 234
-BlockID 275
-BlockID 422
-BlockID 3
-BlockID 361
-BlockID 572
-BlockID 257
-BlockID 67
-BlockID 240
-BlockID 32
-BlockID 30
-BlockID 346
-BlockID 222
-BlockID 498
-BlockID 204
-BlockID 202
-BlockID 108
-BlockID 318
-BlockID 261
-BlockID 304
-BlockID 134
-BlockID 295
-BlockID 169
-BlockID 409
-BlockID 326
-BlockID 19
-BlockID 12
-BlockID 539
-BlockID 176
-BlockID 443
-BlockID 254
-BlockID 38
-BlockID 300
-BlockID 514
-BlockID 163
-BlockID 383
-BlockID 622
-BlockID 575
-BlockID 290
-BlockID 388
-BlockID 48
-BlockID 332
-BlockID 497
-BlockID 143
-BlockID 440
-BlockID 75
-BlockID 99
-BlockID 281
-BlockID 135
-BlockID 137
-BlockID 151
-BlockID 110
-BlockID 350
-BlockID 113
-BlockID 56
-BlockID 255
-BlockID 436
-BlockID 279
-BlockID 54
-BlockID 400
-BlockID 152
-BlockID 62
-BlockID 210
-BlockID 6
-BlockID 223
-BlockID 297
-BlockID 126
-BlockID 360
-BlockID 256
-BlockID 243
-BlockID 595
-BlockID 503
-BlockID 542
-BlockID 129
-BlockID 224
-BlockID 362
-BlockID 583
-BlockID 486
-BlockID 391
-BlockID 265
-BlockID 316
-BlockID 349
-BlockID 438
-BlockID 181
-BlockID 107
-BlockID 242
-BlockID 628
-BlockID 587
-BlockID 237
-BlockID 345
-BlockID 162
-BlockID 227
-BlockID 494
-BlockID 531
-BlockID 73
-BlockID 80
-BlockID 630
-BlockID 190
-BlockID 334
-BlockID 268
-BlockID 177
-BlockID 148
-BlockID 319
-BlockID 540
-BlockID 79
-BlockID 541
-BlockID 211
-BlockID 439
-BlockID 76
-BlockID 288
-BlockID 83
-BlockID 421
-BlockID 209
-BlockID 264
-BlockID 33
-BlockID 512
-BlockID 247
-BlockID 7
-BlockID 442
-BlockID 140
-BlockID 150
-BlockID 205
-BlockID 551
-BlockID 251
-BlockID 28
-BlockID 18
-BlockID 41
-BlockID 160
-BlockID 40
-BlockID 375
-BlockID 411
-BlockID 5
-BlockID 197
-BlockID 262
-BlockID 321
-BlockID 253
-BlockID 355
-BlockID 64
-BlockID 499
-BlockID 501
-BlockID 111
-BlockID 230
-BlockID 301
-BlockID 458
-BlockID 410
-BlockID 506
-BlockID 368
-BlockID 118
-BlockID 535
-BlockID 402
-BlockID 338
-BlockID 277
-BlockID 280
-BlockID 22
-BlockID 128
-BlockID 328
-BlockID 633
-BlockID 413
-BlockID 179
-BlockID 396
-BlockID 399
-BlockID 31
-BlockID 310
-BlockID 423
-BlockID 309
-BlockID 314
-BlockID 327
-BlockID 103
-BlockID 329
-BlockID 71
-BlockID 286
-BlockID 452
-BlockID 274
-BlockID 635
-BlockID 434
-BlockID 387
-BlockID 448
-BlockID 218
-BlockID 451
-BlockID 303
-BlockID 596
-BlockID 492
-BlockID 174
-BlockID 467
-BlockID 63
-BlockID 560
-BlockID 299
-BlockID 226
-BlockID 266
-BlockID 608
-BlockID 463
-BlockID 559
-BlockID 158
-BlockID 298
-BlockID 109
-BlockID 324
-BlockID 466
-BlockID 430
-BlockID 94
-BlockID 374
-BlockID 527
-BlockID 479
-BlockID 8
-BlockID 576
-BlockID 198
-BlockID 482
-BlockID 292
-BlockID 578
-BlockID 398
-BlockID 447
-BlockID 588
-BlockID 100
-BlockID 306
-BlockID 529
-BlockID 1
-BlockID 191
-BlockID 4
-BlockID 195
-BlockID 322
-BlockID 536
-BlockID 546
-BlockID 431
-BlockID 564
-BlockID 282
-BlockID 102
-BlockID 114
-BlockID 358
-BlockID 401
-BlockID 610
-BlockID 418
-BlockID 85
-BlockID 221
-BlockID 357
-BlockID 199
-BlockID 21
-BlockID 117
-BlockID 213
-BlockID 341
-BlockID 17
-BlockID 394
-BlockID 157
-BlockID 484
-BlockID 217
-BlockID 614
-BlockID 625
-BlockID 473
-BlockID 120
-BlockID 339
-BlockID 532
-BlockID 637
-BlockID 119
-BlockID 565
-BlockID 420
-BlockID 584
-BlockID 557
-BlockID 104
-BlockID 180
-BlockID 0
-BlockID 200
-BlockID 272
-BlockID 480
-BlockID 289
-BlockID 201
-BlockID 429
-BlockID 122
-BlockID 525
-BlockID 609
-BlockID 513
-BlockID 593
-BlockID 270
-BlockID 259
-BlockID 246
-BlockID 307
-BlockID 522
-BlockID 444
-BlockID 397
-BlockID 96
-BlockID 603
-BlockID 555
-BlockID 196
-BlockID 472
-BlockID 561
-BlockID 589
-BlockID 488
-BlockID 543
-BlockID 634
-BlockID 477
-BlockID 636
-BlockID 291
-BlockID 620
-BlockID 381
-BlockID 125
-BlockID 412
-BlockID 509
-BlockID 483
-BlockID 101
-BlockID 212
-BlockID 611
-BlockID 556
-BlockID 378
-BlockID 427
-BlockID 475
-BlockID 496
-BlockID 105
-BlockID 426
-BlockID 377
-BlockID 183
-BlockID 461
-BlockID 276
-BlockID 369
-BlockID 598
-BlockID 599
-BlockID 284
-BlockID 121
-BlockID 45
-BlockID 95
-BlockID 371
-BlockID 511
-BlockID 11
-BlockID 373
-BlockID 607
-BlockID 526
-BlockID 315
-BlockID 231
-BlockID 219
-BlockID 424
-BlockID 616
-BlockID 348
-BlockID 415
-BlockID 98
-BlockID 562
-BlockID 379
-BlockID 549
-BlockID 87
-BlockID 317
-BlockID 570
-BlockID 567
-BlockID 408
-BlockID 601
-BlockID 294
-BlockID 590
-BlockID 552
-BlockID 538
-BlockID 577
-BlockID 534
-BlockID 380
-BlockID 471
-BlockID 457
-BlockID 547
-BlockID 419
-BlockID 216
-BlockID 548
-BlockID 97
-BlockID 167
-BlockID 459
-BlockID 507
-BlockID 602
-BlockID 2
-BlockID 214
-BlockID 248
-BlockID 615
-BlockID 193
-BlockID 149
-BlockID 432
-BlockID 504
-BlockID 510
-BlockID 455
-BlockID 335
-BlockID 235
-BlockID 502
-BlockID 203
-BlockID 215
-BlockID 308
-BlockID 220
-BlockID 474
-BlockID 460
-BlockID 621
-BlockID 445
-BlockID 563
-BlockID 207
-BlockID 604
-BlockID 296
-BlockID 194
-BlockID 376
-BlockID 305
-BlockID 363
-BlockID 626
-BlockID 582
-BlockID 597
-BlockID 386
-BlockID 441
-BlockID 478
-BlockID 579
-BlockID 638
-BlockID 594
-BlockID 521
-BlockID 569
-BlockID 517
-BlockID 639
-BlockID 530
-BlockID 581
-BlockID 573
-BlockID 260
-BlockID 619
-BlockID 600
-BlockID 468
-BlockID 469
-BlockID 462
-BlockID 449
-BlockID 528
-BlockID 417
-BlockID 533
-BlockID 566
-BlockID 278
-BlockID 519
-BlockID 515
-BlockID 545
-BlockID 571
-BlockID 437
-BlockID 520
-BlockID 623
-BlockID 390
-BlockID 606
-BlockID 490
-BlockID 629
-BlockID 550
-BlockID 340
-BlockID 354
-BlockID 485
-BlockID 493
-BlockID 631
-BlockID 454
-BlockID 523
-BlockID 489
-BlockID 544
-BlockID 425
-BlockID 389
-BlockID 612
-BlockID 382
-BlockID 414
-BlockID 508
-BlockID 592
-BlockID 617
-BlockID 618
-BlockID 554
-BlockID 428
-BlockID 632
-BlockID 558
-BlockID 406
-BlockID 370
-BlockID 613
-BlockID 605
-BlockID 574
-BlockID 44
-BlockID 568
-BlockID 166 no work done num waiting 17 gridDim.x 672 numEnqueued 0
-BlockID 72 no work done num waiting 32 gridDim.x 672 numEnqueued 0
-BlockID 481 no work done num waiting 51 gridDim.x 672 numEnqueued 0
-BlockID 385 no work done num waiting 51 gridDim.x 672 numEnqueued 0
-BlockID 42 no work done num waiting 32 gridDim.x 672 numEnqueued 0
-BlockID 433 no work done num waiting 63 gridDim.x 672 numEnqueued 0
-BlockID 168 no work done num waiting 63 gridDim.x 672 numEnqueued 0
-BlockID 229 no work done num waiting 52 gridDim.x 672 numEnqueued 0
-BlockID 236 no work done num waiting 52 gridDim.x 672 numEnqueued 0
-BlockID 60 no work done num waiting 32 gridDim.x 672 numEnqueued 0
-BlockID 187 no work done num waiting 64 gridDim.x 672 numEnqueued 0
-BlockID 93 no work done num waiting 58 gridDim.x 672 numEnqueued 0
-BlockID 77 no work done num waiting 101 gridDim.x 672 numEnqueued 0
-BlockID 351 no work done num waiting 102 gridDim.x 672 numEnqueued 0
-BlockID 138 no work done num waiting 72 gridDim.x 672 numEnqueued 0
-BlockID 146 no work done num waiting 93 gridDim.x 672 numEnqueued 0
-BlockID 81 no work done num waiting 29 gridDim.x 672 numEnqueued 0
-BlockID 70 no work done num waiting 158 gridDim.x 672 numEnqueued 0
-BlockID 263 no work done num waiting 158 gridDim.x 672 numEnqueued 0
-BlockID 344 no work done num waiting 158 gridDim.x 672 numEnqueued 0
-BlockID 206 no work done num waiting 64 gridDim.x 672 numEnqueued 0
-BlockID 58 no work done num waiting 54 gridDim.x 672 numEnqueued 0
-BlockID 175 no work done num waiting 98 gridDim.x 672 numEnqueued 0
-BlockID 127 no work done num waiting 81 gridDim.x 672 numEnqueued 0
-BlockID 171 no work done num waiting 117 gridDim.x 672 numEnqueued 0
-BlockID 133 no work done num waiting 54 gridDim.x 672 numEnqueued 0
-BlockID 37 no work done num waiting 63 gridDim.x 672 numEnqueued 0
-BlockID 257 no work done num waiting 132 gridDim.x 672 numEnqueued 0
-BlockID 416 no work done num waiting 93 gridDim.x 672 numEnqueued 0
-BlockID 537 no work done num waiting 156 gridDim.x 672 numEnqueued 0
-BlockID 283 no work done num waiting 156 gridDim.x 672 numEnqueued 0
-BlockID 173 no work done num waiting 156 gridDim.x 672 numEnqueued 0
-BlockID 585 no work done num waiting 156 gridDim.x 672 numEnqueued 0
-BlockID 52 no work done num waiting 126 gridDim.x 672 numEnqueued 0
-BlockID 182 no work done num waiting 123 gridDim.x 672 numEnqueued 0
-BlockID 91 no work done num waiting 101 gridDim.x 672 numEnqueued 0
-BlockID 255 no work done num waiting 157 gridDim.x 672 numEnqueued 0
-BlockID 54 no work done num waiting 157 gridDim.x 672 numEnqueued 0
-BlockID 242 no work done num waiting 117 gridDim.x 672 numEnqueued 0
-BlockID 56 no work done num waiting 98 gridDim.x 672 numEnqueued 0
-BlockID 404 no work done num waiting 181 gridDim.x 672 numEnqueued 0
-BlockID 156 no work done num waiting 181 gridDim.x 672 numEnqueued 0
-BlockID 84 no work done num waiting 109 gridDim.x 672 numEnqueued 0
-BlockID 82 no work done num waiting 109 gridDim.x 672 numEnqueued 0
-BlockID 89 no work done num waiting 145 gridDim.x 672 numEnqueued 0
-BlockID 359 no work done num waiting 124 gridDim.x 672 numEnqueued 0
-BlockID 131 no work done num waiting 83 gridDim.x 672 numEnqueued 0
-BlockID 186 no work done num waiting 100 gridDim.x 672 numEnqueued 0
-BlockID 361 no work done num waiting 204 gridDim.x 672 numEnqueued 0
-BlockID 500 no work done num waiting 204 gridDim.x 672 numEnqueued 0
-BlockID 152 no work done num waiting 141 gridDim.x 672 numEnqueued 0
-BlockID 33 no work done num waiting 217 gridDim.x 672 numEnqueued 0
-BlockID 129 no work done num waiting 217 gridDim.x 672 numEnqueued 0
-BlockID 366 no work done num waiting 181 gridDim.x 672 numEnqueued 0
-BlockID 285 no work done num waiting 133 gridDim.x 672 numEnqueued 0
-BlockID 78 no work done num waiting 149 gridDim.x 672 numEnqueued 0
-BlockID 271 no work done num waiting 132 gridDim.x 672 numEnqueued 0
-BlockID 55 no work done num waiting 156 gridDim.x 672 numEnqueued 0
-BlockID 249 no work done num waiting 103 gridDim.x 672 numEnqueued 0
-BlockID 342 no work done num waiting 103 gridDim.x 672 numEnqueued 0
-BlockID 185 no work done num waiting 208 gridDim.x 672 numEnqueued 0
-BlockID 405 no work done num waiting 208 gridDim.x 672 numEnqueued 0
-BlockID 142 no work done num waiting 184 gridDim.x 672 numEnqueued 0
-BlockID 48 no work done num waiting 184 gridDim.x 672 numEnqueued 0
-BlockID 14 no work done num waiting 181 gridDim.x 672 numEnqueued 0
-BlockID 325 no work done num waiting 204 gridDim.x 672 numEnqueued 0
-BlockID 208 no work done num waiting 185 gridDim.x 672 numEnqueued 0
-BlockID 253 no work done num waiting 188 gridDim.x 672 numEnqueued 0
-BlockID 353 no work done num waiting 188 gridDim.x 672 numEnqueued 0
-BlockID 352 no work done num waiting 149 gridDim.x 672 numEnqueued 0
-BlockID 176 no work done num waiting 149 gridDim.x 672 numEnqueued 0
-BlockID 57 no work done num waiting 199 gridDim.x 672 numEnqueued 0
-BlockID 88 no work done num waiting 190 gridDim.x 672 numEnqueued 0
-BlockID 498 no work done num waiting 190 gridDim.x 672 numEnqueued 0
-BlockID 86 no work done num waiting 157 gridDim.x 672 numEnqueued 0
-BlockID 450 no work done num waiting 199 gridDim.x 672 numEnqueued 0
-BlockID 190 no work done num waiting 155 gridDim.x 672 numEnqueued 0
-BlockID 372 no work done num waiting 135 gridDim.x 672 numEnqueued 0
-BlockID 64 no work done num waiting 181 gridDim.x 672 numEnqueued 0
-BlockID 463 no work done num waiting 181 gridDim.x 672 numEnqueued 0
-BlockID 154 no work done num waiting 217 gridDim.x 672 numEnqueued 0
-BlockID 165 no work done num waiting 159 gridDim.x 672 numEnqueued 0
-BlockID 139 no work done num waiting 214 gridDim.x 672 numEnqueued 0
-BlockID 141 no work done num waiting 203 gridDim.x 672 numEnqueued 0
-BlockID 313 no work done num waiting 194 gridDim.x 672 numEnqueued 0
-BlockID 61 no work done num waiting 203 gridDim.x 672 numEnqueued 0
-BlockID 258 no work done num waiting 158 gridDim.x 672 numEnqueued 0
-BlockID 189 no work done num waiting 214 gridDim.x 672 numEnqueued 0
-BlockID 144 no work done num waiting 151 gridDim.x 672 numEnqueued 0
-BlockID 330 no work done num waiting 217 gridDim.x 672 numEnqueued 0
-BlockID 464 no work done num waiting 217 gridDim.x 672 numEnqueued 0
-BlockID 65 no work done num waiting 178 gridDim.x 672 numEnqueued 0
-BlockID 159 no work done num waiting 178 gridDim.x 672 numEnqueued 0
-BlockID 280 no work done num waiting 181 gridDim.x 672 numEnqueued 0
-BlockID 294 no work done num waiting 273 gridDim.x 672 numEnqueued 0
-BlockID 553 no work done num waiting 273 gridDim.x 672 numEnqueued 0
-BlockID 452 no work done num waiting 267 gridDim.x 672 numEnqueued 0
-BlockID 323 no work done num waiting 247 gridDim.x 672 numEnqueued 0
-BlockID 134 no work done num waiting 214 gridDim.x 672 numEnqueued 0
-BlockID 470 no work done num waiting 247 gridDim.x 672 numEnqueued 0
-BlockID 518 no work done num waiting 247 gridDim.x 672 numEnqueued 0
-BlockID 136 no work done num waiting 247 gridDim.x 672 numEnqueued 0
-BlockID 164 no work done num waiting 108 gridDim.x 672 numEnqueued 0
-BlockID 145 no work done num waiting 141 gridDim.x 672 numEnqueued 0
-BlockID 66 no work done num waiting 137 gridDim.x 672 numEnqueued 0
-BlockID 192 no work done num waiting 181 gridDim.x 672 numEnqueued 0
-BlockID 16 no work done num waiting 182 gridDim.x 672 numEnqueued 0
-BlockID 400 no work done num waiting 209 gridDim.x 672 numEnqueued 0
-BlockID 150 no work done num waiting 157 gridDim.x 672 numEnqueued 0
-BlockID 347 no work done num waiting 184 gridDim.x 672 numEnqueued 0
-BlockID 69 no work done num waiting 159 gridDim.x 672 numEnqueued 0
-BlockID 575 no work done num waiting 159 gridDim.x 672 numEnqueued 0
-BlockID 290 no work done num waiting 208 gridDim.x 672 numEnqueued 0
-BlockID 453 no work done num waiting 208 gridDim.x 672 numEnqueued 0
-BlockID 170 no work done num waiting 158 gridDim.x 672 numEnqueued 0
-BlockID 178 no work done num waiting 175 gridDim.x 672 numEnqueued 0
-BlockID 62 no work done num waiting 181 gridDim.x 672 numEnqueued 0
-BlockID 232 no work done num waiting 198 gridDim.x 672 numEnqueued 0
-BlockID 184 no work done num waiting 239 gridDim.x 672 numEnqueued 0
-BlockID 288 no work done num waiting 203 gridDim.x 672 numEnqueued 0
-BlockID 497 no work done num waiting 203 gridDim.x 672 numEnqueued 0
-BlockID 46 no work done num waiting 184 gridDim.x 672 numEnqueued 0
-BlockID 362 no work done num waiting 208 gridDim.x 672 numEnqueued 0
-BlockID 541 no work done num waiting 225 gridDim.x 672 numEnqueued 0
-BlockID 177 no work done num waiting 181 gridDim.x 672 numEnqueued 0
-BlockID 79 no work done num waiting 225 gridDim.x 672 numEnqueued 0
-BlockID 268 no work done num waiting 225 gridDim.x 672 numEnqueued 0
-BlockID 27 no work done num waiting 81 gridDim.x 672 numEnqueued 0
-BlockID 29 no work done num waiting 136 gridDim.x 672 numEnqueued 0
-BlockID 491 no work done num waiting 207 gridDim.x 672 numEnqueued 0
-BlockID 130 no work done num waiting 198 gridDim.x 672 numEnqueued 0
-BlockID 116 no work done num waiting 72 gridDim.x 672 numEnqueued 0
-BlockID 47 no work done num waiting 225 gridDim.x 672 numEnqueued 0
-BlockID 237 no work done num waiting 303 gridDim.x 672 numEnqueued 0
-BlockID 43 no work done num waiting 246 gridDim.x 672 numEnqueued 0
-BlockID 71 no work done num waiting 262 gridDim.x 672 numEnqueued 0
-BlockID 624 no work done num waiting 245 gridDim.x 672 numEnqueued 0
-BlockID 169 no work done num waiting 245 gridDim.x 672 numEnqueued 0
-BlockID 234 no work done num waiting 247 gridDim.x 672 numEnqueued 0
-BlockID 448 no work done num waiting 209 gridDim.x 672 numEnqueued 0
-BlockID 456 no work done num waiting 223 gridDim.x 672 numEnqueued 0
-BlockID 302 no work done num waiting 182 gridDim.x 672 numEnqueued 0
-BlockID 80 no work done num waiting 294 gridDim.x 672 numEnqueued 0
-BlockID 395 no work done num waiting 294 gridDim.x 672 numEnqueued 0
-BlockID 267 no work done num waiting 294 gridDim.x 672 numEnqueued 0
-BlockID 587 no work done num waiting 294 gridDim.x 672 numEnqueued 0
-BlockID 443 no work done num waiting 294 gridDim.x 672 numEnqueued 0
-BlockID 155 no work done num waiting 295 gridDim.x 672 numEnqueued 0
-BlockID 326 no work done num waiting 216 gridDim.x 672 numEnqueued 0
-BlockID 506 no work done num waiting 216 gridDim.x 672 numEnqueued 0
-BlockID 630 no work done num waiting 294 gridDim.x 672 numEnqueued 0
-BlockID 20 no work done num waiting 72 gridDim.x 672 numEnqueued 0
-BlockID 250 no work done num waiting 247 gridDim.x 672 numEnqueued 0
-BlockID 440 no work done num waiting 225 gridDim.x 672 numEnqueued 0
-BlockID 148 no work done num waiting 303 gridDim.x 672 numEnqueued 0
-BlockID 633 no work done num waiting 144 gridDim.x 672 numEnqueued 0
-BlockID 505 no work done num waiting 301 gridDim.x 672 numEnqueued 0
-BlockID 188 no work done num waiting 185 gridDim.x 672 numEnqueued 0
-BlockID 92 no work done num waiting 224 gridDim.x 672 numEnqueued 0
-BlockID 383 no work done num waiting 266 gridDim.x 672 numEnqueued 0
-BlockID 67 no work done num waiting 266 gridDim.x 672 numEnqueued 0
-BlockID 346 no work done num waiting 288 gridDim.x 672 numEnqueued 0
-BlockID 435 no work done num waiting 306 gridDim.x 672 numEnqueued 0
-BlockID 73 no work done num waiting 313 gridDim.x 672 numEnqueued 0
-BlockID 531 no work done num waiting 306 gridDim.x 672 numEnqueued 0
-BlockID 391 no work done num waiting 224 gridDim.x 672 numEnqueued 0
-BlockID 487 no work done num waiting 224 gridDim.x 672 numEnqueued 0
-BlockID 337 no work done num waiting 247 gridDim.x 672 numEnqueued 0
-BlockID 331 no work done num waiting 243 gridDim.x 672 numEnqueued 0
-BlockID 256 no work done num waiting 273 gridDim.x 672 numEnqueued 0
-BlockID 50 no work done num waiting 303 gridDim.x 672 numEnqueued 0
-BlockID 540 no work done num waiting 303 gridDim.x 672 numEnqueued 0
-BlockID 275 no work done num waiting 273 gridDim.x 672 numEnqueued 0
-BlockID 368 no work done num waiting 246 gridDim.x 672 numEnqueued 0
-BlockID 401 no work done num waiting 203 gridDim.x 672 numEnqueued 0
-BlockID 112 no work done num waiting 282 gridDim.x 672 numEnqueued 0
-BlockID 38 no work done num waiting 247 gridDim.x 672 numEnqueued 0
-BlockID 293 no work done num waiting 332 gridDim.x 672 numEnqueued 0
-BlockID 147 no work done num waiting 208 gridDim.x 672 numEnqueued 0
-BlockID 501 no work done num waiting 208 gridDim.x 672 numEnqueued 0
-BlockID 243 no work done num waiting 321 gridDim.x 672 numEnqueued 0
-BlockID 360 no work done num waiting 330 gridDim.x 672 numEnqueued 0
-BlockID 403 no work done num waiting 330 gridDim.x 672 numEnqueued 0
-BlockID 49 no work done num waiting 319 gridDim.x 672 numEnqueued 0
-BlockID 153 no work done num waiting 301 gridDim.x 672 numEnqueued 0
-BlockID 151 no work done num waiting 321 gridDim.x 672 numEnqueued 0
-BlockID 516 no work done num waiting 332 gridDim.x 672 numEnqueued 0
-BlockID 334 no work done num waiting 225 gridDim.x 672 numEnqueued 0
-BlockID 312 no work done num waiting 295 gridDim.x 672 numEnqueued 0
-BlockID 143 no work done num waiting 271 gridDim.x 672 numEnqueued 0
-BlockID 384 no work done num waiting 295 gridDim.x 672 numEnqueued 0
-BlockID 343 no work done num waiting 295 gridDim.x 672 numEnqueued 0
-BlockID 286 no work done num waiting 321 gridDim.x 672 numEnqueued 0
-BlockID 588 no work done num waiting 303 gridDim.x 672 numEnqueued 0
-BlockID 265 no work done num waiting 269 gridDim.x 672 numEnqueued 0
-BlockID 512 no work done num waiting 336 gridDim.x 672 numEnqueued 0
-BlockID 31 no work done num waiting 336 gridDim.x 672 numEnqueued 0
-BlockID 560 no work done num waiting 336 gridDim.x 672 numEnqueued 0
-BlockID 393 no work done num waiting 321 gridDim.x 672 numEnqueued 0
-BlockID 476 no work done num waiting 149 gridDim.x 672 numEnqueued 0
-BlockID 465 no work done num waiting 243 gridDim.x 672 numEnqueued 0
-BlockID 172 no work done num waiting 319 gridDim.x 672 numEnqueued 0
-BlockID 627 no work done num waiting 269 gridDim.x 672 numEnqueued 0
-BlockID 59 no work done num waiting 295 gridDim.x 672 numEnqueued 0
-BlockID 269 no work done num waiting 247 gridDim.x 672 numEnqueued 0
-BlockID 402 no work done num waiting 321 gridDim.x 672 numEnqueued 0
-BlockID 583 no work done num waiting 319 gridDim.x 672 numEnqueued 0
-BlockID 35 no work done num waiting 247 gridDim.x 672 numEnqueued 0
-BlockID 252 no work done num waiting 338 gridDim.x 672 numEnqueued 0
-BlockID 392 no work done num waiting 338 gridDim.x 672 numEnqueued 0
-BlockID 304 no work done num waiting 307 gridDim.x 672 numEnqueued 0
-BlockID 422 no work done num waiting 247 gridDim.x 672 numEnqueued 0
-BlockID 51 no work done num waiting 227 gridDim.x 672 numEnqueued 0
-BlockID 34 no work done num waiting 306 gridDim.x 672 numEnqueued 0
-BlockID 314 no work done num waiting 321 gridDim.x 672 numEnqueued 0
-BlockID 484 no work done num waiting 321 gridDim.x 672 numEnqueued 0
-BlockID 349 no work done num waiting 319 gridDim.x 672 numEnqueued 0
-BlockID 76 no work done num waiting 319 gridDim.x 672 numEnqueued 0
-BlockID 158 no work done num waiting 359 gridDim.x 672 numEnqueued 0
-BlockID 160 no work done num waiting 359 gridDim.x 672 numEnqueued 0
-BlockID 329 no work done num waiting 343 gridDim.x 672 numEnqueued 0
-BlockID 559 no work done num waiting 343 gridDim.x 672 numEnqueued 0
-BlockID 300 no work done num waiting 307 gridDim.x 672 numEnqueued 0
-BlockID 74 no work done num waiting 269 gridDim.x 672 numEnqueued 0
-BlockID 536 no work done num waiting 368 gridDim.x 672 numEnqueued 0
-BlockID 546 no work done num waiting 346 gridDim.x 672 numEnqueued 0
-BlockID 10 no work done num waiting 307 gridDim.x 672 numEnqueued 0
-BlockID 586 no work done num waiting 307 gridDim.x 672 numEnqueued 0
-BlockID 106 no work done num waiting 307 gridDim.x 672 numEnqueued 0
-BlockID 36 no work done num waiting 243 gridDim.x 672 numEnqueued 0
-BlockID 240 no work done num waiting 346 gridDim.x 672 numEnqueued 0
-BlockID 319 no work done num waiting 346 gridDim.x 672 numEnqueued 0
-BlockID 24 no work done num waiting 284 gridDim.x 672 numEnqueued 0
-BlockID 350 no work done num waiting 407 gridDim.x 672 numEnqueued 0
-BlockID 239 no work done num waiting 368 gridDim.x 672 numEnqueued 0
-BlockID 584 no work done num waiting 407 gridDim.x 672 numEnqueued 0
-BlockID 244 no work done num waiting 338 gridDim.x 672 numEnqueued 0
-BlockID 273 no work done num waiting 301 gridDim.x 672 numEnqueued 0
-BlockID 282 no work done num waiting 339 gridDim.x 672 numEnqueued 0
-BlockID 499 no work done num waiting 349 gridDim.x 672 numEnqueued 0
-BlockID 595 no work done num waiting 349 gridDim.x 672 numEnqueued 0
-BlockID 174 no work done num waiting 333 gridDim.x 672 numEnqueued 0
-BlockID 161 no work done num waiting 387 gridDim.x 672 numEnqueued 0
-BlockID 524 no work done num waiting 251 gridDim.x 672 numEnqueued 0
-BlockID 39 no work done num waiting 209 gridDim.x 672 numEnqueued 0
-BlockID 338 no work done num waiting 284 gridDim.x 672 numEnqueued 0
-BlockID 264 no work done num waiting 389 gridDim.x 672 numEnqueued 0
-BlockID 40 no work done num waiting 335 gridDim.x 672 numEnqueued 0
-BlockID 364 no work done num waiting 344 gridDim.x 672 numEnqueued 0
-BlockID 636 no work done num waiting 344 gridDim.x 672 numEnqueued 0
-BlockID 495 no work done num waiting 329 gridDim.x 672 numEnqueued 0
-BlockID 26 no work done num waiting 387 gridDim.x 672 numEnqueued 0
-BlockID 110 no work done num waiting 372 gridDim.x 672 numEnqueued 0
-BlockID 578 no work done num waiting 370 gridDim.x 672 numEnqueued 0
-BlockID 45 no work done num waiting 370 gridDim.x 672 numEnqueued 0
-BlockID 407 no work done num waiting 344 gridDim.x 672 numEnqueued 0
-BlockID 292 no work done num waiting 344 gridDim.x 672 numEnqueued 0
-BlockID 83 no work done num waiting 263 gridDim.x 672 numEnqueued 0
-BlockID 336 no work done num waiting 335 gridDim.x 672 numEnqueued 0
-BlockID 124 no work done num waiting 387 gridDim.x 672 numEnqueued 0
-BlockID 238 no work done num waiting 345 gridDim.x 672 numEnqueued 0
-BlockID 580 no work done num waiting 345 gridDim.x 672 numEnqueued 0
-BlockID 367 no work done num waiting 368 gridDim.x 672 numEnqueued 0
-BlockID 365 no work done num waiting 372 gridDim.x 672 numEnqueued 0
-BlockID 388 no work done num waiting 338 gridDim.x 672 numEnqueued 0
-BlockID 411 no work done num waiting 368 gridDim.x 672 numEnqueued 0
-BlockID 163 no work done num waiting 359 gridDim.x 672 numEnqueued 0
-BlockID 262 no work done num waiting 359 gridDim.x 672 numEnqueued 0
-BlockID 527 no work done num waiting 359 gridDim.x 672 numEnqueued 0
-BlockID 137 no work done num waiting 313 gridDim.x 672 numEnqueued 0
-BlockID 535 no work done num waiting 389 gridDim.x 672 numEnqueued 0
-BlockID 439 no work done num waiting 339 gridDim.x 672 numEnqueued 0
-BlockID 298 no work done num waiting 273 gridDim.x 672 numEnqueued 0
-BlockID 68 no work done num waiting 389 gridDim.x 672 numEnqueued 0
-BlockID 261 no work done num waiting 384 gridDim.x 672 numEnqueued 0
-BlockID 53 no work done num waiting 313 gridDim.x 672 numEnqueued 0
-BlockID 444 no work done num waiting 408 gridDim.x 672 numEnqueued 0
-BlockID 354 no work done num waiting 422 gridDim.x 672 numEnqueued 0
-BlockID 492 no work done num waiting 381 gridDim.x 672 numEnqueued 0
-BlockID 397 no work done num waiting 422 gridDim.x 672 numEnqueued 0
-BlockID 589 no work done num waiting 422 gridDim.x 672 numEnqueued 0
-BlockID 181 no work done num waiting 323 gridDim.x 672 numEnqueued 0
-BlockID 233 no work done num waiting 332 gridDim.x 672 numEnqueued 0
-BlockID 409 no work done num waiting 400 gridDim.x 672 numEnqueued 0
-BlockID 608 no work done num waiting 359 gridDim.x 672 numEnqueued 0
-BlockID 551 no work done num waiting 344 gridDim.x 672 numEnqueued 0
-BlockID 599 no work done num waiting 344 gridDim.x 672 numEnqueued 0
-BlockID 90 no work done num waiting 344 gridDim.x 672 numEnqueued 0
-BlockID 259 no work done num waiting 419 gridDim.x 672 numEnqueued 0
-BlockID 511 no work done num waiting 380 gridDim.x 672 numEnqueued 0
-BlockID 486 no work done num waiting 345 gridDim.x 672 numEnqueued 0
-BlockID 287 no work done num waiting 375 gridDim.x 672 numEnqueued 0
-BlockID 513 no work done num waiting 411 gridDim.x 672 numEnqueued 0
-BlockID 247 no work done num waiting 367 gridDim.x 672 numEnqueued 0
-BlockID 118 no work done num waiting 370 gridDim.x 672 numEnqueued 0
-BlockID 306 no work done num waiting 370 gridDim.x 672 numEnqueued 0
-BlockID 473 no work done num waiting 370 gridDim.x 672 numEnqueued 0
-BlockID 320 no work done num waiting 373 gridDim.x 672 numEnqueued 0
-BlockID 254 no work done num waiting 360 gridDim.x 672 numEnqueued 0
-BlockID 458 no work done num waiting 436 gridDim.x 672 numEnqueued 0
-BlockID 607 no work done num waiting 380 gridDim.x 672 numEnqueued 0
-BlockID 637 no work done num waiting 400 gridDim.x 672 numEnqueued 0
-BlockID 226 no work done num waiting 358 gridDim.x 672 numEnqueued 0
-BlockID 115 no work done num waiting 333 gridDim.x 672 numEnqueued 0
-BlockID 266 no work done num waiting 411 gridDim.x 672 numEnqueued 0
-BlockID 132 no work done num waiting 417 gridDim.x 672 numEnqueued 0
-BlockID 591 no work done num waiting 329 gridDim.x 672 numEnqueued 0
-BlockID 225 no work done num waiting 419 gridDim.x 672 numEnqueued 0
-BlockID 41 no work done num waiting 370 gridDim.x 672 numEnqueued 0
-BlockID 122 no work done num waiting 446 gridDim.x 672 numEnqueued 0
-BlockID 525 no work done num waiting 446 gridDim.x 672 numEnqueued 0
-BlockID 28 no work done num waiting 446 gridDim.x 672 numEnqueued 0
-BlockID 251 no work done num waiting 345 gridDim.x 672 numEnqueued 0
-BlockID 322 no work done num waiting 443 gridDim.x 672 numEnqueued 0
-BlockID 104 no work done num waiting 224 gridDim.x 672 numEnqueued 0
-BlockID 539 no work done num waiting 370 gridDim.x 672 numEnqueued 0
-BlockID 628 no work done num waiting 366 gridDim.x 672 numEnqueued 0
-BlockID 135 no work done num waiting 370 gridDim.x 672 numEnqueued 0
-BlockID 228 no work done num waiting 370 gridDim.x 672 numEnqueued 0
-BlockID 356 no work done num waiting 375 gridDim.x 672 numEnqueued 0
-BlockID 503 no work done num waiting 344 gridDim.x 672 numEnqueued 0
-BlockID 18 no work done num waiting 332 gridDim.x 672 numEnqueued 0
-BlockID 96 no work done num waiting 436 gridDim.x 672 numEnqueued 0
-BlockID 224 no work done num waiting 399 gridDim.x 672 numEnqueued 0
-BlockID 471 no work done num waiting 446 gridDim.x 672 numEnqueued 0
-BlockID 567 no work done num waiting 446 gridDim.x 672 numEnqueued 0
-BlockID 564 no work done num waiting 419 gridDim.x 672 numEnqueued 0
-BlockID 387 no work done num waiting 458 gridDim.x 672 numEnqueued 0
-BlockID 157 no work done num waiting 476 gridDim.x 672 numEnqueued 0
-BlockID 451 no work done num waiting 477 gridDim.x 672 numEnqueued 0
-BlockID 552 no work done num waiting 372 gridDim.x 672 numEnqueued 0
-BlockID 339 no work done num waiting 368 gridDim.x 672 numEnqueued 0
-BlockID 25 no work done num waiting 368 gridDim.x 672 numEnqueued 0
-BlockID 9 no work done num waiting 364 gridDim.x 672 numEnqueued 0
-BlockID 22 no work done num waiting 388 gridDim.x 672 numEnqueued 0
-BlockID 120 no work done num waiting 388 gridDim.x 672 numEnqueued 0
-BlockID 434 no work done num waiting 370 gridDim.x 672 numEnqueued 0
-BlockID 345 no work done num waiting 370 gridDim.x 672 numEnqueued 0
-BlockID 85 no work done num waiting 359 gridDim.x 672 numEnqueued 0
-BlockID 140 no work done num waiting 370 gridDim.x 672 numEnqueued 0
-BlockID 576 no work done num waiting 371 gridDim.x 672 numEnqueued 0
-BlockID 289 no work done num waiting 467 gridDim.x 672 numEnqueued 0
-BlockID 634 no work done num waiting 477 gridDim.x 672 numEnqueued 0
-BlockID 12 no work done num waiting 485 gridDim.x 672 numEnqueued 0
-BlockID 204 no work done num waiting 485 gridDim.x 672 numEnqueued 0
-BlockID 315 no work done num waiting 370 gridDim.x 672 numEnqueued 0
-BlockID 183 no work done num waiting 398 gridDim.x 672 numEnqueued 0
-BlockID 272 no work done num waiting 398 gridDim.x 672 numEnqueued 0
-BlockID 357 no work done num waiting 282 gridDim.x 672 numEnqueued 0
-BlockID 274 no work done num waiting 400 gridDim.x 672 numEnqueued 0
-BlockID 494 no work done num waiting 449 gridDim.x 672 numEnqueued 0
-BlockID 333 no work done num waiting 436 gridDim.x 672 numEnqueued 0
-BlockID 318 no work done num waiting 477 gridDim.x 672 numEnqueued 0
-BlockID 579 no work done num waiting 506 gridDim.x 672 numEnqueued 0
-BlockID 167 no work done num waiting 507 gridDim.x 672 numEnqueued 0
-BlockID 483 no work done num waiting 506 gridDim.x 672 numEnqueued 0
-BlockID 99 no work done num waiting 378 gridDim.x 672 numEnqueued 0
-BlockID 7 no work done num waiting 389 gridDim.x 672 numEnqueued 0
-BlockID 103 no work done num waiting 474 gridDim.x 672 numEnqueued 0
-BlockID 227 no work done num waiting 467 gridDim.x 672 numEnqueued 0
-BlockID 555 no work done num waiting 484 gridDim.x 672 numEnqueued 0
-BlockID 230 no work done num waiting 492 gridDim.x 672 numEnqueued 0
-BlockID 117 no work done num waiting 390 gridDim.x 672 numEnqueued 0
-BlockID 107 no work done num waiting 392 gridDim.x 672 numEnqueued 0
-BlockID 299 no work done num waiting 419 gridDim.x 672 numEnqueued 0
-BlockID 398 no work done num waiting 489 gridDim.x 672 numEnqueued 0
-BlockID 542 no work done num waiting 489 gridDim.x 672 numEnqueued 0
-BlockID 396 no work done num waiting 436 gridDim.x 672 numEnqueued 0
-BlockID 482 no work done num waiting 492 gridDim.x 672 numEnqueued 0
-BlockID 241 no work done num waiting 489 gridDim.x 672 numEnqueued 0
-BlockID 355 no work done num waiting 489 gridDim.x 672 numEnqueued 0
-BlockID 180 no work done num waiting 485 gridDim.x 672 numEnqueued 0
-BlockID 601 no work done num waiting 419 gridDim.x 672 numEnqueued 0
-BlockID 457 no work done num waiting 419 gridDim.x 672 numEnqueued 0
-BlockID 593 no work done num waiting 494 gridDim.x 672 numEnqueued 0
-BlockID 321 no work done num waiting 352 gridDim.x 672 numEnqueued 0
-BlockID 496 no work done num waiting 489 gridDim.x 672 numEnqueued 0
-BlockID 311 no work done num waiting 359 gridDim.x 672 numEnqueued 0
-BlockID 479 no work done num waiting 461 gridDim.x 672 numEnqueued 0
-BlockID 442 no work done num waiting 520 gridDim.x 672 numEnqueued 0
-BlockID 284 no work done num waiting 520 gridDim.x 672 numEnqueued 0
-BlockID 202 no work done num waiting 485 gridDim.x 672 numEnqueued 0
-BlockID 394 no work done num waiting 520 gridDim.x 672 numEnqueued 0
-BlockID 307 no work done num waiting 443 gridDim.x 672 numEnqueued 0
-BlockID 5 no work done num waiting 443 gridDim.x 672 numEnqueued 0
-BlockID 549 no work done num waiting 453 gridDim.x 672 numEnqueued 0
-BlockID 87 no work done num waiting 453 gridDim.x 672 numEnqueued 0
-BlockID 75 no work done num waiting 411 gridDim.x 672 numEnqueued 0
-BlockID 1 no work done num waiting 402 gridDim.x 672 numEnqueued 0
-BlockID 19 no work done num waiting 449 gridDim.x 672 numEnqueued 0
-BlockID 213 no work done num waiting 449 gridDim.x 672 numEnqueued 0
-BlockID 303 no work done num waiting 472 gridDim.x 672 numEnqueued 0
-BlockID 548 no work done num waiting 449 gridDim.x 672 numEnqueued 0
-BlockID 123 no work done num waiting 370 gridDim.x 672 numEnqueued 0
-BlockID 488 no work done num waiting 497 gridDim.x 672 numEnqueued 0
-BlockID 423 no work done num waiting 446 gridDim.x 672 numEnqueued 0
-BlockID 245 no work done num waiting 476 gridDim.x 672 numEnqueued 0
-BlockID 410 no work done num waiting 476 gridDim.x 672 numEnqueued 0
-BlockID 108 no work done num waiting 520 gridDim.x 672 numEnqueued 0
-BlockID 335 no work done num waiting 472 gridDim.x 672 numEnqueued 0
-BlockID 276 no work done num waiting 402 gridDim.x 672 numEnqueued 0
-BlockID 281 no work done num waiting 474 gridDim.x 672 numEnqueued 0
-BlockID 231 no work done num waiting 456 gridDim.x 672 numEnqueued 0
-BlockID 317 no work done num waiting 497 gridDim.x 672 numEnqueued 0
-BlockID 111 no work done num waiting 393 gridDim.x 672 numEnqueued 0
-BlockID 295 no work done num waiting 472 gridDim.x 672 numEnqueued 0
-BlockID 603 no work done num waiting 484 gridDim.x 672 numEnqueued 0
-BlockID 614 no work done num waiting 499 gridDim.x 672 numEnqueued 0
-BlockID 566 no work done num waiting 499 gridDim.x 672 numEnqueued 0
-BlockID 119 no work done num waiting 461 gridDim.x 672 numEnqueued 0
-BlockID 438 no work done num waiting 474 gridDim.x 672 numEnqueued 0
-BlockID 446 no work done num waiting 489 gridDim.x 672 numEnqueued 0
-BlockID 529 no work done num waiting 443 gridDim.x 672 numEnqueued 0
-BlockID 94 no work done num waiting 501 gridDim.x 672 numEnqueued 0
-BlockID 15 no work done num waiting 393 gridDim.x 672 numEnqueued 0
-Block 44 waiting after return depth 0 startingVertex 4 bti 0 
-BlockID 162 no work done num waiting 494 gridDim.x 672 numEnqueued 0
-BlockID 248 no work done num waiting 504 gridDim.x 672 numEnqueued 0
-BlockID 543 no work done num waiting 500 gridDim.x 672 numEnqueued 0
-BlockID 447 no work done num waiting 500 gridDim.x 672 numEnqueued 0
-BlockID 191 no work done num waiting 425 gridDim.x 672 numEnqueued 0
-BlockID 23 no work done num waiting 461 gridDim.x 672 numEnqueued 0
-BlockID 4 no work done num waiting 482 gridDim.x 672 numEnqueued 0
-BlockID 378 no work done num waiting 443 gridDim.x 672 numEnqueued 0
-BlockID 30 no work done num waiting 398 gridDim.x 672 numEnqueued 0
-BlockID 561 no work done num waiting 477 gridDim.x 672 numEnqueued 0
-BlockID 480 no work done num waiting 449 gridDim.x 672 numEnqueued 0
-BlockID 125 no work done num waiting 534 gridDim.x 672 numEnqueued 0
-BlockID 222 no work done num waiting 489 gridDim.x 672 numEnqueued 0
-BlockID 348 no work done num waiting 412 gridDim.x 672 numEnqueued 0
-BlockID 625 no work done num waiting 534 gridDim.x 672 numEnqueued 0
-BlockID 179 no work done num waiting 424 gridDim.x 672 numEnqueued 0
-BlockID 3 no work done num waiting 336 gridDim.x 672 numEnqueued 0
-BlockID 371 no work done num waiting 508 gridDim.x 672 numEnqueued 0
-BlockID 622 no work done num waiting 461 gridDim.x 672 numEnqueued 0
-BlockID 418 no work done num waiting 520 gridDim.x 672 numEnqueued 0
-BlockID 332 no work done num waiting 495 gridDim.x 672 numEnqueued 0
-BlockID 514 no work done num waiting 507 gridDim.x 672 numEnqueued 0
-BlockID 466 no work done num waiting 507 gridDim.x 672 numEnqueued 0
-BlockID 114 no work done num waiting 525 gridDim.x 672 numEnqueued 0
-BlockID 210 no work done num waiting 520 gridDim.x 672 numEnqueued 0
-BlockID 467 no work done num waiting 525 gridDim.x 672 numEnqueued 0
-BlockID 212 no work done num waiting 525 gridDim.x 672 numEnqueued 0
-BlockID 63 no work done num waiting 496 gridDim.x 672 numEnqueued 0
-BlockID 609 no work done num waiting 507 gridDim.x 672 numEnqueued 0
-BlockID 341 no work done num waiting 478 gridDim.x 672 numEnqueued 0
-BlockID 475 no work done num waiting 507 gridDim.x 672 numEnqueued 0
-BlockID 597 no work done num waiting 476 gridDim.x 672 numEnqueued 0
-BlockID 602 no work done num waiting 533 gridDim.x 672 numEnqueued 0
-BlockID 386 no work done num waiting 542 gridDim.x 672 numEnqueued 0
-BlockID 635 no work done num waiting 504 gridDim.x 672 numEnqueued 0
-BlockID 565 no work done num waiting 490 gridDim.x 672 numEnqueued 0
-BlockID 13 no work done num waiting 501 gridDim.x 672 numEnqueued 0
-BlockID 109 no work done num waiting 504 gridDim.x 672 numEnqueued 0
-BlockID 468 no work done num waiting 505 gridDim.x 672 numEnqueued 0
-BlockID 420 no work done num waiting 505 gridDim.x 672 numEnqueued 0
-BlockID 399 no work done num waiting 536 gridDim.x 672 numEnqueued 0
-BlockID 6 no work done num waiting 458 gridDim.x 672 numEnqueued 0
-BlockID 547 no work done num waiting 509 gridDim.x 672 numEnqueued 0
-BlockID 21 no work done num waiting 520 gridDim.x 672 numEnqueued 0
-BlockID 211 no work done num waiting 520 gridDim.x 672 numEnqueued 0
-BlockID 413 no work done num waiting 500 gridDim.x 672 numEnqueued 0
-BlockID 32 no work done num waiting 417 gridDim.x 672 numEnqueued 0
-BlockID 223 no work done num waiting 500 gridDim.x 672 numEnqueued 0
-BlockID 436 no work done num waiting 536 gridDim.x 672 numEnqueued 0
-BlockID 532 no work done num waiting 536 gridDim.x 672 numEnqueued 0
-BlockID 214 no work done num waiting 482 gridDim.x 672 numEnqueued 0
-BlockID 199 no work done num waiting 555 gridDim.x 672 numEnqueued 0
-BlockID 201 no work done num waiting 555 gridDim.x 672 numEnqueued 0
-BlockID 316 no work done num waiting 544 gridDim.x 672 numEnqueued 0
-BlockID 626 no work done num waiting 555 gridDim.x 672 numEnqueued 0
-BlockID 507 no work done num waiting 542 gridDim.x 672 numEnqueued 0
-BlockID 577 no work done num waiting 488 gridDim.x 672 numEnqueued 0
-BlockID 459 no work done num waiting 542 gridDim.x 672 numEnqueued 0
-BlockID 310 no work done num waiting 536 gridDim.x 672 numEnqueued 0
-BlockID 477 no work done num waiting 536 gridDim.x 672 numEnqueued 0
-BlockID 358 no work done num waiting 494 gridDim.x 672 numEnqueued 0
-BlockID 572 no work done num waiting 419 gridDim.x 672 numEnqueued 0
-BlockID 219 no work done num waiting 505 gridDim.x 672 numEnqueued 0
-BlockID 538 no work done num waiting 536 gridDim.x 672 numEnqueued 0
-BlockID 95 no work done num waiting 530 gridDim.x 672 numEnqueued 0
-BlockID 101 no work done num waiting 507 gridDim.x 672 numEnqueued 0
-BlockID 113 no work done num waiting 529 gridDim.x 672 numEnqueued 0
-BlockID 297 no work done num waiting 500 gridDim.x 672 numEnqueued 0
-BlockID 0 no work done num waiting 544 gridDim.x 672 numEnqueued 0
-BlockID 100 no work done num waiting 536 gridDim.x 672 numEnqueued 0
-BlockID 260 no work done num waiting 535 gridDim.x 672 numEnqueued 0
-BlockID 375 no work done num waiting 539 gridDim.x 672 numEnqueued 0
-BlockID 195 no work done num waiting 507 gridDim.x 672 numEnqueued 0
-BlockID 308 no work done num waiting 555 gridDim.x 672 numEnqueued 0
-BlockID 615 no work done num waiting 539 gridDim.x 672 numEnqueued 0
-BlockID 610 no work done num waiting 555 gridDim.x 672 numEnqueued 0
-BlockID 430 no work done num waiting 502 gridDim.x 672 numEnqueued 0
-BlockID 291 no work done num waiting 535 gridDim.x 672 numEnqueued 0
-BlockID 324 no work done num waiting 555 gridDim.x 672 numEnqueued 0
-BlockID 598 no work done num waiting 555 gridDim.x 672 numEnqueued 0
-BlockID 205 no work done num waiting 555 gridDim.x 672 numEnqueued 0
-BlockID 8 no work done num waiting 543 gridDim.x 672 numEnqueued 0
-BlockID 582 no work done num waiting 578 gridDim.x 672 numEnqueued 0
-BlockID 562 no work done num waiting 552 gridDim.x 672 numEnqueued 0
-BlockID 149 no work done num waiting 563 gridDim.x 672 numEnqueued 0
-BlockID 301 no work done num waiting 536 gridDim.x 672 numEnqueued 0
-BlockID 105 no work done num waiting 565 gridDim.x 672 numEnqueued 0
-BlockID 534 no work done num waiting 570 gridDim.x 672 numEnqueued 0
-BlockID 445 no work done num waiting 535 gridDim.x 672 numEnqueued 0
-BlockID 327 no work done num waiting 563 gridDim.x 672 numEnqueued 0
-BlockID 277 no work done num waiting 536 gridDim.x 672 numEnqueued 0
-BlockID 472 no work done num waiting 536 gridDim.x 672 numEnqueued 0
-BlockID 522 no work done num waiting 507 gridDim.x 672 numEnqueued 0
-BlockID 426 no work done num waiting 520 gridDim.x 672 numEnqueued 0
-BlockID 217 no work done num waiting 554 gridDim.x 672 numEnqueued 0
-BlockID 594 no work done num waiting 551 gridDim.x 672 numEnqueued 0
-BlockID 377 no work done num waiting 551 gridDim.x 672 numEnqueued 0
-BlockID 126 no work done num waiting 555 gridDim.x 672 numEnqueued 0
-BlockID 590 no work done num waiting 566 gridDim.x 672 numEnqueued 0
-BlockID 419 no work done num waiting 550 gridDim.x 672 numEnqueued 0
-BlockID 235 no work done num waiting 536 gridDim.x 672 numEnqueued 0
-BlockID 596 no work done num waiting 507 gridDim.x 672 numEnqueued 0
-BlockID 328 no work done num waiting 562 gridDim.x 672 numEnqueued 0
-BlockID 489 no work done num waiting 536 gridDim.x 672 numEnqueued 0
-BlockID 98 no work done num waiting 560 gridDim.x 672 numEnqueued 0
-BlockID 424 no work done num waiting 560 gridDim.x 672 numEnqueued 0
-BlockID 376 no work done num waiting 560 gridDim.x 672 numEnqueued 0
-BlockID 616 no work done num waiting 573 gridDim.x 672 numEnqueued 0
-BlockID 102 no work done num waiting 554 gridDim.x 672 numEnqueued 0
-BlockID 279 no work done num waiting 554 gridDim.x 672 numEnqueued 0
-BlockID 629 no work done num waiting 582 gridDim.x 672 numEnqueued 0
-BlockID 246 no work done num waiting 555 gridDim.x 672 numEnqueued 0
-BlockID 490 no work done num waiting 582 gridDim.x 672 numEnqueued 0
-BlockID 17 no work done num waiting 563 gridDim.x 672 numEnqueued 0
-BlockID 209 no work done num waiting 563 gridDim.x 672 numEnqueued 0
-BlockID 270 no work done num waiting 551 gridDim.x 672 numEnqueued 0
-BlockID 200 no work done num waiting 554 gridDim.x 672 numEnqueued 0
-BlockID 221 no work done num waiting 554 gridDim.x 672 numEnqueued 0
-BlockID 415 no work done num waiting 567 gridDim.x 672 numEnqueued 0
-BlockID 196 no work done num waiting 573 gridDim.x 672 numEnqueued 0
-BlockID 197 no work done num waiting 578 gridDim.x 672 numEnqueued 0
-BlockID 374 no work done num waiting 560 gridDim.x 672 numEnqueued 0
-BlockID 421 no work done num waiting 575 gridDim.x 672 numEnqueued 0
-BlockID 469 no work done num waiting 580 gridDim.x 672 numEnqueued 0
-BlockID 521 no work done num waiting 578 gridDim.x 672 numEnqueued 0
-BlockID 449 no work done num waiting 579 gridDim.x 672 numEnqueued 0
-BlockID 431 no work done num waiting 549 gridDim.x 672 numEnqueued 0
-BlockID 631 no work done num waiting 551 gridDim.x 672 numEnqueued 0
-BlockID 11 no work done num waiting 561 gridDim.x 672 numEnqueued 0
-BlockID 427 no work done num waiting 560 gridDim.x 672 numEnqueued 0
-BlockID 215 no work done num waiting 560 gridDim.x 672 numEnqueued 0
-BlockID 121 no work done num waiting 560 gridDim.x 672 numEnqueued 0
-BlockID 218 no work done num waiting 592 gridDim.x 672 numEnqueued 0
-BlockID 408 no work done num waiting 536 gridDim.x 672 numEnqueued 0
-BlockID 530 no work done num waiting 557 gridDim.x 672 numEnqueued 0
-BlockID 569 no work done num waiting 584 gridDim.x 672 numEnqueued 0
-BlockID 429 no work done num waiting 570 gridDim.x 672 numEnqueued 0
-BlockID 620 no work done num waiting 570 gridDim.x 672 numEnqueued 0
-BlockID 194 no work done num waiting 597 gridDim.x 672 numEnqueued 0
-BlockID 441 no work done num waiting 536 gridDim.x 672 numEnqueued 0
-BlockID 128 no work done num waiting 592 gridDim.x 672 numEnqueued 0
-BlockID 570 no work done num waiting 578 gridDim.x 672 numEnqueued 0
-BlockID 528 no work done num waiting 571 gridDim.x 672 numEnqueued 0
-BlockID 432 no work done num waiting 571 gridDim.x 672 numEnqueued 0
-BlockID 193 no work done num waiting 578 gridDim.x 672 numEnqueued 0
-BlockID 544 no work done num waiting 586 gridDim.x 672 numEnqueued 0
-BlockID 309 no work done num waiting 557 gridDim.x 672 numEnqueued 0
-BlockID 373 no work done num waiting 567 gridDim.x 672 numEnqueued 0
-BlockID 305 no work done num waiting 595 gridDim.x 672 numEnqueued 0
-BlockID 2 no work done num waiting 597 gridDim.x 672 numEnqueued 0
-BlockID 504 no work done num waiting 566 gridDim.x 672 numEnqueued 0
-BlockID 611 no work done num waiting 591 gridDim.x 672 numEnqueued 0
-BlockID 379 no work done num waiting 583 gridDim.x 672 numEnqueued 0
-BlockID 493 no work done num waiting 561 gridDim.x 672 numEnqueued 0
-BlockID 533 no work done num waiting 593 gridDim.x 672 numEnqueued 0
-BlockID 380 no work done num waiting 587 gridDim.x 672 numEnqueued 0
-BlockID 509 no work done num waiting 592 gridDim.x 672 numEnqueued 0
-BlockID 461 no work done num waiting 592 gridDim.x 672 numEnqueued 0
-BlockID 97 no work done num waiting 592 gridDim.x 672 numEnqueued 0
-BlockID 510 no work done num waiting 592 gridDim.x 672 numEnqueued 0
-BlockID 638 no work done num waiting 585 gridDim.x 672 numEnqueued 0
-BlockID 519 no work done num waiting 584 gridDim.x 672 numEnqueued 0
-BlockID 557 no work done num waiting 597 gridDim.x 672 numEnqueued 0
-BlockID 412 no work done num waiting 597 gridDim.x 672 numEnqueued 0
-BlockID 545 no work done num waiting 595 gridDim.x 672 numEnqueued 0
-BlockID 621 no work done num waiting 592 gridDim.x 672 numEnqueued 0
-BlockID 278 no work done num waiting 578 gridDim.x 672 numEnqueued 0
-BlockID 563 no work done num waiting 605 gridDim.x 672 numEnqueued 0
-BlockID 198 no work done num waiting 605 gridDim.x 672 numEnqueued 0
-BlockID 390 no work done num waiting 607 gridDim.x 672 numEnqueued 0
-BlockID 203 no work done num waiting 617 gridDim.x 672 numEnqueued 0
-BlockID 363 no work done num waiting 610 gridDim.x 672 numEnqueued 0
-BlockID 216 no work done num waiting 605 gridDim.x 672 numEnqueued 0
-BlockID 381 no work done num waiting 605 gridDim.x 672 numEnqueued 0
-BlockID 428 no work done num waiting 618 gridDim.x 672 numEnqueued 0
-BlockID 340 no work done num waiting 618 gridDim.x 672 numEnqueued 0
-BlockID 517 no work done num waiting 597 gridDim.x 672 numEnqueued 0
-BlockID 515 no work done num waiting 605 gridDim.x 672 numEnqueued 0
-BlockID 207 no work done num waiting 607 gridDim.x 672 numEnqueued 0
-BlockID 502 no work done num waiting 618 gridDim.x 672 numEnqueued 0
-BlockID 455 no work done num waiting 597 gridDim.x 672 numEnqueued 0
-BlockID 417 no work done num waiting 598 gridDim.x 672 numEnqueued 0
-BlockID 474 no work done num waiting 618 gridDim.x 672 numEnqueued 0
-BlockID 220 no work done num waiting 618 gridDim.x 672 numEnqueued 0
-BlockID 600 no work done num waiting 597 gridDim.x 672 numEnqueued 0
-BlockID 462 no work done num waiting 607 gridDim.x 672 numEnqueued 0
-BlockID 556 no work done num waiting 624 gridDim.x 672 numEnqueued 0
-BlockID 296 no work done num waiting 624 gridDim.x 672 numEnqueued 0
-BlockID 604 no work done num waiting 624 gridDim.x 672 numEnqueued 0
-BlockID 460 no work done num waiting 624 gridDim.x 672 numEnqueued 0
-BlockID 526 no work done num waiting 612 gridDim.x 672 numEnqueued 0
-BlockID 554 no work done num waiting 609 gridDim.x 672 numEnqueued 0
-BlockID 389 no work done num waiting 624 gridDim.x 672 numEnqueued 0
-BlockID 485 no work done num waiting 624 gridDim.x 672 numEnqueued 0
-BlockID 425 no work done num waiting 616 gridDim.x 672 numEnqueued 0
-BlockID 573 no work done num waiting 618 gridDim.x 672 numEnqueued 0
-BlockID 478 no work done num waiting 626 gridDim.x 672 numEnqueued 0
-BlockID 382 no work done num waiting 626 gridDim.x 672 numEnqueued 0
-BlockID 550 no work done num waiting 625 gridDim.x 672 numEnqueued 0
-BlockID 523 no work done num waiting 627 gridDim.x 672 numEnqueued 0
-BlockID 571 no work done num waiting 627 gridDim.x 672 numEnqueued 0
-BlockID 617 no work done num waiting 625 gridDim.x 672 numEnqueued 0
-BlockID 581 no work done num waiting 624 gridDim.x 672 numEnqueued 0
-BlockID 369 no work done num waiting 626 gridDim.x 672 numEnqueued 0
-BlockID 592 no work done num waiting 626 gridDim.x 672 numEnqueued 0
-BlockID 437 no work done num waiting 626 gridDim.x 672 numEnqueued 0
-BlockID 619 no work done num waiting 628 gridDim.x 672 numEnqueued 0
-BlockID 623 no work done num waiting 625 gridDim.x 672 numEnqueued 0
-BlockID 632 no work done num waiting 628 gridDim.x 672 numEnqueued 0
-BlockID 612 no work done num waiting 626 gridDim.x 672 numEnqueued 0
-BlockID 454 no work done num waiting 631 gridDim.x 672 numEnqueued 0
-BlockID 520 no work done num waiting 631 gridDim.x 672 numEnqueued 0
-BlockID 639 no work done num waiting 632 gridDim.x 672 numEnqueued 0
-BlockID 618 no work done num waiting 635 gridDim.x 672 numEnqueued 0
-BlockID 508 no work done num waiting 636 gridDim.x 672 numEnqueued 0
-BlockID 406 no work done num waiting 634 gridDim.x 672 numEnqueued 0
-BlockID 606 no work done num waiting 636 gridDim.x 672 numEnqueued 0
-BlockID 605 no work done num waiting 637 gridDim.x 672 numEnqueued 0
-BlockID 613 no work done num waiting 637 gridDim.x 672 numEnqueued 0
-Block 44 Neighbors left of vertex 4 start 11 end 13 bti 0 depth 0
-BlockID 574 no work done num waiting 637 gridDim.x 672 numEnqueued 0
-BlockID 414 no work done num waiting 637 gridDim.x 672 numEnqueued 0
-BlockID 558 no work done num waiting 638 gridDim.x 672 numEnqueued 0
-BlockID 370 no work done num waiting 638 gridDim.x 672 numEnqueued 0
-BlockID 568 no work done num waiting 639 gridDim.x 672 numEnqueued 0
-unmatched edge 4->1 visited 0
-matched edge 4->1 visited 0 breaking
-found neighbor, branch
-After PRC Block 44 Neighbors left of vertex 4 start 11 end 13 bti 1 depth 0
-After PLC Block 44 Neighbors left of vertex 1 start 2 end 6 bti 0 depth 1
-Block 588 continuing after dequeue_DFS pop 1 stackTop -1 depth 0 startingVertex 4 bti 1 
-Block 44 waiting after return depth 1 startingVertex 1 bti 0 
-Block 588 waiting after return depth 0 startingVertex 4 bti 1 
-Block 588 Neighbors left of vertex 4 start 11 end 13 bti 1 depth 0
-Block 44 Neighbors left of vertex 1 start 2 end 6 bti 0 depth 1
-unmatched edge 4->8 visited 0
-matched edge 1->3 visited 0
-matched edge 4->8 visited 0 breaking
-matched edge 1->3 visited 0 breaking
-found neighbor, branch
-found neighbor, branch
-After PRC Block 588 Neighbors left of vertex 4 start 11 end 13 bti 2 depth 0
-After PRC Block 44 Neighbors left of vertex 1 start 2 end 6 bti 1 depth 1
-After PLC Block 588 Neighbors left of vertex 8 start 18 end 21 bti 0 depth 1
-Block 130 continuing after dequeue_DFS pop 1 stackTop -1 depth 0 startingVertex 4 bti 2 
-After PLC Block 44 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 2
-Block 588 waiting after return depth 1 startingVertex 8 bti 0 
-Block 309 continuing after dequeue_DFS pop 1 stackTop -1 depth 1 startingVertex 1 bti 1 
-Block 130 waiting after return depth 0 startingVertex 4 bti 2 
-Block 44 waiting after return depth 2 startingVertex 3 bti 0 
-Block 588 Neighbors left of vertex 8 start 18 end 21 bti 0 depth 1
-Block 309 waiting after return depth 1 startingVertex 1 bti 1 
-Block 130 No Neighbors left of vertex 4 start 11 end 13 bti 2 depth 0
-Block 44 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 2
-Block 309 Neighbors left of vertex 1 start 2 end 6 bti 1 depth 1
-matched edge 8->7 visited 0
-BlockID 130 no work done num waiting 637 gridDim.x 672 numEnqueued 0
-matched edge 8->7 visited 0 breaking
-unmatched edge 3->1 visited 1
-matched edge 1->3 visited 0
-found neighbor, branch
-unmatched edge 3->7 visited 0
-matched edge 1->3 visited 0 breaking
-matched edge 3->7 visited 0 breaking
-After PRC Block 588 Neighbors left of vertex 8 start 18 end 21 bti 1 depth 1
-found neighbor, branch
-found neighbor, branch
-After PRC Block 309 Neighbors left of vertex 1 start 2 end 6 bti 2 depth 1
-After PRC Block 44 Neighbors left of vertex 3 start 8 end 11 bti 2 depth 2
-Block 130 continuing after dequeue_DFS pop 1 stackTop -1 depth 1 startingVertex 8 bti 1 
-After PLC Block 588 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 2
-Block 130 waiting after return depth 1 startingVertex 8 bti 1 
-Block 588 waiting after return depth 2 startingVertex 7 bti 0 
-After PLC Block 309 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 2
-After PLC Block 44 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 3
-Block 130 Neighbors left of vertex 8 start 18 end 21 bti 1 depth 1
-Block 588 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 2
-Block 44 waiting after return depth 3 startingVertex 7 bti 0 
-Block 309 waiting after return depth 2 startingVertex 3 bti 0 
-Block 182 continuing after dequeue_DFS pop 1 stackTop -1 depth 1 startingVertex 1 bti 2 
-Block 547 continuing after dequeue_DFS pop 1 stackTop -1 depth 2 startingVertex 3 bti 2 
-matched edge 8->7 visited 0
-Block 547 waiting after return depth 2 startingVertex 3 bti 2 
-Block 182 waiting after return depth 1 startingVertex 1 bti 2 
-Block 44 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 3
-unmatched edge 7->3 visited 0
-Block 309 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 2
-matched edge 8->7 visited 0 breaking
-matched edge 7->3 visited 0 breaking
-Block 182 Neighbors left of vertex 1 start 2 end 6 bti 2 depth 1
-Block 547 Neighbors left of vertex 3 start 8 end 11 bti 2 depth 2
-found neighbor, branch
-found neighbor, branch
-matched edge 7->8 visited 0
-unmatched edge 3->1 visited 1
-After PRC Block 130 Neighbors left of vertex 8 start 18 end 21 bti 2 depth 1
-After PRC Block 588 Neighbors left of vertex 7 start 16 end 18 bti 1 depth 2
-matched edge 7->8 visited 0 breaking
-matched edge 1->3 visited 0
-unmatched edge 3->11 visited 0
-unmatched edge 3->7 visited 0
-matched edge 1->3 visited 0 breaking
-matched edge 3->11 visited 0 breaking
-found neighbor, branch
-matched edge 3->7 visited 0 breaking
-found neighbor, branch
-found neighbor, branch
-found neighbor, branch
-After PRC Block 44 Neighbors left of vertex 7 start 16 end 18 bti 1 depth 3
-After PRC Block 182 Neighbors left of vertex 1 start 2 end 6 bti 3 depth 1
-After PRC Block 547 Neighbors left of vertex 3 start 8 end 11 bti 3 depth 2
-After PRC Block 309 Neighbors left of vertex 3 start 8 end 11 bti 2 depth 2
-After PLC Block 130 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 2
-After PLC Block 588 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 3
-Block 534 continuing after dequeue_DFS pop 1 stackTop -1 depth 1 startingVertex 8 bti 2 
-Block 103 continuing after dequeue_DFS pop 1 stackTop -1 depth 2 startingVertex 7 bti 1 
-Block 130 waiting after return depth 2 startingVertex 7 bti 0 
-Block 588 waiting after return depth 3 startingVertex 3 bti 0 
-Block 103 waiting after return depth 2 startingVertex 7 bti 1 
-Block 534 waiting after return depth 1 startingVertex 8 bti 2 
-Block 130 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 2
-Block 588 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 3
-Block 534 Neighbors left of vertex 8 start 18 end 21 bti 2 depth 1
-Block 103 Neighbors left of vertex 7 start 16 end 18 bti 1 depth 2
-After PLC Block 182 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 2
-After PLC Block 547 Neighbors left of vertex 11 start 25 end 29 bti 0 depth 3
-After PLC Block 44 Neighbors left of vertex 8 start 18 end 21 bti 0 depth 4
-Block 547 waiting after return depth 3 startingVertex 11 bti 0 
-Block 182 waiting after return depth 2 startingVertex 3 bti 0 
-Block 510 continuing after dequeue_DFS pop 1 stackTop -1 depth 3 startingVertex 7 bti 1 
-Block 276 continuing after dequeue_DFS pop 1 stackTop -1 depth 2 startingVertex 3 bti 3 
-Block 44 waiting after return depth 4 startingVertex 8 bti 0 
-matched edge 8->7 visited 0
-matched edge 3->1 visited 0
-unmatched edge 7->8 visited 1
-unmatched edge 7->3 visited 0
-Block 1 continuing after dequeue_DFS pop 1 stackTop -1 depth 1 startingVertex 1 bti 3 
-Block 182 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 2
-Block 547 Neighbors left of vertex 11 start 25 end 29 bti 0 depth 3
-After PLC Block 309 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 3
-matched edge 3->1 visited 0 breaking
-matched edge 8->7 visited 0 breaking
-matched edge 7->3 visited 0 breaking
-Block 193 continuing after dequeue_DFS pop 1 stackTop -1 depth 2 startingVertex 3 bti 2 
-Block 44 Neighbors left of vertex 8 start 18 end 21 bti 0 depth 4
-Block 276 waiting after return depth 2 startingVertex 3 bti 3 
-Block 510 waiting after return depth 3 startingVertex 7 bti 1 
-didnt find neighbor, set pop
-found neighbor, branch
-Block 1 waiting after return depth 1 startingVertex 1 bti 3 
-found neighbor, branch
-Block 309 waiting after return depth 3 startingVertex 7 bti 0 
-found neighbor, branch
-Block 193 waiting after return depth 2 startingVertex 3 bti 2 
-Block 510 Neighbors left of vertex 7 start 16 end 18 bti 1 depth 3
-Block 276 No Neighbors left of vertex 3 start 8 end 11 bti 3 depth 2
-After PRC Block 588 Neighbors left of vertex 3 start 8 end 11 bti 1 depth 3
-After PRC Block 130 Neighbors left of vertex 7 start 16 end 18 bti 1 depth 2
-unmatched edge 3->1 visited 1
-matched edge 11->6 visited 0
-After PRC Block 534 Neighbors left of vertex 8 start 18 end 21 bti 3 depth 1
-Block 1 Neighbors left of vertex 1 start 2 end 6 bti 3 depth 1
-Block 309 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 3
-unmatched edge 8->4 visited 16843009
-matched edge 11->6 visited 0 breaking
-BlockID 103 no work done num waiting 629 gridDim.x 672 numEnqueued 0
-Block 193 Neighbors left of vertex 3 start 8 end 11 bti 2 depth 2
-unmatched edge 3->7 visited 0
-unmatched edge 8->7 visited 1
-found neighbor, branch
-BlockID 276 no work done num waiting 630 gridDim.x 672 numEnqueued 0
-matched edge 3->7 visited 0 breaking
-matched edge 1->3 visited 0
-matched edge 7->8 visited 0
-matched edge 7->8 visited 0
-unmatched edge 8->12 visited 0
-matched edge 1->3 visited 0 breaking
-matched edge 7->8 visited 0 breaking
-found neighbor, branch
-After PRC Block 547 Neighbors left of vertex 11 start 25 end 29 bti 1 depth 3
-matched edge 7->8 visited 0 breaking
-matched edge 8->12 visited 0 breaking
-found neighbor, branch
-found neighbor, branch
-found neighbor, branch
-found neighbor, branch
-unmatched edge 3->11 visited 0
-After PRC Block 182 Neighbors left of vertex 3 start 8 end 11 bti 2 depth 2
-After PRC Block 1 Neighbors left of vertex 1 start 2 end 6 bti 4 depth 1
-After PRC Block 510 Neighbors left of vertex 7 start 16 end 18 bti 2 depth 3
-matched edge 3->11 visited 0 breaking
-After PRC Block 309 Neighbors left of vertex 7 start 16 end 18 bti 1 depth 3
-After PRC Block 44 Neighbors left of vertex 8 start 18 end 21 bti 3 depth 4
-found neighbor, branch
-After PRC Block 193 Neighbors left of vertex 3 start 8 end 11 bti 3 depth 2
-After PLC Block 130 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 3
-Block 546 continuing after dequeue_DFS pop 1 stackTop -1 depth 2 startingVertex 7 bti 1 
-After PLC Block 534 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 2
-Block 130 waiting after return depth 3 startingVertex 3 bti 0 
-After PLC Block 588 Neighbors left of vertex 1 start 2 end 6 bti 0 depth 4
-Block 55 continuing after dequeue_DFS pop 1 stackTop -1 depth 1 startingVertex 8 bti 3 
-Block 534 waiting after return depth 2 startingVertex 7 bti 0 
-Block 546 waiting after return depth 2 startingVertex 7 bti 1 
-Block 130 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 3
-Block 238 continuing after dequeue_DFS pop 1 stackTop -1 depth 3 startingVertex 3 bti 1 
-Block 588 waiting after return depth 4 startingVertex 1 bti 0 
-Block 55 waiting after return depth 1 startingVertex 8 bti 3 
-Block 534 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 2
-After PLC Block 547 Neighbors left of vertex 6 start 14 end 16 bti 0 depth 4
-After PLC Block 182 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 3
-Block 546 Neighbors left of vertex 7 start 16 end 18 bti 1 depth 2
-Block 238 waiting after return depth 3 startingVertex 3 bti 1 
-Block 103 continuing after dequeue_DFS pop 1 stackTop -1 depth 3 startingVertex 11 bti 1 
-Block 588 Neighbors left of vertex 1 start 2 end 6 bti 0 depth 4
-matched edge 3->1 visited 0
-Block 630 continuing after dequeue_DFS pop 1 stackTop -1 depth 2 startingVertex 3 bti 2 
-Block 182 waiting after return depth 3 startingVertex 7 bti 0 
-Block 55 No Neighbors left of vertex 8 start 18 end 21 bti 3 depth 1
-Block 547 waiting after return depth 4 startingVertex 6 bti 0 
-matched edge 3->1 visited 0 breaking
-Block 103 waiting after return depth 3 startingVertex 11 bti 1 
-After PLC Block 44 Neighbors left of vertex 12 start 29 end 32 bti 0 depth 5
-Block 110 continuing after dequeue_DFS pop 1 stackTop -1 depth 4 startingVertex 8 bti 3 
-Block 109 continuing after dequeue_DFS pop 1 stackTop -1 depth 3 startingVertex 7 bti 2 
-After PLC Block 510 Neighbors left of vertex 8 start 18 end 21 bti 0 depth 4
-found neighbor, branch
-Block 238 Neighbors left of vertex 3 start 8 end 11 bti 1 depth 3
-Block 182 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 3
-Block 630 waiting after return depth 2 startingVertex 3 bti 2 
-After PLC Block 1 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 2
-Block 547 Neighbors left of vertex 6 start 14 end 16 bti 0 depth 4
-unmatched edge 7->3 visited 0
-Block 319 continuing after dequeue_DFS pop 1 stackTop -1 depth 1 startingVertex 1 bti 4 
-unmatched edge 7->8 visited 1
-BlockID 55 no work done num waiting 623 gridDim.x 672 numEnqueued 0
-Block 103 Neighbors left of vertex 11 start 25 end 29 bti 1 depth 3
-Block 44 waiting after return depth 5 startingVertex 12 bti 0 
-Block 110 waiting after return depth 4 startingVertex 8 bti 3 
-After PRC Block 130 Neighbors left of vertex 3 start 8 end 11 bti 1 depth 3
-matched edge 7->3 visited 0 breaking
-Block 109 waiting after return depth 3 startingVertex 7 bti 2 
-Block 510 waiting after return depth 4 startingVertex 8 bti 0 
-unmatched edge 1->0 visited 0
-Block 1 waiting after return depth 2 startingVertex 3 bti 0 
-Block 630 Neighbors left of vertex 3 start 8 end 11 bti 2 depth 2
-didnt find neighbor, set pop
-Block 319 waiting after return depth 1 startingVertex 1 bti 4 
-found neighbor, branch
-matched edge 1->0 visited 0 breaking
-matched edge 7->8 visited 0
-Block 110 No Neighbors left of vertex 8 start 18 end 21 bti 3 depth 4
-Block 109 No Neighbors left of vertex 7 start 16 end 18 bti 2 depth 3
-Block 44 Neighbors left of vertex 12 start 29 end 32 bti 0 depth 5
-Block 510 Neighbors left of vertex 8 start 18 end 21 bti 0 depth 4
-unmatched edge 6->10 visited 0
-found neighbor, branch
-matched edge 3->1 visited 0
-matched edge 7->8 visited 0 breaking
-After PLC Block 193 Neighbors left of vertex 11 start 25 end 29 bti 0 depth 3
-After PRC Block 534 Neighbors left of vertex 7 start 16 end 18 bti 1 depth 2
-Block 1 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 2
-Block 342 continuing after dequeue_DFS pop 1 stackTop -1 depth 2 startingVertex 3 bti 3 
-matched edge 11->6 visited 0
-Block 319 No Neighbors left of vertex 1 start 2 end 6 bti 4 depth 1
-matched edge 6->10 visited 0 breaking
-matched edge 3->1 visited 0 breaking
-found neighbor, branch
-matched edge 11->6 visited 0 breaking
-Block 404 continuing after dequeue_DFS pop 1 stackTop -1 depth 3 startingVertex 7 bti 1 
-BlockID 546 no work done num waiting 622 gridDim.x 672 numEnqueued 0
-After PRC Block 588 Neighbors left of vertex 1 start 2 end 6 bti 1 depth 4
-BlockID 110 no work done num waiting 624 gridDim.x 672 numEnqueued 0
-Block 193 waiting after return depth 3 startingVertex 11 bti 0 
-After PLC Block 309 Neighbors left of vertex 8 start 18 end 21 bti 0 depth 4
-found neighbor, branch
-BlockID 109 no work done num waiting 624 gridDim.x 672 numEnqueued 0
-found neighbor, branch
-After PRC Block 182 Neighbors left of vertex 7 start 16 end 18 bti 1 depth 3
-unmatched edge 3->11 visited 0
-found neighbor, branch
-Block 342 waiting after return depth 2 startingVertex 3 bti 3 
-matched edge 12->5 visited 0
-Block 404 waiting after return depth 3 startingVertex 7 bti 1 
-matched edge 3->11 visited 0 breaking
-BlockID 319 no work done num waiting 625 gridDim.x 672 numEnqueued 0
-After PRC Block 103 Neighbors left of vertex 11 start 25 end 29 bti 2 depth 3
-After PRC Block 547 Neighbors left of vertex 6 start 14 end 16 bti 1 depth 4
-unmatched edge 8->4 visited 16843009
-matched edge 12->5 visited 0 breaking
-unmatched edge 3->1 visited 1
-Block 193 Neighbors left of vertex 11 start 25 end 29 bti 0 depth 3
-Block 309 waiting after return depth 4 startingVertex 8 bti 0 
-After PRC Block 238 Neighbors left of vertex 3 start 8 end 11 bti 2 depth 3
-Block 342 No Neighbors left of vertex 3 start 8 end 11 bti 3 depth 2
-found neighbor, branch
-found neighbor, branch
-Block 404 Neighbors left of vertex 7 start 16 end 18 bti 1 depth 3
-unmatched edge 8->7 visited 1
-unmatched edge 3->7 visited 0
-After PRC Block 630 Neighbors left of vertex 3 start 8 end 11 bti 3 depth 2
-After PRC Block 44 Neighbors left of vertex 12 start 29 end 32 bti 1 depth 5
-matched edge 3->7 visited 0 breaking
-Block 309 Neighbors left of vertex 8 start 18 end 21 bti 0 depth 4
-BlockID 342 no work done num waiting 626 gridDim.x 672 numEnqueued 1
-unmatched edge 8->12 visited 0
-found neighbor, branch
-matched edge 11->6 visited 0
-matched edge 8->12 visited 0 breaking
-matched edge 7->8 visited 0
-matched edge 11->6 visited 0 breaking
-After PLC Block 130 Neighbors left of vertex 1 start 2 end 6 bti 0 depth 4
-After PRC Block 1 Neighbors left of vertex 3 start 8 end 11 bti 2 depth 2
-found neighbor, branch
-Block 393 continuing after dequeue_DFS pop 1 stackTop -1 depth 3 startingVertex 3 bti 1 
-matched edge 7->8 visited 0 breaking
-found neighbor, branch
-Block 130 waiting after return depth 4 startingVertex 1 bti 0 
-After PRC Block 510 Neighbors left of vertex 8 start 18 end 21 bti 3 depth 4
-found neighbor, branch
-Block 393 waiting after return depth 3 startingVertex 3 bti 1 
-unmatched edge 8->4 visited 16843009
-After PRC Block 193 Neighbors left of vertex 11 start 25 end 29 bti 1 depth 3
-After PRC Block 404 Neighbors left of vertex 7 start 16 end 18 bti 2 depth 3
-Block 130 Neighbors left of vertex 1 start 2 end 6 bti 0 depth 4
-Block 393 Neighbors left of vertex 3 start 8 end 11 bti 1 depth 3
-unmatched edge 8->7 visited 1
-After PLC Block 182 Neighbors left of vertex 8 start 18 end 21 bti 0 depth 4
-After PLC Block 534 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 3
-Block 157 continuing after dequeue_DFS pop 1 stackTop -1 depth 3 startingVertex 7 bti 1 
-After PLC Block 588 Neighbors left of vertex 0 start 0 end 2 bti 0 depth 5
-After PLC Block 103 Neighbors left of vertex 6 start 14 end 16 bti 0 depth 4
-Block 36 continuing after dequeue_DFS pop 1 stackTop -1 depth 4 startingVertex 1 bti 1 
-Block 248 continuing after dequeue_DFS pop 1 stackTop -1 depth 2 startingVertex 7 bti 1 
-Block 182 waiting after return depth 4 startingVertex 8 bti 0 
-unmatched edge 8->12 visited 0
-unmatched edge 1->0 visited 0
-Block 184 continuing after dequeue_DFS pop 1 stackTop -1 depth 3 startingVertex 11 bti 2 
-After PLC Block 547 Neighbors left of vertex 10 start 23 end 25 bti 0 depth 5
-Block 534 waiting after return depth 3 startingVertex 3 bti 0 
-Block 157 waiting after return depth 3 startingVertex 7 bti 1 
-matched edge 1->0 visited 0 breaking
-matched edge 8->12 visited 0 breaking
-matched edge 3->1 visited 0
-Block 103 waiting after return depth 4 startingVertex 6 bti 0 
-Block 588 waiting after return depth 5 startingVertex 0 bti 0 
-Block 36 waiting after return depth 4 startingVertex 1 bti 1 
-Block 285 continuing after dequeue_DFS pop 1 stackTop -1 depth 4 startingVertex 6 bti 1 
-Block 182 Neighbors left of vertex 8 start 18 end 21 bti 0 depth 4
-matched edge 3->1 visited 0 breaking
-Block 248 waiting after return depth 2 startingVertex 7 bti 1 
-Block 184 waiting after return depth 3 startingVertex 11 bti 2 
-found neighbor, branch
-Block 547 waiting after return depth 5 startingVertex 10 bti 0 
-Block 157 Neighbors left of vertex 7 start 16 end 18 bti 1 depth 3
-found neighbor, branch
-Block 534 Neighbors left of vertex 3 start 8 end 11 bti 0 depth 3
-Block 103 Neighbors left of vertex 6 start 14 end 16 bti 0 depth 4
-BLOCK 285 RETURNING
-Block 36 Neighbors left of vertex 1 start 2 end 6 bti 1 depth 4
-found neighbor, branch
-Block 588 Neighbors left of vertex 0 start 0 end 2 bti 0 depth 5
-After PRC Block 130 Neighbors left of vertex 1 start 2 end 6 bti 1 depth 4
-Block 285 waiting after return depth 4 startingVertex 6 bti 1 
-After PLC Block 44 Neighbors left of vertex 5 start 13 end 14 bti 0 depth 6
-Block 184 Neighbors left of vertex 11 start 25 end 29 bti 2 depth 3
-Block 248 Neighbors left of vertex 7 start 16 end 18 bti 1 depth 2
-After PLC Block 238 Neighbors left of vertex 1 start 2 end 6 bti 0 depth 4
-After PRC Block 309 Neighbors left of vertex 8 start 18 end 21 bti 3 depth 4
-Block 547 Neighbors left of vertex 10 start 23 end 25 bti 0 depth 5
-Block 191 continuing after dequeue_DFS pop 1 stackTop -1 depth 5 startingVertex 12 bti 1 
-After PRC Block 393 Neighbors left of vertex 3 start 8 end 11 bti 2 depth 3
-Block 487 continuing after dequeue_DFS pop 1 stackTop -1 depth 3 startingVertex 3 bti 2 
-unmatched edge 8->4 visited 16843009
-Block 285 No Neighbors left of vertex 6 start 14 end 16 bti 1 depth 4
-After PLC Block 630 Neighbors left of vertex 11 start 25 end 29 bti 0 depth 3
-BLOCK 44 RETURNING
-BLOCK 238 RETURNING
-Block 156 continuing after dequeue_DFS pop 1 stackTop -1 depth 2 startingVertex 3 bti 3 
-BLOCK 191 RETURNING
-matched edge 3->1 visited 0
-unmatched edge 6->10 visited 0
-BLOCK 487 RETURNING
-Block 44 waiting after return depth 6 startingVertex 5 bti 0 
-matched edge 7->8 visited 0
-unmatched edge 8->7 visited 1
-matched edge 6->10 visited 0 breaking
-matched edge 3->1 visited 0 breaking
-Block 191 waiting after return depth 5 startingVertex 12 bti 1 
-BLOCK 630 RETURNING
-unmatched edge 1->2 visited 0
-Block 487 waiting after return depth 3 startingVertex 3 bti 2 
-Block 238 waiting after return depth 4 startingVertex 1 bti 0 
-matched edge 0->2 visited 0
-BLOCK 156 RETURNING
-matched edge 7->8 visited 0 breaking
-matched edge 11->6 visited 0
-After PLC Block 1 Neighbors left of vertex 7 start 16 end 18 bti 0 depth 3
-matched edge 1->2 visited 0 breaking
-found neighbor, branch
-found neighbor, branch
-Block 82 continuing after dequeue_DFS pop 1 stackTop -1 depth 2 startingVertex 3 bti 2 
-Block 630 waiting after return depth 3 startingVertex 11 bti 0 
-Block 156 waiting after return depth 2 startingVertex 3 bti 3 
-Block 44 No Neighbors left of vertex 5 start 13 end 14 bti 0 depth 6
-matched edge 11->6 visited 0 breaking
-matched edge 0->2 visited 0 breaking
-unmatched edge 10->6 visited 1
-unmatched edge 8->12 visited 0
-BlockID 285 no work done num waiting 617 gridDim.x 672 numEnqueued 1
-found neighbor, branch
-Block 191 No Neighbors left of vertex 12 start 29 end 32 bti 1 depth 5
-unmatched edge 7->8 visited 1
-Block 487 No Neighbors left of vertex 3 start 8 end 11 bti 2 depth 3
-found neighbor, branch
-BLOCK 1 RETURNING
-Block 238 No Neighbors left of vertex 1 start 2 end 6 bti 0 depth 4
-After PRC Block 103 Neighbors left of vertex 6 start 14 end 16 bti 1 depth 4
-After PRC Block 534 Neighbors left of vertex 3 start 8 end 11 bti 1 depth 3
-matched edge 8->12 visited 0 breaking
-BLOCK 82 RETURNING
-After PLC Block 510 Neighbors left of vertex 12 start 29 end 32 bti 0 depth 5
-found neighbor, branch
-found neighbor, branch
-Block 156 No Neighbors left of vertex 3 start 8 end 11 bti 3 depth 2
-Block 165 continuing after dequeue_DFS pop 1 stackTop -1 depth 4 startingVertex 8 bti 3 
-Block 630 No Neighbors left of vertex 11 start 25 end 29 bti 0 depth 3
-Block 1 waiting after return depth 3 startingVertex 7 bti 0 
-unmatched edge 10->13 visited 0
-didnt find neighbor, set pop
-Block 82 waiting after return depth 2 startingVertex 3 bti 2 
-After PRC Block 157 Neighbors left of vertex 7 start 16 end 18 bti 2 depth 3
-found neighbor, branch
-After PRC Block 36 Neighbors left of vertex 1 start 2 end 6 bti 2 depth 4
-BLOCK 510 RETURNING
-After PLC Block 193 Neighbors left of vertex 6 start 14 end 16 bti 0 depth 4
-matched edge 10->13 visited 0 breaking
-BlockID 44 no work done num waiting 615 gridDim.x 672 numEnqueued 0
-After PRC Block 184 Neighbors left of vertex 11 start 25 end 29 bti 3 depth 3
-BLOCK 165 RETURNING
-BlockID 191 no work done num waiting 616 gridDim.x 672 numEnqueued 0
-After PLC Block 404 Neighbors left of vertex 8 start 18 end 21 bti 0 depth 4
-After PRC Block 588 Neighbors left of vertex 0 start 0 end 2 bti 1 depth 5
-Block 1 No Neighbors left of vertex 7 start 16 end 18 bti 0 depth 3
-Block 82 No Neighbors left of vertex 3 start 8 end 11 bti 2 depth 2
-Block 510 waiting after return depth 5 startingVertex 12 bti 0 
-BlockID 487 no work done num waiting 617 gridDim.x 672 numEnqueued 0
-Block 575 continuing after dequeue_DFS pop 1 stackTop -1 depth 3 startingVertex 11 bti 1 
-After PRC Block 182 Neighbors left of vertex 8 start 18 end 21 bti 3 depth 4
-Block 165 waiting after return depth 4 startingVertex 8 bti 3 
-Block 148 continuing after dequeue_DFS pop 1 stackTop -1 depth 3 startingVertex 7 bti 2 
-found neighbor, branch
-BLOCK 193 RETURNING
-BlockID 156 no work done num waiting 621 gridDim.x 672 numEnqueued 0
-BlockID 630 no work done num waiting 621 gridDim.x 672 numEnqueued 0
-BlockID 238 no work done num waiting 621 gridDim.x 672 numEnqueued 0
-BlockID 248 no work done num waiting 621 gridDim.x 672 numEnqueued 0
-BLOCK 404 RETURNING
-Block 193 waiting after return depth 4 startingVertex 6 bti 0 
-BLOCK 575 RETURNING
-BLOCK 148 RETURNING
-Block 510 No Neighbors left of vertex 12 start 29 end 32 bti 0 depth 5
-Block 165 No Neighbors left of vertex 8 start 18 end 21 bti 3 depth 4
-After PRC Block 547 Neighbors left of vertex 10 start 23 end 25 bti 2 depth 5
-Block 148 waiting after return depth 3 startingVertex 7 bti 2 
-BlockID 82 no work done num waiting 622 gridDim.x 672 numEnqueued 0
-Block 404 waiting after return depth 4 startingVertex 8 bti 0 
-Block 575 waiting after return depth 3 startingVertex 11 bti 1 
-Block 193 No Neighbors left of vertex 6 start 14 end 16 bti 0 depth 4
-BlockID 1 no work done num waiting 623 gridDim.x 672 numEnqueued 1
-Block 148 No Neighbors left of vertex 7 start 16 end 18 bti 2 depth 3
-Block 404 No Neighbors left of vertex 8 start 18 end 21 bti 0 depth 4
-Block 575 No Neighbors left of vertex 11 start 25 end 29 bti 1 depth 3
-After PLC Block 130 Neighbors left of vertex 0 start 0 end 2 bti 0 depth 5
-BlockID 165 no work done num waiting 624 gridDim.x 672 numEnqueued 0
-BlockID 510 no work done num waiting 624 gridDim.x 672 numEnqueued 1
-Block 368 continuing after dequeue_DFS pop 1 stackTop -1 depth 4 startingVertex 1 bti 1 
-BLOCK 130 RETURNING
-BlockID 193 no work done num waiting 625 gridDim.x 672 numEnqueued 1
-Block 130 waiting after return depth 5 startingVertex 0 bti 0 
-BlockID 404 no work done num waiting 626 gridDim.x 672 numEnqueued 2
-After PLC Block 393 Neighbors left of vertex 1 start 2 end 6 bti 0 depth 4
-BLOCK 368 RETURNING
-BlockID 148 no work done num waiting 627 gridDim.x 672 numEnqueued 2
-BlockID 575 no work done num waiting 627 gridDim.x 672 numEnqueued 2
-Block 170 continuing after dequeue_DFS pop 1 stackTop -1 depth 3 startingVertex 3 bti 2 
-Block 368 waiting after return depth 4 startingVertex 1 bti 1 
-Block 130 No Neighbors left of vertex 0 start 0 end 2 bti 0 depth 5
-BLOCK 393 RETURNING
-After PLC Block 103 Neighbors left of vertex 10 start 23 end 25 bti 0 depth 5
-After PLC Block 534 Neighbors left of vertex 1 start 2 end 6 bti 0 depth 4
-BLOCK 170 RETURNING
-Block 393 waiting after return depth 4 startingVertex 1 bti 0 
-Block 276 continuing after dequeue_DFS pop 1 stackTop -1 depth 3 startingVertex 3 bti 1 
-BLOCK 103 RETURNING
-Block 170 waiting after return depth 3 startingVertex 3 bti 2 
-Block 368 No Neighbors left of vertex 1 start 2 end 6 bti 1 depth 4
-BLOCK 534 RETURNING
-Block 393 No Neighbors left of vertex 1 start 2 end 6 bti 0 depth 4
-Block 103 waiting after return depth 5 startingVertex 10 bti 0 
-BLOCK 276 RETURNING
-Block 19 continuing after dequeue_DFS pop 1 stackTop -1 depth 4 startingVertex 6 bti 1 
-BlockID 130 no work done num waiting 625 gridDim.x 672 numEnqueued 4
-Block 534 waiting after return depth 4 startingVertex 1 bti 0 
-Block 170 No Neighbors left of vertex 3 start 8 end 11 bti 2 depth 3
-After PLC Block 184 Neighbors left of vertex 6 start 14 end 16 bti 0 depth 4
-After PLC Block 182 Neighbors left of vertex 12 start 29 end 32 bti 0 depth 5
-Block 276 waiting after return depth 3 startingVertex 3 bti 1 
-After PLC Block 36 Neighbors left of vertex 2 start 6 end 8 bti 0 depth 5
-Block 117 continuing after dequeue_DFS pop 1 stackTop -1 depth 4 startingVertex 8 bti 3 
-Block 103 No Neighbors left of vertex 10 start 23 end 25 bti 0 depth 5
-After PLC Block 309 Neighbors left of vertex 12 start 29 end 32 bti 0 depth 5
-Block 359 continuing after dequeue_DFS pop 1 stackTop -1 depth 4 startingVertex 1 bti 2 
-BLOCK 182 RETURNING
-BLOCK 184 RETURNING
-BLOCK 19 RETURNING
-Block 534 No Neighbors left of vertex 1 start 2 end 6 bti 0 depth 4
-After PLC Block 157 Neighbors left of vertex 8 start 18 end 21 bti 0 depth 4
-Block 182 waiting after return depth 5 startingVertex 12 bti 0 
-Block 184 waiting after return depth 4 startingVertex 6 bti 0 
-BLOCK 36 RETURNING
-Block 276 No Neighbors left of vertex 3 start 8 end 11 bti 1 depth 3
-Block 30 continuing after dequeue_DFS pop 1 stackTop -1 depth 3 startingVertex 7 bti 2 
-BlockID 368 no work done num waiting 623 gridDim.x 672 numEnqueued 1
-Block 7 continuing after dequeue_DFS pop 1 stackTop -1 depth 3 startingVertex 11 bti 3 
-Block 19 waiting after return depth 4 startingVertex 6 bti 1 
-BlockID 393 no work done num waiting 623 gridDim.x 672 numEnqueued 1
-BLOCK 117 RETURNING
-Block 223 continuing after dequeue_DFS pop 1 stackTop -1 depth 4 startingVertex 8 bti 3 
-BLOCK 359 RETURNING
-BLOCK 309 RETURNING
-Block 36 waiting after return depth 5 startingVertex 2 bti 0 
-After PLC Block 588 Neighbors left of vertex 2 start 6 end 8 bti 0 depth 6
-Block 184 No Neighbors left of vertex 6 start 14 end 16 bti 0 depth 4
-Block 182 No Neighbors left of vertex 12 start 29 end 32 bti 0 depth 5
-BlockID 170 no work done num waiting 624 gridDim.x 672 numEnqueued 1
-BLOCK 157 RETURNING
-Block 117 waiting after return depth 4 startingVertex 8 bti 3 
-Block 359 waiting after return depth 4 startingVertex 1 bti 2 
-BLOCK 30 RETURNING
-BLOCK 7 RETURNING
-Block 309 waiting after return depth 5 startingVertex 12 bti 0 
-BlockID 103 no work done num waiting 625 gridDim.x 672 numEnqueued 2
-BLOCK 223 RETURNING
-Block 157 waiting after return depth 4 startingVertex 8 bti 0 
-Block 19 No Neighbors left of vertex 6 start 14 end 16 bti 1 depth 4
-BLOCK 588 RETURNING
-Block 36 No Neighbors left of vertex 2 start 6 end 8 bti 0 depth 5
-Block 30 waiting after return depth 3 startingVertex 7 bti 2 
-Block 359 No Neighbors left of vertex 1 start 2 end 6 bti 2 depth 4
-Block 7 waiting after return depth 3 startingVertex 11 bti 3 
-Block 223 waiting after return depth 4 startingVertex 8 bti 3 
-Block 117 No Neighbors left of vertex 8 start 18 end 21 bti 3 depth 4
-BlockID 534 no work done num waiting 625 gridDim.x 672 numEnqueued 0
-BlockID 276 no work done num waiting 625 gridDim.x 672 numEnqueued 0
-BlockID 182 no work done num waiting 627 gridDim.x 672 numEnqueued 0
-BlockID 184 no work done num waiting 627 gridDim.x 672 numEnqueued 0
-Block 588 waiting after return depth 6 startingVertex 2 bti 0 
-After PLC Block 547 Neighbors left of vertex 13 start 32 end 35 bti 0 depth 6
-Block 157 No Neighbors left of vertex 8 start 18 end 21 bti 0 depth 4
-Block 309 No Neighbors left of vertex 12 start 29 end 32 bti 0 depth 5
-Block 404 continuing after dequeue_DFS pop 1 stackTop -1 depth 5 startingVertex 10 bti 2 
-Block 30 No Neighbors left of vertex 7 start 16 end 18 bti 2 depth 3
-Block 613 continuing after dequeue_DFS pop 1 stackTop -1 depth 5 startingVertex 0 bti 1 
-Block 7 No Neighbors left of vertex 11 start 25 end 29 bti 3 depth 3
-BLOCK 547 RETURNING
-Block 223 No Neighbors left of vertex 8 start 18 end 21 bti 3 depth 4
-Block 588 No Neighbors left of vertex 2 start 6 end 8 bti 0 depth 6
-BlockID 36 no work done num waiting 629 gridDim.x 672 numEnqueued 0
-BlockID 19 no work done num waiting 630 gridDim.x 672 numEnqueued 0
-BlockID 359 no work done num waiting 630 gridDim.x 672 numEnqueued 0
-BLOCK 404 RETURNING
-Block 547 waiting after return depth 6 startingVertex 13 bti 0 
-BLOCK 613 RETURNING
-BlockID 117 no work done num waiting 631 gridDim.x 672 numEnqueued 0
-BlockID 157 no work done num waiting 632 gridDim.x 672 numEnqueued 0
-Block 404 waiting after return depth 5 startingVertex 10 bti 2 
-BlockID 30 no work done num waiting 633 gridDim.x 672 numEnqueued 0
-Block 613 waiting after return depth 5 startingVertex 0 bti 1 
-BlockID 7 no work done num waiting 634 gridDim.x 672 numEnqueued 0
-Block 547 No Neighbors left of vertex 13 start 32 end 35 bti 0 depth 6
-BlockID 588 no work done num waiting 636 gridDim.x 672 numEnqueued 0
-BlockID 309 no work done num waiting 636 gridDim.x 672 numEnqueued 0
-BlockID 223 no work done num waiting 637 gridDim.x 672 numEnqueued 0
-Block 404 No Neighbors left of vertex 10 start 23 end 25 bti 2 depth 5
-Block 613 No Neighbors left of vertex 0 start 0 end 2 bti 1 depth 5
-BlockID 547 no work done num waiting 638 gridDim.x 672 numEnqueued 0
-BlockID 404 no work done num waiting 639 gridDim.x 672 numEnqueued 0
-BlockID 613 no work done num waiting 640 gridDim.x 672 numEnqueued 0
+Block ID 86 first to dequue
+bid 86 bti 0 depth 0 unmatched edge 4->1 
+Incrementing bti 0 0
+Incrementing bti 1 0
+bid 86 bti 0 depth 1 matched edge 1->3 
+Incrementing bti 0 1
+bid 455 bti 0 depth 0 unmatched edge 4->1 
+Incrementing bti 1 1
+Incrementing bti 0 0
+Incrementing bti 1 0
+bid 86 bti 1 depth 2 unmatched edge 3->7 
+Incrementing bti 1 2
+bid 455 bti 0 depth 1 matched edge 1->3 
+Incrementing bti 2 2
+Incrementing bti 0 1
+bid 514 bti 0 depth 1 matched edge 1->3 
+bid 370 bti 0 depth 0 unmatched edge 4->1 
+Incrementing bti 1 1
+Incrementing bti 0 1
+Incrementing bti 0 0
+bid 86 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 1 0
+Incrementing bti 1 1
+Incrementing bti 0 3
+bid 455 bti 1 depth 2 unmatched edge 3->7 
+Incrementing bti 1 3
+Incrementing bti 1 2
+bid 370 bti 0 depth 1 matched edge 1->3 
+bid 514 bti 1 depth 2 unmatched edge 3->7 
+Incrementing bti 2 2
+Incrementing bti 0 1
+bid 86 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 1 2
+Incrementing bti 1 1
+Incrementing bti 2 2
+Incrementing bti 2 4
+bid 455 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 3 4
+bid 276 bti 0 depth 1 matched edge 1->3 
+bid 116 bti 0 depth 1 matched edge 1->3 
+bid 523 bti 0 depth 3 matched edge 7->8 
+bid 176 bti 0 depth 0 unmatched edge 4->1 
+Incrementing bti 0 3
+bid 109 bti 1 depth 2 unmatched edge 3->7 
+bid 545 bti 1 depth 2 unmatched edge 3->7 
+Incrementing bti 1 3
+bid 514 bti 0 depth 3 matched edge 7->8 
+bid 370 bti 1 depth 2 unmatched edge 3->7 
+Incrementing bti 0 0
+Incrementing bti 0 1
+Incrementing bti 0 3
+Incrementing bti 0 1
+Incrementing bti 1 2
+Incrementing bti 1 2
+Incrementing bti 1 0
+Incrementing bti 1 1
+Incrementing bti 1 1
+Incrementing bti 0 3
+Incrementing bti 1 3
+bid 86 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 2 2
+Incrementing bti 2 2
+Incrementing bti 1 2
+Incrementing bti 1 3
+Incrementing bti 2 2
+Incrementing bti 0 5
+bid 455 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 1 5
+bid 176 bti 0 depth 1 matched edge 1->3 
+bid 116 bti 1 depth 2 unmatched edge 3->7 
+Incrementing bti 2 4
+bid 523 bti 2 depth 4 unmatched edge 8->12 
+bid 545 bti 0 depth 3 matched edge 7->8 
+bid 276 bti 1 depth 2 unmatched edge 3->7 
+bid 109 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 3 4
+Incrementing bti 0 1
+Incrementing bti 1 2
+bid 370 bti 0 depth 3 matched edge 7->8 
+bid 514 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 2 4
+Incrementing bti 0 3
+Incrementing bti 1 2
+Incrementing bti 0 3
+Incrementing bti 1 1
+Incrementing bti 2 2
+Incrementing bti 3 4
+Incrementing bti 1 3
+Incrementing bti 1 3
+Incrementing bti 2 2
+Incrementing bti 0 3
+Incrementing bti 2 4
+bid 455 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 3
+Incrementing bti 3 4
+bid 86 bti 0 depth 1 matched edge 1->3 
+Incrementing bti 0 5
+bid 116 bti 0 depth 3 matched edge 7->8 
+bid 176 bti 1 depth 2 unmatched edge 3->7 
+bid 523 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 0 1
+bid 276 bti 0 depth 3 matched edge 7->8 
+bid 109 bti 2 depth 4 unmatched edge 8->12 
+bid 545 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 1 5
+Incrementing bti 1 1
+Incrementing bti 0 3
+Incrementing bti 1 2
+Incrementing bti 0 5
+Incrementing bti 0 3
+Incrementing bti 2 4
+bid 514 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 2 4
+bid 370 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 1 3
+Incrementing bti 2 2
+Incrementing bti 1 5
+Incrementing bti 1 3
+Incrementing bti 3 4
+Incrementing bti 3 4
+Incrementing bti 0 5
+Incrementing bti 2 4
+bid 86 bti 1 depth 2 unmatched edge 3->7 
+Incrementing bti 1 5
+Incrementing bti 3 4
+bid 176 bti 0 depth 3 matched edge 7->8 
+bid 116 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 1 2
+bid 455 bti 1 depth 2 unmatched edge 3->7 
+bid 109 bti 0 depth 5 matched edge 12->5 
+bid 545 bti 0 depth 5 matched edge 12->5 
+bid 276 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 2 2
+Incrementing bti 0 3
+Incrementing bti 2 4
+Incrementing bti 1 2
+bid 523 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 2 4
+Incrementing bti 1 3
+bid 370 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 3 4
+Incrementing bti 2 2
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 3 4
+Incrementing bti 2 4
+Incrementing bti 0 5
+bid 86 bti 0 depth 3 matched edge 7->8 
+bid 514 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 3 4
+Incrementing bti 1 5
+bid 569 bti 0 depth 3 matched edge 7->8 
+bid 526 bti 0 depth 1 matched edge 1->3 
+bid 24 bti 0 depth 1 matched edge 1->3 
+bid 37 bti 0 depth 5 matched edge 12->5 
+bid 292 bti 0 depth 5 matched edge 12->5 
+bid 491 bti 0 depth 0 unmatched edge 4->1 
+bid 40 bti 0 depth 3 matched edge 7->8 
+bid 167 bti 0 depth 1 matched edge 1->3 
+bid 562 bti 0 depth 3 matched edge 7->8 
+bid 238 bti 0 depth 3 matched edge 7->8 
+bid 42 bti 0 depth 3 matched edge 7->8 
+bid 263 bti 1 depth 2 unmatched edge 3->7 
+bid 47 bti 1 depth 2 unmatched edge 3->7 
+bid 176 bti 2 depth 4 unmatched edge 8->12 
+bid 186 bti 0 depth 1 matched edge 1->3 
+bid 241 bti 2 depth 4 unmatched edge 8->12 
+bid 69 bti 1 depth 2 unmatched edge 3->7 
+bid 402 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 0 3
+bid 451 bti 1 depth 2 unmatched edge 3->7 
+bid 197 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 0 3
+bid 99 bti 1 depth 2 unmatched edge 3->7 
+bid 433 bti 2 depth 4 unmatched edge 8->12 
+bid 570 bti 0 depth 5 matched edge 12->5 
+bid 73 bti 2 depth 4 unmatched edge 8->12 
+bid 445 bti 0 depth 3 matched edge 7->8 
+bid 181 bti 1 depth 2 unmatched edge 3->7 
+bid 5 bti 2 depth 4 unmatched edge 8->12 
+bid 298 bti 1 depth 2 unmatched edge 3->7 
+bid 116 bti 0 depth 5 matched edge 12->5 
+bid 349 bti 2 depth 4 unmatched edge 8->12 
+bid 83 bti 2 depth 4 unmatched edge 8->12 
+bid 455 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 1 3
+bid 276 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 3
+Incrementing bti 1 2
+Incrementing bti 0 5
+Incrementing bti 2 4
+Incrementing bti 0 3
+Incrementing bti 0 5
+Incrementing bti 0 3
+Incrementing bti 0 1
+Incrementing bti 0 1
+Incrementing bti 1 2
+Incrementing bti 0 0
+Incrementing bti 2 4
+Incrementing bti 0 3
+Incrementing bti 0 3
+Incrementing bti 0 1
+Incrementing bti 1 2
+Incrementing bti 0 5
+Incrementing bti 0 1
+Incrementing bti 0 3
+Incrementing bti 0 5
+Incrementing bti 1 2
+Incrementing bti 1 2
+Incrementing bti 0 3
+Incrementing bti 2 4
+Incrementing bti 2 4
+Incrementing bti 2 4
+Incrementing bti 0 3
+Incrementing bti 0 5
+Incrementing bti 1 2
+Incrementing bti 2 4
+Incrementing bti 1 2
+Incrementing bti 0 3
+Incrementing bti 2 4
+bid 523 bti 0 depth 5 matched edge 12->5 
+bid 109 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 1 5
+Incrementing bti 1 3
+Incrementing bti 2 2
+Incrementing bti 1 5
+Incrementing bti 1 3
+Incrementing bti 3 4
+Incrementing bti 1 1
+Incrementing bti 2 2
+Incrementing bti 1 1
+Incrementing bti 1 0
+Incrementing bti 1 3
+Incrementing bti 3 4
+Incrementing bti 1 5
+Incrementing bti 0 5
+Incrementing bti 1 1
+Incrementing bti 2 2
+Incrementing bti 1 3
+Incrementing bti 2 2
+Incrementing bti 1 1
+Incrementing bti 1 3
+Incrementing bti 2 2
+Incrementing bti 3 4
+Incrementing bti 1 5
+Incrementing bti 3 4
+bid 545 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 1 3
+Incrementing bti 1 3
+Incrementing bti 3 4
+Incrementing bti 2 2
+Incrementing bti 1 3
+Incrementing bti 2 2
+Incrementing bti 1 5
+Incrementing bti 3 4
+Incrementing bti 3 4
+Incrementing bti 1 5
+Incrementing bti 0 5
+Incrementing bti 0 3
+bid 86 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 2 4
+bid 514 bti 2 depth 4 unmatched edge 8->12 
+bid 370 bti 1 depth 2 unmatched edge 3->7 
+Incrementing bti 1 5
+Incrementing bti 1 3
+bid 263 bti 0 depth 3 matched edge 7->8 
+bid 176 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 2 4
+Incrementing bti 3 4
+bid 40 bti 2 depth 4 unmatched edge 8->12 
+bid 24 bti 1 depth 2 unmatched edge 3->7 
+bid 526 bti 1 depth 2 unmatched edge 3->7 
+bid 569 bti 2 depth 4 unmatched edge 8->12 
+bid 491 bti 0 depth 1 matched edge 1->3 
+bid 69 bti 0 depth 3 matched edge 7->8 
+bid 241 bti 0 depth 5 matched edge 12->5 
+bid 47 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 2 4
+bid 455 bti 2 depth 4 unmatched edge 8->12 
+bid 562 bti 2 depth 4 unmatched edge 8->12 
+bid 186 bti 1 depth 2 unmatched edge 3->7 
+Incrementing bti 1 2
+bid 451 bti 0 depth 3 matched edge 7->8 
+bid 42 bti 0 depth 4 matched edge 8->7 
+bid 73 bti 0 depth 5 matched edge 12->5 
+bid 99 bti 0 depth 3 matched edge 7->8 
+bid 5 bti 0 depth 5 matched edge 12->5 
+bid 167 bti 1 depth 2 unmatched edge 3->7 
+Incrementing bti 3 4
+bid 238 bti 2 depth 4 unmatched edge 8->12 
+bid 197 bti 2 depth 4 unmatched edge 8->12 
+bid 433 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 0 3
+Incrementing bti 0 5
+Incrementing bti 2 4
+bid 349 bti 0 depth 5 matched edge 12->5 
+bid 298 bti 0 depth 3 matched edge 7->8 
+bid 570 bti 0 depth 6 matched edge 5->12 
+bid 181 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 3 4
+bid 83 bti 0 depth 5 matched edge 12->5 
+bid 37 bti 0 depth 5 matched edge 12->5 
+bid 292 bti 0 depth 5 matched edge 12->5 
+bid 445 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 2 2
+Incrementing bti 1 2
+Incrementing bti 0 1
+Incrementing bti 2 4
+Incrementing bti 1 2
+Incrementing bti 2 4
+Incrementing bti 0 3
+Incrementing bti 0 5
+Incrementing bti 0 3
+Incrementing bti 2 4
+bid 116 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 1 3
+Incrementing bti 1 2
+Incrementing bti 0 3
+Incrementing bti 0 3
+Incrementing bti 0 5
+Incrementing bti 1 5
+Incrementing bti 3 4
+Incrementing bti 0 5
+Incrementing bti 0 4
+Incrementing bti 1 2
+Incrementing bti 2 4
+Incrementing bti 2 4
+bid 109 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 0 5
+Incrementing bti 2 2
+Incrementing bti 3 4
+Incrementing bti 1 1
+Incrementing bti 2 2
+Incrementing bti 3 4
+bid 402 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 1 3
+Incrementing bti 1 5
+Incrementing bti 1 3
+bid 276 bti 0 depth 5 matched edge 12->5 
+bid 545 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 3 4
+Incrementing bti 0 3
+Incrementing bti 2 2
+Incrementing bti 0 3
+Incrementing bti 1 3
+Incrementing bti 0 5
+Incrementing bti 2 4
+Incrementing bti 1 3
+Incrementing bti 0 6
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 2 4
+Incrementing bti 0 5
+Incrementing bti 1 4
+Incrementing bti 3 4
+Incrementing bti 3 4
+Incrementing bti 2 2
+Incrementing bti 1 5
+bid 86 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 2 4
+Incrementing bti 1 5
+Incrementing bti 1 5
+bid 523 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 2 4
+Incrementing bti 1 3
+Incrementing bti 3 4
+Incrementing bti 0 5
+Incrementing bti 1 5
+Incrementing bti 1 3
+Incrementing bti 0 5
+Incrementing bti 1 6
+Incrementing bti 1 5
+bid 514 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 3 4
+bid 370 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 3 4
+bid 40 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 0 5
+bid 263 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 3 4
+Incrementing bti 0 3
+bid 455 bti 0 depth 5 matched edge 12->5 
+bid 24 bti 0 depth 3 matched edge 7->8 
+bid 526 bti 0 depth 3 matched edge 7->8 
+bid 569 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 0 5
+bid 491 bti 1 depth 2 unmatched edge 3->7 
+Incrementing bti 0 3
+bid 562 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 5
+bid 69 bti 2 depth 4 unmatched edge 8->12 
+bid 47 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 0 5
+bid 186 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 1 3
+Incrementing bti 2 4
+bid 451 bti 2 depth 4 unmatched edge 8->12 
+bid 197 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 0 5
+bid 176 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 1 5
+bid 42 bti 0 depth 5 matched edge 7->8 
+bid 99 bti 2 depth 4 unmatched edge 8->12 
+bid 238 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 3
+bid 167 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 0 3
+Incrementing bti 0 3
+Incrementing bti 0 5
+bid 116 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 2
+Incrementing bti 1 5
+Incrementing bti 3 4
+Incrementing bti 0 5
+Incrementing bti 2 4
+Incrementing bti 1 5
+bid 109 bti 0 depth 5 matched edge 12->5 
+bid 241 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 2 4
+Incrementing bti 0 3
+Incrementing bti 1 3
+Incrementing bti 2 4
+Incrementing bti 1 3
+Incrementing bti 1 5
+Incrementing bti 0 3
+bid 298 bti 2 depth 4 unmatched edge 8->12 
+bid 570 bti 0 depth 7 matched edge 12->5 
+Incrementing bti 0 5
+Incrementing bti 2 2
+bid 181 bti 2 depth 4 unmatched edge 8->12 
+bid 445 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 2 4
+bid 37 bti 0 depth 5 matched edge 12->5 
+bid 292 bti 1 depth 2 unmatched edge 3->7 
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 1 5
+Incrementing bti 3 4
+Incrementing bti 0 5
+bid 5 bti 0 depth 5 matched edge 12->5 
+bid 73 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 0 3
+bid 433 bti 0 depth 3 matched edge 7->8 
+bid 402 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 3 4
+Incrementing bti 1 3
+Incrementing bti 3 4
+Incrementing bti 0 5
+Incrementing bti 1 3
+Incrementing bti 1 5
+Incrementing bti 0 3
+Incrementing bti 3 4
+bid 523 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 1 3
+Incrementing bti 1 2
+Incrementing bti 0 5
+Incrementing bti 2 4
+Incrementing bti 0 5
+Incrementing bti 0 7
+Incrementing bti 1 5
+Incrementing bti 2 4
+bid 349 bti 0 depth 1 matched edge 1->3 
+Incrementing bti 0 5
+bid 370 bti 2 depth 4 unmatched edge 8->12 
+bid 263 bti 0 depth 5 matched edge 12->5 
+bid 83 bti 0 depth 1 matched edge 1->3 
+Incrementing bti 2 4
+Incrementing bti 0 3
+bid 276 bti 0 depth 5 matched edge 12->5 
+bid 545 bti 0 depth 0 unmatched edge 4->1 
+Incrementing bti 0 5
+Incrementing bti 1 3
+bid 86 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 2 2
+Incrementing bti 1 5
+Incrementing bti 2 4
+Incrementing bti 3 4
+Incrementing bti 1 5
+bid 491 bti 0 depth 3 matched edge 7->8 
+bid 24 bti 2 depth 4 unmatched edge 8->12 
+bid 526 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 1 7
+Incrementing bti 3 4
+Incrementing bti 1 3
+Incrementing bti 1 5
+Incrementing bti 3 4
+Incrementing bti 1 5
+Incrementing bti 0 5
+bid 69 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 2 4
+Incrementing bti 0 5
+Incrementing bti 0 0
+Incrementing bti 0 1
+Incrementing bti 0 1
+Incrementing bti 3 4
+Incrementing bti 0 3
+bid 40 bti 1 depth 2 unmatched edge 3->7 
+bid 514 bti 1 depth 2 unmatched edge 3->7 
+bid 176 bti 2 depth 4 unmatched edge 8->12 
+bid 47 bti 0 depth 5 matched edge 12->5 
+bid 186 bti 2 depth 4 unmatched edge 8->12 
+bid 451 bti 0 depth 5 matched edge 12->5 
+bid 455 bti 2 depth 4 unmatched edge 8->12 
+bid 99 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 2 4
+Incrementing bti 2 4
+Incrementing bti 1 5
+Incrementing bti 3 4
+Incrementing bti 1 5
+Incrementing bti 1 0
+Incrementing bti 0 3
+Incrementing bti 1 3
+Incrementing bti 1 1
+bid 569 bti 0 depth 3 matched edge 7->8 
+bid 42 bti 0 depth 6 matched edge 8->7 
+Incrementing bti 1 1
+Incrementing bti 1 2
+Incrementing bti 0 5
+bid 167 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 1 2
+Incrementing bti 3 4
+Incrementing bti 3 4
+bid 562 bti 0 depth 1 matched edge 1->3 
+Incrementing bti 2 4
+bid 292 bti 0 depth 3 matched edge 7->8 
+bid 241 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 2 4
+Incrementing bti 0 5
+Incrementing bti 2 4
+Incrementing bti 0 5
+Incrementing bti 1 3
+Incrementing bti 2 2
+bid 116 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 0 5
+bid 197 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 1 5
+Incrementing bti 3 4
+Incrementing bti 2 2
+Incrementing bti 0 3
+bid 249 bti 0 depth 5 matched edge 12->5 
+bid 550 bti 0 depth 5 matched edge 12->5 
+bid 48 bti 0 depth 5 matched edge 12->5 
+bid 523 bti 0 depth 5 matched edge 12->5 
+bid 388 bti 0 depth 3 matched edge 7->8 
+bid 153 bti 0 depth 4 matched edge 8->7 
+bid 100 bti 0 depth 5 matched edge 12->5 
+bid 377 bti 1 depth 5 unmatched edge 12->8 
+Incrementing bti 1 5
+bid 320 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 0 6
+bid 574 bti 0 depth 3 matched edge 7->8 
+bid 405 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 3 4
+bid 520 bti 0 depth 1 unmatched edge 1->0 
+bid 356 bti 0 depth 5 matched edge 12->5 
+bid 258 bti 0 depth 1 matched edge 1->3 
+bid 501 bti 0 depth 5 matched edge 12->5 
+bid 148 bti 0 depth 3 matched edge 7->8 
+bid 392 bti 1 depth 2 unmatched edge 3->7 
+bid 353 bti 2 depth 4 unmatched edge 8->12 
+bid 474 bti 1 depth 2 unmatched edge 3->7 
+bid 404 bti 0 depth 5 matched edge 12->5 
+bid 208 bti 1 depth 2 unmatched edge 3->7 
+bid 149 bti 0 depth 5 matched edge 12->5 
+bid 498 bti 0 depth 4 matched edge 8->7 
+bid 484 bti 2 depth 4 unmatched edge 8->12 
+bid 123 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 0 3
+bid 513 bti 2 depth 4 unmatched edge 8->12 
+bid 15 bti 1 depth 2 unmatched edge 3->7 
+bid 365 bti 0 depth 4 matched edge 8->7 
+bid 330 bti 0 depth 2 matched edge 3->1 
+bid 344 bti 1 depth 2 unmatched edge 3->7 
+bid 329 bti 0 depth 3 matched edge 7->8 
+bid 73 bti 0 depth 5 matched edge 12->5 
+bid 49 bti 0 depth 2 matched edge 3->1 
+bid 115 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 3 4
+bid 462 bti 0 depth 3 matched edge 7->8 
+bid 127 bti 0 depth 5 matched edge 12->5 
+bid 376 bti 0 depth 5 matched edge 12->5 
+bid 60 bti 0 depth 4 matched edge 8->7 
+bid 155 bti 0 depth 5 matched edge 12->5 
+bid 104 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 5
+bid 424 bti 1 depth 2 unmatched edge 3->7 
+bid 200 bti 2 depth 4 unmatched edge 8->12 
+bid 453 bti 2 depth 4 unmatched edge 8->12 
+bid 252 bti 0 depth 7 matched edge 12->5 
+bid 70 bti 0 depth 5 matched edge 12->5 
+bid 117 bti 0 depth 5 matched edge 12->5 
+bid 298 bti 0 depth 5 matched edge 12->5 
+bid 527 bti 0 depth 4 matched edge 8->7 
+bid 570 bti 0 depth 8 matched edge 5->12 
+bid 363 bti 2 depth 4 unmatched edge 8->12 
+bid 45 bti 2 depth 4 unmatched edge 8->12 
+bid 154 bti 0 depth 4 matched edge 8->7 
+bid 238 bti 2 depth 4 unmatched edge 8->12 
+bid 156 bti 0 depth 5 matched edge 12->5 
+bid 166 bti 0 depth 3 matched edge 7->8 
+bid 428 bti 0 depth 3 matched edge 7->8 
+bid 559 bti 0 depth 3 matched edge 7->8 
+bid 519 bti 0 depth 3 matched edge 7->8 
+bid 157 bti 0 depth 5 matched edge 12->5 
+bid 334 bti 0 depth 3 matched edge 7->8 
+bid 419 bti 0 depth 5 matched edge 12->5 
+bid 333 bti 0 depth 5 matched edge 12->5 
+bid 457 bti 1 depth 2 unmatched edge 3->7 
+bid 563 bti 0 depth 3 matched edge 7->8 
+bid 248 bti 0 depth 5 matched edge 12->5 
+bid 303 bti 0 depth 5 matched edge 12->5 
+bid 246 bti 0 depth 4 matched edge 8->7 
+bid 525 bti 0 depth 4 matched edge 8->7 
+bid 558 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 1 1
+bid 385 bti 0 depth 3 matched edge 7->8 
+bid 463 bti 0 depth 3 matched edge 7->8 
+bid 433 bti 2 depth 4 unmatched edge 8->12 
+bid 190 bti 1 depth 2 unmatched edge 3->7 
+bid 71 bti 0 depth 5 matched edge 12->5 
+bid 437 bti 0 depth 5 matched edge 12->5 
+bid 77 bti 0 depth 5 matched edge 12->5 
+bid 75 bti 0 depth 3 matched edge 7->8 
+bid 339 bti 0 depth 5 matched edge 12->5 
+bid 476 bti 2 depth 4 unmatched edge 8->12 
+bid 485 bti 0 depth 5 matched edge 12->5 
+bid 270 bti 0 depth 3 matched edge 7->8 
+bid 152 bti 0 depth 4 matched edge 8->7 
+bid 244 bti 0 depth 6 matched edge 5->12 
+bid 481 bti 2 depth 4 unmatched edge 8->12 
+bid 342 bti 0 depth 5 matched edge 7->8 
+bid 181 bti 0 depth 5 matched edge 12->5 
+bid 255 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 0 4
+bid 61 bti 2 depth 4 unmatched edge 8->12 
+bid 192 bti 0 depth 4 matched edge 8->7 
+bid 58 bti 1 depth 2 unmatched edge 3->7 
+bid 331 bti 0 depth 4 matched edge 8->7 
+Incrementing bti 1 5
+bid 150 bti 0 depth 3 matched edge 7->8 
+bid 173 bti 2 depth 4 unmatched edge 8->12 
+bid 259 bti 0 depth 4 matched edge 8->7 
+bid 533 bti 2 depth 4 unmatched edge 8->12 
+bid 415 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 3
+Incrementing bti 2 4
+bid 555 bti 2 depth 4 unmatched edge 8->12 
+bid 54 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 1 3
+bid 37 bti 2 depth 4 unmatched edge 8->12 
+bid 86 bti 2 depth 4 unmatched edge 8->12 
+bid 109 bti 0 depth 5 matched edge 12->5 
+bid 370 bti 0 depth 5 matched edge 12->5 
+bid 545 bti 0 depth 1 matched edge 1->3 
+Incrementing bti 0 3
+bid 5 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 2
+Incrementing bti 1 2
+bid 491 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 0 5
+Incrementing bti 1 6
+Incrementing bti 2 4
+bid 402 bti 0 depth 0 unmatched edge 4->1 
+Incrementing bti 0 3
+Incrementing bti 2 1
+bid 24 bti 0 depth 5 matched edge 12->5 
+bid 526 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 0 4
+Incrementing bti 0 1
+Incrementing bti 1 4
+Incrementing bti 2 4
+Incrementing bti 0 5
+Incrementing bti 0 5
+bid 349 bti 1 depth 2 unmatched edge 3->7 
+bid 83 bti 1 depth 2 unmatched edge 3->7 
+Incrementing bti 0 3
+bid 40 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 0 3
+Incrementing bti 2 4
+Incrementing bti 3 4
+Incrementing bti 2 4
+bid 176 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 0 3
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 1 3
+Incrementing bti 0 5
+Incrementing bti 0 3
+Incrementing bti 2 4
+Incrementing bti 0 1
+bid 445 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 2 4
+Incrementing bti 0 5
+Incrementing bti 1 5
+Incrementing bti 1 2
+Incrementing bti 0 3
+Incrementing bti 2 2
+Incrementing bti 2 4
+Incrementing bti 0 4
+Incrementing bti 2 4
+Incrementing bti 0 2
+Incrementing bti 1 2
+Incrementing bti 0 5
+Incrementing bti 1 2
+Incrementing bti 0 5
+Incrementing bti 0 3
+Incrementing bti 1 2
+Incrementing bti 0 5
+Incrementing bti 2 4
+Incrementing bti 2 4
+Incrementing bti 2 4
+Incrementing bti 0 5
+Incrementing bti 0 3
+Incrementing bti 0 5
+Incrementing bti 0 3
+Incrementing bti 0 5
+Incrementing bti 2 2
+Incrementing bti 2 4
+Incrementing bti 0 2
+Incrementing bti 1 2
+Incrementing bti 0 5
+Incrementing bti 0 4
+Incrementing bti 1 2
+Incrementing bti 0 3
+Incrementing bti 0 5
+Incrementing bti 0 4
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 0 3
+Incrementing bti 0 3
+Incrementing bti 0 3
+Incrementing bti 0 5
+Incrementing bti 0 3
+Incrementing bti 0 4
+Incrementing bti 0 4
+Incrementing bti 2 4
+Incrementing bti 0 5
+Incrementing bti 0 3
+Incrementing bti 0 3
+Incrementing bti 0 4
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 0 3
+Incrementing bti 2 4
+Incrementing bti 0 7
+Incrementing bti 0 5
+Incrementing bti 0 4
+Incrementing bti 0 6
+Incrementing bti 0 5
+Incrementing bti 0 3
+Incrementing bti 0 5
+Incrementing bti 0 4
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 0 4
+Incrementing bti 2 4
+Incrementing bti 0 4
+Incrementing bti 0 5
+Incrementing bti 1 2
+Incrementing bti 0 4
+Incrementing bti 2 4
+Incrementing bti 2 4
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 1 5
+Incrementing bti 2 4
+Incrementing bti 0 3
+Incrementing bti 2 4
+Incrementing bti 2 4
+Incrementing bti 0 3
+Incrementing bti 0 5
+bid 569 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 3 4
+Incrementing bti 3 4
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 1 4
+Incrementing bti 3 4
+Incrementing bti 1 5
+bid 186 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 3
+Incrementing bti 2 5
+Incrementing bti 1 1
+Incrementing bti 1 5
+bid 292 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 1 3
+Incrementing bti 1 5
+Incrementing bti 0 5
+Incrementing bti 1 5
+Incrementing bti 3 4
+Incrementing bti 0 8
+Incrementing bti 0 5
+Incrementing bti 2 2
+Incrementing bti 1 3
+Incrementing bti 1 3
+Incrementing bti 3 4
+Incrementing bti 3 4
+Incrementing bti 2 2
+Incrementing bti 2 2
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 1 1
+Incrementing bti 3 4
+Incrementing bti 1 3
+Incrementing bti 1 4
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 1 3
+Incrementing bti 3 4
+Incrementing bti 1 3
+Incrementing bti 0 1
+Incrementing bti 1 5
+Incrementing bti 3 4
+Incrementing bti 1 3
+Incrementing bti 1 5
+Incrementing bti 3 4
+Incrementing bti 1 3
+Incrementing bti 3 4
+Incrementing bti 3 4
+Incrementing bti 1 4
+Incrementing bti 2 2
+Incrementing bti 1 2
+Incrementing bti 1 3
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 1 4
+Incrementing bti 1 3
+Incrementing bti 3 4
+bid 514 bti 0 depth 3 matched edge 7->8 
+bid 263 bti 0 depth 1 matched edge 1->3 
+Incrementing bti 1 4
+bid 276 bti 0 depth 1 matched edge 1->3 
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 2 2
+Incrementing bti 1 5
+Incrementing bti 0 0
+Incrementing bti 1 3
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 3 4
+bid 69 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 1 4
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 1 4
+Incrementing bti 1 5
+Incrementing bti 2 2
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 1 3
+Incrementing bti 1 3
+Incrementing bti 3 4
+Incrementing bti 3 4
+Incrementing bti 3 4
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 1 3
+Incrementing bti 1 7
+bid 455 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 6
+Incrementing bti 1 4
+Incrementing bti 1 3
+Incrementing bti 1 3
+Incrementing bti 3 4
+Incrementing bti 1 4
+Incrementing bti 1 5
+Incrementing bti 0 5
+Incrementing bti 2 2
+Incrementing bti 1 2
+Incrementing bti 1 4
+Incrementing bti 1 4
+Incrementing bti 1 3
+bid 47 bti 0 depth 6 matched edge 5->12 
+Incrementing bti 2 4
+Incrementing bti 1 5
+Incrementing bti 3 4
+Incrementing bti 1 4
+Incrementing bti 3 4
+Incrementing bti 2 4
+Incrementing bti 1 5
+Incrementing bti 0 5
+Incrementing bti 1 3
+Incrementing bti 0 5
+Incrementing bti 1 3
+Incrementing bti 1 5
+Incrementing bti 1 5
+bid 451 bti 0 depth 4 matched edge 8->7 
+Incrementing bti 0 3
+bid 42 bti 0 depth 7 matched edge 7->8 
+bid 562 bti 1 depth 2 unmatched edge 3->7 
+Incrementing bti 1 1
+Incrementing bti 1 0
+bid 208 bti 0 depth 3 matched edge 7->8 
+bid 116 bti 0 depth 4 matched edge 8->7 
+Incrementing bti 0 5
+bid 474 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 3 4
+bid 86 bti 0 depth 5 matched edge 12->5 
+bid 37 bti 0 depth 5 matched edge 12->5 
+bid 167 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 3 4
+Incrementing bti 2 4
+Incrementing bti 1 8
+Incrementing bti 1 5
+Incrementing bti 1 5
+bid 99 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 1 2
+Incrementing bti 1 5
+Incrementing bti 0 3
+Incrementing bti 1 2
+bid 100 bti 0 depth 6 matched edge 5->12 
+Incrementing bti 1 5
+bid 249 bti 0 depth 6 matched edge 5->12 
+Incrementing bti 0 5
+bid 48 bti 0 depth 6 matched edge 5->12 
+bid 153 bti 0 depth 5 matched edge 7->8 
+Incrementing bti 1 3
+Incrementing bti 0 3
+bid 377 bti 0 depth 6 matched edge 8->7 
+bid 241 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 5
+bid 513 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 0 1
+Incrementing bti 0 1
+Incrementing bti 0 5
+bid 329 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 3 4
+Incrementing bti 0 6
+bid 404 bti 0 depth 6 matched edge 5->12 
+Incrementing bti 1 2
+bid 45 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 0 5
+bid 484 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 0 4
+bid 123 bti 0 depth 5 matched edge 12->5 
+bid 520 bti 0 depth 2 matched edge 0->2 
+bid 523 bti 1 depth 2 unmatched edge 3->7 
+Incrementing bti 0 5
+Incrementing bti 2 2
+Incrementing bti 1 3
+Incrementing bti 0 3
+Incrementing bti 0 4
+Incrementing bti 0 7
+Incrementing bti 2 2
+bid 365 bti 0 depth 5 matched edge 7->8 
+bid 330 bti 0 depth 3 matched edge 1->3 
+Incrementing bti 0 3
+Incrementing bti 1 5
+bid 525 bti 0 depth 5 matched edge 7->8 
+bid 258 bti 1 depth 2 unmatched edge 3->7 
+bid 388 bti 2 depth 4 unmatched edge 8->12 
+bid 405 bti 0 depth 4 matched edge 8->7 
+bid 453 bti 0 depth 5 matched edge 12->5 
+bid 200 bti 0 depth 5 matched edge 12->5 
+bid 149 bti 0 depth 6 matched edge 5->12 
+Incrementing bti 1 3
+Incrementing bti 0 6
+Incrementing bti 0 3
+bid 491 bti 0 depth 5 matched edge 12->5 
+bid 462 bti 2 depth 4 unmatched edge 8->12 
+bid 117 bti 0 depth 6 matched edge 5->12 
+bid 363 bti 0 depth 5 matched edge 12->5 
+bid 476 bti 0 depth 5 matched edge 12->5 
+bid 15 bti 0 depth 3 matched edge 7->8 
+bid 424 bti 0 depth 3 matched edge 7->8 
+bid 344 bti 0 depth 3 matched edge 7->8 
+bid 197 bti 0 depth 4 matched edge 8->7 
+bid 392 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 0 5
+bid 574 bti 2 depth 4 unmatched edge 8->12 
+bid 109 bti 2 depth 4 unmatched edge 8->12 
+bid 148 bti 2 depth 4 unmatched edge 8->12 
+bid 428 bti 2 depth 4 unmatched edge 8->12 
+bid 61 bti 0 depth 5 matched edge 12->5 
+bid 334 bti 0 depth 4 matched edge 8->7 
+bid 155 bti 0 depth 6 matched edge 5->12 
+Incrementing bti 0 6
+Incrementing bti 1 1
+bid 498 bti 0 depth 5 unmatched edge 7->3 
+bid 238 bti 0 depth 5 matched edge 12->5 
+bid 320 bti 2 depth 4 unmatched edge 8->12 
+bid 157 bti 0 depth 6 matched edge 5->12 
+Incrementing bti 1 1
+Incrementing bti 1 5
+Incrementing bti 0 5
+bid 353 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 0 5
+Incrementing bti 0 6
+Incrementing bti 1 6
+bid 60 bti 0 depth 5 matched edge 7->8 
+bid 558 bti 2 depth 4 unmatched edge 8->12 
+bid 58 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 0 6
+Incrementing bti 1 5
+bid 563 bti 0 depth 4 matched edge 8->7 
+Incrementing bti 1 5
+bid 71 bti 0 depth 6 matched edge 5->12 
+bid 433 bti 0 depth 5 matched edge 12->5 
+bid 481 bti 0 depth 5 matched edge 12->5 
+bid 527 bti 0 depth 5 matched edge 7->8 
+bid 385 bti 2 depth 4 unmatched edge 8->12 
+bid 550 bti 0 depth 2 matched edge 3->1 
+Incrementing bti 1 4
+bid 70 bti 0 depth 6 matched edge 5->12 
+bid 252 bti 0 depth 8 matched edge 5->12 
+bid 73 bti 0 depth 6 matched edge 5->12 
+bid 333 bti 0 depth 6 matched edge 5->12 
+bid 156 bti 0 depth 6 matched edge 5->12 
+bid 166 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 1 3
+Incrementing bti 2 2
+bid 190 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 1 3
+Incrementing bti 1 4
+bid 154 bti 0 depth 5 matched edge 7->8 
+bid 173 bti 0 depth 5 matched edge 12->5 
+bid 77 bti 0 depth 6 matched edge 5->12 
+bid 342 bti 0 depth 6 unmatched edge 8->4 
+Incrementing bti 0 5
+bid 246 bti 0 depth 5 matched edge 7->8 
+bid 463 bti 0 depth 4 matched edge 8->7 
+bid 331 bti 0 depth 5 matched edge 7->8 
+Incrementing bti 1 6
+Incrementing bti 1 2
+bid 292 bti 0 depth 5 matched edge 12->5 
+bid 192 bti 0 depth 5 matched edge 7->8 
+Incrementing bti 2 4
+bid 75 bti 0 depth 4 matched edge 8->7 
+Incrementing bti 1 7
+bid 533 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 3
+bid 152 bti 0 depth 5 matched edge 7->8 
+Incrementing bti 1 6
+bid 49 bti 0 depth 3 matched edge 1->3 
+bid 457 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 0 6
+bid 485 bti 0 depth 6 matched edge 5->12 
+bid 150 bti 0 depth 4 matched edge 8->7 
+bid 244 bti 0 depth 7 matched edge 12->5 
+Incrementing bti 1 5
+Incrementing bti 2 4
+Incrementing bti 1 5
+Incrementing bti 0 5
+Incrementing bti 2 4
+bid 559 bti 0 depth 4 matched edge 8->7 
+Incrementing bti 1 5
+bid 248 bti 0 depth 6 matched edge 5->12 
+bid 40 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 1 6
+Incrementing bti 0 2
+bid 270 bti 2 depth 4 unmatched edge 8->12 
+bid 519 bti 2 depth 4 unmatched edge 8->12 
+bid 545 bti 1 depth 2 unmatched edge 3->7 
+bid 569 bti 0 depth 5 matched edge 12->5 
+bid 104 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 1 2
+bid 356 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 5
+bid 259 bti 0 depth 5 matched edge 7->8 
+Incrementing bti 0 5
+bid 54 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 6
+Incrementing bti 0 6
+bid 555 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 5
+Incrementing bti 0 3
+Incrementing bti 0 5
+Incrementing bti 2 4
+Incrementing bti 0 5
+bid 402 bti 0 depth 1 matched edge 1->3 
+bid 526 bti 0 depth 6 matched edge 5->12 
+bid 501 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 2 2
+Incrementing bti 0 4
+Incrementing bti 0 5
+bid 115 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 0 4
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 0 6
+bid 127 bti 0 depth 5 matched edge 12->5 
+bid 570 bti 0 depth 9 matched edge 12->5 
+Incrementing bti 0 5
+Incrementing bti 3 4
+bid 419 bti 1 depth 2 unmatched edge 3->7 
+bid 376 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 2 4
+Incrementing bti 2 4
+Incrementing bti 2 4
+Incrementing bti 3 4
+Incrementing bti 0 5
+Incrementing bti 0 4
+Incrementing bti 0 6
+Incrementing bti 1 5
+Incrementing bti 3 4
+Incrementing bti 1 5
+Incrementing bti 2 5
+bid 370 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 0 3
+Incrementing bti 0 3
+Incrementing bti 0 5
+Incrementing bti 0 2
+bid 303 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 2 4
+Incrementing bti 0 6
+bid 339 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 2 4
+Incrementing bti 0 3
+bid 5 bti 1 depth 2 unmatched edge 3->7 
+Incrementing bti 1 6
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 0 3
+Incrementing bti 2 4
+Incrementing bti 2 2
+Incrementing bti 0 5
+Incrementing bti 1 2
+Incrementing bti 1 3
+Incrementing bti 1 6
+Incrementing bti 0 3
+Incrementing bti 1 5
+bid 69 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 2 4
+Incrementing bti 0 6
+Incrementing bti 0 5
+Incrementing bti 3 4
+Incrementing bti 1 5
+Incrementing bti 2 4
+Incrementing bti 1 4
+Incrementing bti 1 5
+Incrementing bti 0 5
+Incrementing bti 0 5
+bid 100 bti 1 depth 7 unmatched edge 12->8 
+bid 276 bti 1 depth 2 unmatched edge 3->7 
+Incrementing bti 0 6
+Incrementing bti 0 5
+Incrementing bti 1 2
+Incrementing bti 0 4
+Incrementing bti 0 6
+bid 24 bti 2 depth 4 unmatched edge 8->12 
+bid 255 bti 0 depth 4 matched edge 8->7 
+bid 514 bti 0 depth 4 matched edge 8->7 
+Incrementing bti 1 5
+Incrementing bti 3 4
+Incrementing bti 1 5
+bid 176 bti 0 depth 1 matched edge 1->3 
+Incrementing bti 0 5
+bid 263 bti 1 depth 2 unmatched edge 3->7 
+Incrementing bti 1 6
+Incrementing bti 3 4
+Incrementing bti 1 5
+Incrementing bti 0 6
+Incrementing bti 1 2
+Incrementing bti 3 4
+Incrementing bti 0 5
+Incrementing bti 2 5
+Incrementing bti 0 5
+Incrementing bti 1 5
+Incrementing bti 3 4
+Incrementing bti 1 4
+Incrementing bti 1 6
+Incrementing bti 0 8
+Incrementing bti 2 4
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 1 6
+Incrementing bti 0 5
+Incrementing bti 0 6
+Incrementing bti 0 6
+Incrementing bti 0 6
+Incrementing bti 0 4
+Incrementing bti 0 6
+Incrementing bti 1 3
+bid 451 bti 0 depth 5 matched edge 7->8 
+Incrementing bti 3 4
+Incrementing bti 1 4
+Incrementing bti 0 3
+Incrementing bti 2 4
+bid 349 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 2 4
+bid 437 bti 0 depth 6 matched edge 8->7 
+bid 445 bti 2 depth 4 unmatched edge 8->12 
+bid 415 bti 0 depth 5 matched edge 12->5 
+bid 83 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 1 2
+Incrementing bti 0 3
+Incrementing bti 2 2
+Incrementing bti 0 5
+bid 99 bti 2 depth 4 unmatched edge 8->12 
+bid 474 bti 2 depth 4 unmatched edge 8->12 
+bid 208 bti 2 depth 4 unmatched edge 8->12 
+bid 47 bti 0 depth 7 matched edge 12->5 
+Incrementing bti 1 5
+Incrementing bti 0 5
+bid 116 bti 0 depth 5 matched edge 7->8 
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 1 3
+Incrementing bti 0 4
+bid 153 bti 0 depth 6 matched edge 8->7 
+Incrementing bti 0 4
+Incrementing bti 0 3
+Incrementing bti 1 5
+Incrementing bti 1 2
+Incrementing bti 0 5
+Incrementing bti 3 4
+Incrementing bti 0 5
+bid 298 bti 2 depth 4 unmatched edge 8->12 
+bid 249 bti 0 depth 7 matched edge 12->5 
+bid 377 bti 0 depth 7 matched edge 7->8 
+Incrementing bti 0 4
+Incrementing bti 0 5
+bid 186 bti 0 depth 4 matched edge 8->7 
+Incrementing bti 3 4
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 1 6
+Incrementing bti 0 7
+Incrementing bti 1 6
+Incrementing bti 1 3
+bid 86 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 3
+bid 37 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 2 4
+Incrementing bti 0 6
+Incrementing bti 0 3
+bid 562 bti 0 depth 3 matched edge 7->8 
+bid 455 bti 0 depth 6 matched edge 5->12 
+Incrementing bti 1 3
+Incrementing bti 1 6
+Incrementing bti 1 5
+Incrementing bti 3 4
+Incrementing bti 0 6
+Incrementing bti 0 1
+bid 48 bti 0 depth 7 matched edge 12->5 
+Incrementing bti 1 5
+Incrementing bti 1 6
+Incrementing bti 0 5
+Incrementing bti 0 7
+bid 181 bti 2 depth 4 unmatched edge 8->12 
+bid 42 bti 0 depth 8 matched edge 8->7 
+Incrementing bti 1 5
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 2 4
+Incrementing bti 0 5
+Incrementing bti 1 4
+Incrementing bti 1 5
+Incrementing bti 3 4
+Incrementing bti 0 9
+Incrementing bti 1 6
+Incrementing bti 0 3
+Incrementing bti 1 2
+Incrementing bti 0 5
+Incrementing bti 1 6
+Incrementing bti 1 4
+Incrementing bti 3 4
+Incrementing bti 1 5
+bid 523 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 1 8
+Incrementing bti 1 6
+Incrementing bti 1 6
+Incrementing bti 2 2
+bid 109 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 2
+Incrementing bti 3 4
+Incrementing bti 0 5
+Incrementing bti 2 3
+Incrementing bti 0 3
+bid 167 bti 0 depth 6 matched edge 5->12 
+Incrementing bti 0 1
+Incrementing bti 1 3
+Incrementing bti 1 5
+Incrementing bti 0 4
+Incrementing bti 2 2
+Incrementing bti 1 5
+Incrementing bti 0 5
+bid 284 bti 0 depth 3 matched edge 7->8 
+bid 368 bti 1 depth 2 unmatched edge 3->7 
+bid 468 bti 0 depth 5 matched edge 12->5 
+bid 218 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 4
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 1 4
+Incrementing bti 0 4
+bid 203 bti 0 depth 3 matched edge 7->8 
+bid 82 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 4
+Incrementing bti 1 5
+bid 329 bti 0 depth 5 matched edge 12->5 
+bid 32 bti 0 depth 3 matched edge 7->8 
+bid 126 bti 0 depth 4 matched edge 8->7 
+bid 319 bti 0 depth 2 matched edge 3->1 
+Incrementing bti 1 3
+Incrementing bti 0 5
+Incrementing bti 1 7
+bid 4 bti 1 depth 5 unmatched edge 12->8 
+Incrementing bti 1 9
+bid 458 bti 0 depth 3 matched edge 7->8 
+bid 133 bti 2 depth 4 unmatched edge 8->12 
+bid 534 bti 0 depth 3 matched edge 7->8 
+bid 317 bti 0 depth 1 unmatched edge 1->0 
+bid 234 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 3
+bid 506 bti 0 depth 3 matched edge 7->8 
+bid 34 bti 0 depth 4 matched edge 8->7 
+bid 306 bti 0 depth 5 matched edge 12->5 
+bid 518 bti 2 depth 4 unmatched edge 8->12 
+bid 461 bti 0 depth 5 matched edge 12->5 
+bid 362 bti 1 depth 2 unmatched edge 3->7 
+Incrementing bti 3 4
+bid 28 bti 1 depth 5 unmatched edge 12->8 
+Incrementing bti 16843009 4
+Incrementing bti 1 1
+Incrementing bti 0 6
+Incrementing bti 1 5
+Incrementing bti 1 5
+bid 408 bti 0 depth 5 matched edge 12->5 
+bid 394 bti 0 depth 7 matched edge 12->5 
+bid 1 bti 2 depth 4 unmatched edge 8->12 
+bid 530 bti 0 depth 3 matched edge 7->8 
+bid 191 bti 0 depth 2 matched edge 3->1 
+bid 360 bti 0 depth 4 matched edge 8->7 
+bid 490 bti 0 depth 3 matched edge 7->8 
+bid 538 bti 0 depth 4 matched edge 8->7 
+bid 122 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 6
+bid 132 bti 0 depth 5 matched edge 12->5 
+bid 540 bti 0 depth 1 matched edge 1->3 
+bid 210 bti 0 depth 1 matched edge 1->3 
+bid 64 bti 0 depth 5 matched edge 12->5 
+bid 470 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 6
+bid 482 bti 0 depth 3 matched edge 7->8 
+bid 483 bti 0 depth 5 matched edge 12->5 
+bid 469 bti 0 depth 2 matched edge 3->1 
+Incrementing bti 1 3
+Incrementing bti 0 7
+bid 14 bti 0 depth 4 matched edge 8->7 
+bid 118 bti 0 depth 3 matched edge 7->8 
+bid 430 bti 0 depth 1 matched edge 1->3 
+Incrementing bti 1 1
+Incrementing bti 0 4
+Incrementing bti 0 5
+bid 291 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 0 7
+Incrementing bti 0 4
+Incrementing bti 1 5
+bid 59 bti 0 depth 3 matched edge 7->8 
+bid 388 bti 0 depth 5 matched edge 12->5 
+bid 123 bti 0 depth 6 matched edge 5->12 
+Incrementing bti 0 3
+Incrementing bti 2 4
+bid 484 bti 0 depth 6 matched edge 5->12 
+bid 74 bti 2 depth 4 unmatched edge 8->12 
+bid 374 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 2 4
+bid 283 bti 0 depth 5 matched edge 12->5 
+bid 366 bti 0 depth 5 matched edge 12->5 
+bid 198 bti 0 depth 4 matched edge 8->7 
+bid 172 bti 0 depth 3 matched edge 7->8 
+bid 227 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 3
+Incrementing bti 0 4
+bid 554 bti 2 depth 4 unmatched edge 8->12 
+bid 531 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 0 5
+Incrementing bti 3 4
+bid 239 bti 0 depth 2 matched edge 3->1 
+bid 357 bti 0 depth 5 matched edge 12->5 
+bid 387 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 1 7
+bid 206 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 1 3
+Incrementing bti 2 4
+bid 341 bti 0 depth 2 matched edge 3->1 
+Incrementing bti 1 5
+bid 185 bti 0 depth 5 matched edge 12->5 
+bid 572 bti 0 depth 5 matched edge 12->5 
+bid 496 bti 0 depth 4 matched edge 8->7 
+bid 134 bti 0 depth 4 matched edge 8->7 
+bid 312 bti 0 depth 5 matched edge 12->5 
+bid 211 bti 0 depth 8 matched edge 5->12 
+bid 207 bti 0 depth 3 matched edge 7->8 
+bid 350 bti 0 depth 3 matched edge 7->8 
+bid 323 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 1 4
+bid 247 bti 2 depth 4 unmatched edge 8->12 
+bid 500 bti 0 depth 6 matched edge 5->12 
+bid 89 bti 1 depth 5 unmatched edge 12->8 
+bid 189 bti 0 depth 4 matched edge 8->7 
+bid 187 bti 0 depth 5 matched edge 12->5 
+bid 278 bti 0 depth 6 matched edge 5->12 
+bid 467 bti 1 depth 2 unmatched edge 3->7 
+bid 265 bti 0 depth 5 matched edge 12->5 
+bid 400 bti 0 depth 5 matched edge 12->5 
+bid 228 bti 0 depth 4 matched edge 8->7 
+bid 68 bti 0 depth 3 matched edge 7->8 
+bid 495 bti 0 depth 4 matched edge 8->7 
+bid 241 bti 0 depth 6 matched edge 5->12 
+Incrementing bti 0 6
+bid 136 bti 0 depth 3 matched edge 7->8 
+bid 571 bti 0 depth 3 matched edge 7->8 
+bid 299 bti 0 depth 6 matched edge 5->12 
+bid 524 bti 0 depth 5 matched edge 12->5 
+bid 352 bti 0 depth 7 matched edge 7->8 
+bid 137 bti 0 depth 4 matched edge 8->7 
+bid 543 bti 0 depth 5 matched edge 12->5 
+bid 515 bti 0 depth 2 matched edge 3->1 
+bid 337 bti 2 depth 4 unmatched edge 8->12 
+bid 544 bti 0 depth 5 matched edge 12->5 
+bid 81 bti 0 depth 5 matched edge 12->5 
+bid 177 bti 0 depth 2 matched edge 3->1 
+Incrementing bti 16843010 4
+Incrementing bti 1 5
+bid 300 bti 0 depth 4 matched edge 8->7 
+Incrementing bti 1 5
+bid 340 bti 0 depth 5 matched edge 7->8 
+bid 459 bti 0 depth 5 matched edge 12->5 
+bid 52 bti 0 depth 5 matched edge 12->5 
+bid 489 bti 0 depth 5 matched edge 12->5 
+bid 537 bti 0 depth 4 matched edge 8->7 
+bid 79 bti 0 depth 4 matched edge 8->7 
+bid 272 bti 0 depth 3 matched edge 7->8 
+bid 296 bti 0 depth 5 matched edge 12->5 
+bid 568 bti 0 depth 2 matched edge 3->1 
+Incrementing bti 1 5
+bid 224 bti 0 depth 5 matched edge 7->8 
+bid 21 bti 0 depth 4 matched edge 8->7 
+bid 513 bti 0 depth 5 matched edge 12->5 
+bid 314 bti 0 depth 5 matched edge 12->5 
+bid 253 bti 0 depth 5 matched edge 12->5 
+bid 135 bti 0 depth 6 matched edge 5->12 
+bid 213 bti 0 depth 3 matched edge 7->8 
+bid 561 bti 0 depth 5 matched edge 12->5 
+bid 237 bti 0 depth 5 matched edge 12->5 
+bid 564 bti 0 depth 3 matched edge 7->8 
+bid 129 bti 0 depth 4 matched edge 8->7 
+bid 536 bti 0 depth 5 matched edge 12->5 
+bid 324 bti 0 depth 5 matched edge 12->5 
+bid 550 bti 0 depth 3 matched edge 1->3 
+bid 39 bti 0 depth 6 matched edge 8->7 
+bid 345 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 2 2
+bid 393 bti 0 depth 0 unmatched edge 4->1 
+bid 529 bti 0 depth 4 matched edge 8->7 
+bid 31 bti 2 depth 4 unmatched edge 8->12 
+bid 66 bti 0 depth 6 matched edge 5->12 
+bid 462 bti 0 depth 5 matched edge 12->5 
+bid 164 bti 0 depth 4 matched edge 8->7 
+bid 209 bti 0 depth 5 matched edge 12->5 
+bid 475 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 0 3
+Incrementing bti 0 6
+bid 33 bti 0 depth 3 matched edge 7->8 
+bid 380 bti 0 depth 4 matched edge 8->7 
+bid 441 bti 1 depth 5 unmatched edge 12->8 
+Incrementing bti 1 4
+Incrementing bti 1 4
+bid 41 bti 0 depth 2 matched edge 3->1 
+Incrementing bti 1 7
+bid 491 bti 0 depth 6 matched edge 5->12 
+bid 200 bti 0 depth 6 matched edge 5->12 
+bid 175 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 0 7
+bid 440 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 1 5
+Incrementing bti 1 7
+bid 427 bti 2 depth 4 unmatched edge 8->12 
+bid 162 bti 0 depth 1 matched edge 1->3 
+Incrementing bti 0 7
+Incrementing bti 1 5
+bid 197 bti 0 depth 5 unmatched edge 7->3 
+bid 448 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 2 2
+Incrementing bti 1 4
+bid 404 bti 0 depth 7 matched edge 12->5 
+bid 268 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 0 5
+bid 233 bti 2 depth 4 unmatched edge 8->12 
+bid 19 bti 1 depth 2 unmatched edge 3->7 
+Incrementing bti 0 8
+bid 292 bti 0 depth 6 matched edge 5->12 
+bid 365 bti 0 depth 6 matched edge 8->7 
+bid 169 bti 0 depth 3 matched edge 7->8 
+bid 488 bti 1 depth 5 unmatched edge 12->8 
+Incrementing bti 1 3
+Incrementing bti 2 3
+bid 149 bti 0 depth 7 matched edge 12->5 
+bid 258 bti 0 depth 3 matched edge 7->8 
+bid 330 bti 0 depth 4 matched edge 3->1 
+bid 290 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 3 4
+Incrementing bti 3 4
+bid 40 bti 0 depth 5 matched edge 12->5 
+bid 363 bti 0 depth 6 matched edge 5->12 
+bid 525 bti 0 depth 6 matched edge 8->7 
+bid 148 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 0 5
+Incrementing bti 1 4
+Incrementing bti 1 6
+bid 520 bti 0 depth 3 matched edge 2->0 
+bid 498 bti 0 depth 6 matched edge 3->1 
+bid 238 bti 0 depth 6 matched edge 5->12 
+Incrementing bti 1 6
+Incrementing bti 1 5
+bid 569 bti 0 depth 6 matched edge 5->12 
+bid 157 bti 0 depth 7 matched edge 12->5 
+bid 155 bti 0 depth 7 matched edge 12->5 
+bid 104 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 0 5
+bid 190 bti 0 depth 4 matched edge 8->7 
+bid 61 bti 0 depth 6 matched edge 5->12 
+bid 334 bti 0 depth 5 matched edge 7->8 
+bid 353 bti 0 depth 6 matched edge 5->12 
+bid 545 bti 0 depth 3 matched edge 7->8 
+Incrementing bti 1 7
+Incrementing bti 1 6
+Incrementing bti 3 4
+Incrementing bti 1 3
+bid 574 bti 0 depth 5 matched edge 12->5 
+bid 558 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 1 8
+Incrementing bti 1 2
+Incrementing bti 0 3
+Incrementing bti 0 3
+Incrementing bti 1 5
+bid 405 bti 0 depth 5 matched edge 7->8 
+Incrementing bti 0 3
+Incrementing bti 1 2
+Incrementing bti 2 3
+bid 15 bti 0 depth 4 matched edge 8->7 
+bid 476 bti 0 depth 6 matched edge 5->12 
+Incrementing bti 0 6
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 1 7
+Incrementing bti 0 2
+Incrementing bti 2 4
+bid 453 bti 0 depth 6 matched edge 5->12 
+bid 370 bti 0 depth 4 matched edge 8->7 
+Incrementing bti 0 1
+Incrementing bti 0 2
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 0 3
+Incrementing bti 0 3
+bid 428 bti 0 depth 5 matched edge 12->5 
+bid 60 bti 0 depth 6 matched edge 8->7 
+Incrementing bti 1 5
+Incrementing bti 0 6
+Incrementing bti 0 4
+Incrementing bti 0 6
+Incrementing bti 0 6
+Incrementing bti 0 5
+Incrementing bti 1 5
+Incrementing bti 0 5
+Incrementing bti 0 3
+Incrementing bti 0 4
+Incrementing bti 0 3
+Incrementing bti 1 5
+Incrementing bti 0 1
+Incrementing bti 0 3
+Incrementing bti 1 5
+Incrementing bti 0 3
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 0 3
+Incrementing bti 0 5
+Incrementing bti 1 5
+Incrementing bti 0 5
+Incrementing bti 0 6
+Incrementing bti 0 5
+Incrementing bti 0 4
+Incrementing bti 0 3
+Incrementing bti 0 3
+Incrementing bti 0 5
+Incrementing bti 2 4
+Incrementing bti 0 5
+Incrementing bti 0 4
+Incrementing bti 0 3
+Incrementing bti 0 1
+Incrementing bti 2 4
+Incrementing bti 0 4
+Incrementing bti 0 4
+bid 424 bti 2 depth 4 unmatched edge 8->12 
+Incrementing bti 0 4
+Incrementing bti 0 7
+Incrementing bti 0 4
+Incrementing bti 0 3
+Incrementing bti 0 1
+Incrementing bti 0 5
+Incrementing bti 0 7
+Incrementing bti 0 6
+Incrementing bti 0 6
+Incrementing bti 2 4
+Incrementing bti 0 3
+Incrementing bti 2 4
+Incrementing bti 2 4
+bid 192 bti 0 depth 6 matched edge 8->7 
+Incrementing bti 2 4
+Incrementing bti 0 3
+bid 563 bti 0 depth 5 matched edge 7->8 
+bid 166 bti 0 depth 5 matched edge 12->5 
+Incrementing bti 0 6
+bid 176 bti 0 depth 2 matched edge 3->1 
+Incrementing bti 0 3
+Incrementing bti 0 3
+Incrementing bti 0 2
+Incrementing bti 0 3
+Incrementing bti 0 5
+Incrementing bti 0 4
+Incrementing bti 0 0
+Incrementing bti 2 4
+Incrementing bti 0 2
+Incrementing bti 0 4
+Incrementing bti 1 5
+Incrementing bti 0 5
+Incrementing bti 0 3
+Incrementing bti 1 3
+Incrementing bti 2 2
+Incrementing bti 1 3
+bid 70 bti 0 depth 7 matched edge 12->5 
+bid 45 bti 0 depth 6 matched edge 5->12 
+Incrementing bti 0 7
+Incrementing bti 0 5
+Incrementing bti 0 4
+Incrementing bti 0 1
+Incrementing bti 0 6
+Incrementing bti 0 4
+Incrementing bti 0 5
+Incrementing bti 2 4
+Incrementing bti 0 5
+Incrementing bti 2 4
+Incrementing bti 0 3
+Incrementing bti 0 4
+Incrementing bti 2 2
+Incrementing bti 0 4
+Incrementing bti 0 5
+Incrementing bti 0 2
+Incrementing bti 0 5
+bid 117 bti 0 depth 7 matched edge 12->5 
+Incrementing bti 1 6
+Incrementing bti 0 6
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 1 3
+Incrementing bti 1 5
+Incrementing bti 0 6
+Incrementing bti 0 4
+Incrementing bti 1 5
+Incrementing bti 0 5
+Incrementing bti 2 4
+Incrementing bti 0 2
+Incrementing bti 0 6
+Incrementing bti 0 5
+bid 252 bti 1 depth 9 unmatched edge 12->8 
+bid 527 bti 0 depth 6 matched edge 8->7 
+Incrementing bti 2 3
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 0 6
+Incrementing bti 1 3
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 1 3
+Incrementing bti 3 4
+Incrementing bti 1 2
+Incrementing bti 1 2
+Incrementing bti 1 1
+Incrementing bti 1 6
+Incrementing bti 1 5
+Incrementing bti 1 4
+Incrementing bti 1 3
+Incrementing bti 1 6
+Incrementing bti 1 5
+Incrementing bti 3 4
+Incrementing bti 1 5
+Incrementing bti 1 3
+Incrementing bti 1 4
+Incrementing bti 1 4
+Incrementing bti 1 5
+Incrementing bti 1 3
+Incrementing bti 1 4
+Incrementing bti 1 3
+Incrementing bti 1 3
+Incrementing bti 1 7
+Incrementing bti 0 5
+Incrementing bti 1 4
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 1 4
+Incrementing bti 1 1
+Incrementing bti 1 5
+Incrementing bti 1 4
+Incrementing bti 0 6
+Incrementing bti 1 5
+Incrementing bti 1 6
+Incrementing bti 1 5
+Incrementing bti 2 7
+Incrementing bti 1 6
+Incrementing bti 3 4
+Incrementing bti 1 4
+Incrementing bti 1 3
+Incrementing bti 1 3
+Incrementing bti 1 3
+Incrementing bti 1 4
+Incrementing bti 1 5
+Incrementing bti 3 4
+Incrementing bti 1 2
+Incrementing bti 1 3
+Incrementing bti 1 3
+Incrementing bti 1 3
+Incrementing bti 1 3
+Incrementing bti 2 5
+Incrementing bti 1 3
+Incrementing bti 1 1
+Incrementing bti 1 5
+Incrementing bti 3 4
+Incrementing bti 0 5
+Incrementing bti 0 4
+Incrementing bti 1 1
+Incrementing bti 1 5
+Incrementing bti 1 6
+Incrementing bti 1 2
+Incrementing bti 1 3
+Incrementing bti 1 2
+Incrementing bti 2 4
+Incrementing bti 3 4
+Incrementing bti 0 2
+Incrementing bti 2 4
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 0 6
+Incrementing bti 1 6
+Incrementing bti 2 5
+Incrementing bti 1 4
+Incrementing bti 0 3
+Incrementing bti 0 3
+Incrementing bti 1 6
+Incrementing bti 1 4
+Incrementing bti 1 5
+Incrementing bti 1 7
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 0 3
+Incrementing bti 0 4
+Incrementing bti 0 5
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 0 5
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 0 3
+Incrementing bti 1 5
+Incrementing bti 1 4
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 0 3
+Incrementing bti 1 4
+Incrementing bti 0 5
+Incrementing bti 1 6
+Incrementing bti 0 4
+Incrementing bti 1 6
+Incrementing bti 1 5
+Incrementing bti 0 4
+Incrementing bti 0 5
+Incrementing bti 0 4
+Incrementing bti 0 8
+Incrementing bti 0 2
+Incrementing bti 3 4
+Incrementing bti 1 1
+Incrementing bti 1 0
+Incrementing bti 3 4
+Incrementing bti 2 5
+Incrementing bti 1 5
+Incrementing bti 1 2
+Incrementing bti 1 3
+Incrementing bti 0 6
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 1 6
+Incrementing bti 3 4
+Incrementing bti 1 4
+Incrementing bti 1 3
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 1 4
+Incrementing bti 1 4
+Incrementing bti 2 5
+Incrementing bti 3 4
+Incrementing bti 1 5
+Incrementing bti 1 2
+Incrementing bti 1 6
+Incrementing bti 0 5
+Incrementing bti 0 6
+Incrementing bti 2 4
+Incrementing bti 0 4
+Incrementing bti 0 5
+Incrementing bti 0 6
+Incrementing bti 0 4
+Incrementing bti 0 3
+Incrementing bti 0 5
+Incrementing bti 0 4
+Incrementing bti 0 3
+Incrementing bti 0 2
+Incrementing bti 1 5
+Incrementing bti 1 6
+Incrementing bti 1 7
+Incrementing bti 1 2
+Incrementing bti 1 6
+Incrementing bti 2 4
+Incrementing bti 0 6
+Incrementing bti 0 3
+Incrementing bti 1 5
+Incrementing bti 3 4
+Incrementing bti 3 4
+Incrementing bti 1 4
+Incrementing bti 2 5
+Incrementing bti 1 5
+Incrementing bti 1 3
+Incrementing bti 1 5
+Incrementing bti 1 3
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 2 5
+Incrementing bti 1 4
+Incrementing bti 1 6
+Incrementing bti 1 4
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 1 6
+Incrementing bti 1 5
+Incrementing bti 0 4
+Incrementing bti 0 6
+Incrementing bti 0 3
+Incrementing bti 0 4
+Incrementing bti 1 2
+Incrementing bti 1 4
+Incrementing bti 1 3
+Incrementing bti 1 3
+Incrementing bti 0 5
+Incrementing bti 1 5
+Incrementing bti 1 8
+Incrementing bti 3 3
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 0 7
+Incrementing bti 1 6
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 0 7
+Incrementing bti 1 5
+Incrementing bti 0 6
+Incrementing bti 1 6
+Incrementing bti 1 4
+Incrementing bti 1 5
+Incrementing bti 0 2
+Incrementing bti 1 4
+Incrementing bti 2 7
+Incrementing bti 1 2
+Incrementing bti 1 6
+Incrementing bti 0 4
+Incrementing bti 2 2
+Incrementing bti 3 4
+Incrementing bti 0 6
+Incrementing bti 1 3
+Incrementing bti 1 2
+Incrementing bti 2 4
+Incrementing bti 0 5
+Incrementing bti 0 5
+Incrementing bti 1 4
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 0 6
+Incrementing bti 0 6
+Incrementing bti 0 6
+Incrementing bti 0 5
+Incrementing bti 0 6
+Incrementing bti 0 6
+Incrementing bti 1 9
+Incrementing bti 0 7
+Incrementing bti 2 2
+Incrementing bti 1 4
+Incrementing bti 0 5
+Incrementing bti 1 5
+Incrementing bti 1 3
+Incrementing bti 3 4
+Incrementing bti 1 3
+Incrementing bti 1 4
+Incrementing bti 1 4
+Incrementing bti 0 5
+Incrementing bti 0 7
+Incrementing bti 1 6
+Incrementing bti 1 3
+Incrementing bti 1 2
+Incrementing bti 1 5
+Incrementing bti 1 7
+Incrementing bti 1 5
+Incrementing bti 1 6
+Incrementing bti 1 5
+Incrementing bti 1 7
+Incrementing bti 1 6
+Incrementing bti 1 4
+Incrementing bti 3 4
+Incrementing bti 1 6
+Incrementing bti 1 5
+Incrementing bti 1 6
+Incrementing bti 1 5
+Incrementing bti 1 5
+Incrementing bti 1 7
+Incrementing bti 2 9
+Incrementing bti 1 6
+Incrementing bti 1 5
+Incrementing bti 1 6
+Incrementing bti 1 6
+Incrementing bti 1 5
+Incrementing bti 1 7
+Elapsed time: 7.995392ms 
+
+Size of minimum vertex cover: 1
+

@@ -70,7 +70,9 @@ __device__ void prepareRightChild(CSRGraph graph,int* vertexDegrees_s, unsigned 
 
     if (threadIdx.x==0){
         int v = *depth2;
+        //printf("Incrementing bti %d %d\n",backtrackingIndices_s2[v],v);
         backtrackingIndices_s2[v]=backtrackingIndices_s2[v]+1;
+        //printf("Incrementing bti %d %d\n",backtrackingIndices_s2[v],v);
     }
     __syncthreads();
 
@@ -492,14 +494,14 @@ __device__ void findUnmatchedNeighbor(CSRGraph graph,unsigned int startingVertex
         for(; backtrackingIndices_s[depth] < end-start; backtrackingIndices_s[depth]++) { // Delete Neighbors of startingVertex
             if (graph.matching[startingVertex]>-1 && !visited_s[graph.matching[startingVertex]]){
                     *neighbor = graph.matching[startingVertex];
-                    printf("matched edge %d->%d \n", startingVertex, *neighbor);
+                    printf("bid %d bti %d depth %d matched edge %d->%d \n", blockIdx.x,backtrackingIndices_s[depth], depth,startingVertex, *neighbor);
                     *foundNeighbor=1;
                     break;
             } else {
                 if (!visited_s[graph.dst[start + backtrackingIndices_s[depth]]]){
                     *neighbor = graph.dst[start + backtrackingIndices_s[depth]];
                     *foundNeighbor=1;
-                    printf("unmatched edge %d->%d \n", startingVertex, *neighbor);
+                    printf("bid %d bti %d depth %d unmatched edge %d->%d \n", blockIdx.x,backtrackingIndices_s[depth], depth,startingVertex, *neighbor);
                     break;
                 }
             }
