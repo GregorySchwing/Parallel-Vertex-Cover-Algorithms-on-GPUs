@@ -17,7 +17,7 @@ CSRGraphRep.o: CSRGraphRep.cpp CSRGraphRep.h
 	g++ -c -O3 $(DEFS) CSRGraphRep.cpp
 
 Sequential.o: Sequential.cpp Sequential.h helperFunctions.o
-	g++ -c -O3 $(DEFS) Sequential.cpp
+	g++ -g -c -O3 $(DEFS) Sequential.cpp
 
 SequentialParameterized.o: SequentialParameterized.cpp SequentialParameterized.h helperFunctions.o
 	g++ -c -O3 $(DEFS) SequentialParameterized.cpp

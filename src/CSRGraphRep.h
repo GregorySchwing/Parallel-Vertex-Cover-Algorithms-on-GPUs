@@ -7,7 +7,8 @@ struct CSRGraph{
     unsigned int* dst;
     unsigned int* srcPtr;
     int* degree;
-    
+    int* visited;
+    int *matching;
     void create(unsigned int xn,unsigned int xm); // Initializes the graph rep
     void copy(CSRGraph graph);
     void deleteVertex(unsigned int v);

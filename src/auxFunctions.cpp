@@ -470,15 +470,28 @@ void printResults(Config config, unsigned int maxApprox, unsigned int edgeApprox
 	char outputFilename[500];
 	strcpy(outputFilename, "Results/Results.csv");
 
+    // Creating a directory
+    if (mkdir("Results", 0777) == -1)
+        std::cerr << "Error :  " << strerror(errno) << std::endl;
+    else
+        std::cout << "Results Directory created";
+
+
 	FILE *output_file = fopen(outputFilename, "a");
 
-	fprintf(
-		output_file,
-		"%s,%s,%u,%u,%s,%s,%d,%f,%d,%d,%d,%u,%d,%d,%u,%f,%u,%f,%u,%u,%u,%f\n",
-		config.outputFilePrefix, config.graphFileName, numVertices, numEdges, asString(config.instance), asString(config.version), config.globalListSize, config.globalListThreshold,
-		config.startingDepth, config.useGlobalMemory, config.blockDim, numBlocksPerSM, numThreadsPerSM, config.numBlocks, maxApprox, timeMax, edgeApprox, timeEdge, minimum, config.k, k_found, timeMin);
+	if (output_file!=NULL)
+	{
+		fprintf(
+			output_file,
+			"%s,%s,%u,%u,%s,%s,%d,%f,%d,%d,%d,%u,%d,%d,%u,%f,%u,%f,%u,%u,%u,%f\n",
+			config.outputFilePrefix, config.graphFileName, numVertices, numEdges, asString(config.instance), asString(config.version), config.globalListSize, config.globalListThreshold,
+			config.startingDepth, config.useGlobalMemory, config.blockDim, numBlocksPerSM, numThreadsPerSM, config.numBlocks, maxApprox, timeMax, edgeApprox, timeEdge, minimum, config.k, k_found, timeMin);
 
-	fclose(output_file);
+		fclose(output_file);
+	} else {
+		printf("Error printing to Results/Results.csv!\n");
+		printf("Oh dear, something went wrong with fopen()! %s\n", strerror(errno));
+	}
 }
 
 void printResults(Config config, unsigned int maxApprox, unsigned int edgeApprox, double timeMax, double timeEdge, unsigned int minimum, float timeMin,
