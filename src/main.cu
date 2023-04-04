@@ -290,6 +290,7 @@ int main(int argc, char *argv[]) {
             cudaFree(k_d);
         }
         graph.del();
+
         cudaFree(minimum_d);
         cudaFree(counters_d);
         cudaFreeGraph(graph_d);
@@ -301,11 +302,11 @@ int main(int argc, char *argv[]) {
         #endif
 
         if(config.version == HYBRID){
-            cudaFree(pathCounter_d);
             cudaFreeWorkList(workList_d);
             cudaFree(first_to_dequeue_global_d);
+        } else {
+            cudaFree(pathCounter_d);
         }
-
     }
 
     if(config.instance == PVC){
