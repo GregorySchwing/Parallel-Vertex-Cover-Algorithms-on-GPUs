@@ -338,14 +338,14 @@ __device__ void findUnmatchedNeighbor(CSRGraph graph,unsigned int startingVertex
         for(; *edgeIndex < end-start; *edgeIndex++) { // Delete Neighbors of startingVertex
             if (graph.matching[startingVertex]>-1 && !visited_s[graph.matching[startingVertex]]){
                     *neighbor = graph.matching[startingVertex];
-                    printf("matched edge %d->%d \n", startingVertex, *neighbor);
+                    printf("bid %d matched edge %d->%d \n", blockIdx.x,startingVertex, *neighbor);
                     *foundNeighbor=1;
                     break;
             } else {
                 if (!visited_s[graph.dst[start + *edgeIndex]]){
                     *neighbor = graph.dst[start + *edgeIndex];
                     *foundNeighbor=1;
-                    printf("unmatched edge %d->%d \n", startingVertex, *neighbor);
+                    printf("bid %d unmatched edge %d->%d \n", blockIdx.x,startingVertex, *neighbor);
                     break;
                 }
             }
