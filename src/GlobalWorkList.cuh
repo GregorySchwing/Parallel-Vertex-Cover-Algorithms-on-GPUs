@@ -370,7 +370,7 @@ __global__ void GlobalWorkList_shared_DFS_2_kernel(Stacks stacks, unsigned int *
 
                 startTime(PREPARE_LEFT_CHILD,&blockCounters);
                 // Left child increments leaves backtracking indices as is
-                // sets foundNeighbor flag and increments depth,
+                // sets foundNeighbor flag, increments depth, and sets startVertex to neighbor
                 //deleteMaxDegreeVertex(graph, vertexDegrees_s, &numDeletedVertices, maxVertex);
                 prepareLeftChild(vertexDegrees_s,&numDeletedVertices,&depth,&neighbor);
                 endTime(PREPARE_LEFT_CHILD,&blockCounters);

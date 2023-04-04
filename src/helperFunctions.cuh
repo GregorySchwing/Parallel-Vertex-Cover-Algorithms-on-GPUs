@@ -82,6 +82,7 @@ __device__ void prepareLeftChild(int* vertexDegrees_s, unsigned int* numDeletedV
     if (threadIdx.x==0){
         *depth+=1;
         vertexDegrees_s[*neighbor]=1;
+        *numDeletedVertices=*neighbor;
     }
 
     __syncthreads();

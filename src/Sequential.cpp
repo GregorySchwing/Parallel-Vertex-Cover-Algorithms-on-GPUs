@@ -147,6 +147,7 @@ unsigned int SequentialDFSDFS_M_ALT(CSRGraph graph, unsigned int minimum)
         printf("%d ",graph.unmatched_vertices[j]);
     }
     printf("\n");
+    // 
     stack.startVertex[stack.top] = graph.unmatched_vertices[0];
     stack.stack[stack.startVertex[stack.top]]=1;
 
