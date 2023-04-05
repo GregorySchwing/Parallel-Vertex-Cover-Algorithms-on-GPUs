@@ -67,7 +67,7 @@ Stacks allocateStacks(int vertexNum, int numBlocks, unsigned int minimum){
     volatile int* stacks_d;
     volatile uint64_t* stacksNumDeletedVertices_d;
     cudaMalloc((void**) &stacks_d, (minimum + 1) * (vertexNum) * sizeof(int) * numBlocks);
-    cudaMalloc((void**) &stacksNumDeletedVertices_d, (minimum + 1) * sizeof(unsigned int) * numBlocks);
+    cudaMalloc((void**) &stacksNumDeletedVertices_d, (minimum + 1) * sizeof(uint64_t) * numBlocks);
 
     stacks.stacks = stacks_d;
     stacks.stacksNumDeletedVertices = stacksNumDeletedVertices_d;
