@@ -7,18 +7,19 @@ CSRGraph allocateGraph(CSRGraph graph){
     unsigned int* srcPtr_d;
     int* degree_d;
     int *matching_d;
-    int num_unmatched_vertices;
+    unsigned int *num_unmatched_vertices_d;
     unsigned int *unmatched_vertices_d;
     cudaMalloc((void**) &dst_d,sizeof(unsigned int)*2*graph.edgeNum);
     cudaMalloc((void**) &srcPtr_d,sizeof(unsigned int)*(graph.vertexNum+1));
     cudaMalloc((void**) &degree_d,sizeof(int)*graph.vertexNum);
     cudaMalloc((void**) &matching_d,sizeof(int)*graph.vertexNum);
-    cudaMalloc((void**) &unmatched_vertices_d,sizeof(unsigned int)*((graph.vertexNum/2)+1));
+    cudaMalloc((void**) &unmatched_vertices_d,sizeof(unsigned int)*(graph.vertexNum));
+    cudaMalloc((void**) &num_unmatched_vertices_d,sizeof(unsigned int));
 
     Graph.vertexNum = graph.vertexNum;
     Graph.edgeNum = graph.edgeNum;
-    Graph.num_unmatched_vertices = graph.num_unmatched_vertices;
-
+    //Graph.num_unmatched_vertices = graph.num_unmatched_vertices;
+    Graph.num_unmatched_vertices = num_unmatched_vertices_d;
     Graph.dst = dst_d;
     Graph.srcPtr = srcPtr_d;
     Graph.degree = degree_d;
@@ -27,8 +28,8 @@ CSRGraph allocateGraph(CSRGraph graph){
     cudaMemcpy(dst_d,graph.dst,sizeof(unsigned int)*2*graph.edgeNum,cudaMemcpyHostToDevice);
     cudaMemcpy(srcPtr_d,graph.srcPtr,sizeof(unsigned int)*(graph.vertexNum+1),cudaMemcpyHostToDevice);
     cudaMemcpy(degree_d,graph.degree,sizeof(int)*graph.vertexNum,cudaMemcpyHostToDevice);
-    cudaMemcpy(unmatched_vertices_d,graph.unmatched_vertices,sizeof(unsigned int)*graph.num_unmatched_vertices,cudaMemcpyHostToDevice);
-    cudaMemcpy(matching_d,graph.matching,sizeof(int)*graph.vertexNum,cudaMemcpyHostToDevice);
+    //cudaMemcpy(unmatched_vertices_d,graph.unmatched_vertices,sizeof(unsigned int)*graph.num_unmatched_vertices,cudaMemcpyHostToDevice);
+    //cudaMemcpy(matching_d,graph.matching,sizeof(int)*graph.vertexNum,cudaMemcpyHostToDevice);
 
     return Graph;
 }

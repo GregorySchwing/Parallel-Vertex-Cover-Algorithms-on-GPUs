@@ -444,9 +444,11 @@ void add_edges_to_unmatched_from_last_vertex_gpu_csc(CSRGraph & graph,CSRGraph &
 
   // Copy sources into column array IC at CP[N] to CP[N+1]
   //thrust::copy(thrust::device, indices.begin(), indices_end, IC_vec+graph.edgeNum);
-  graph.num_unmatched_vertices=(indices_end-indices.begin());
-  cudaMemcpy(graph.unmatched_vertices, thrust::raw_pointer_cast(&indices[0]), graph.num_unmatched_vertices*sizeof(*graph.unmatched_vertices), cudaMemcpyDeviceToHost);
-  cudaMemcpy(graph_d.unmatched_vertices, thrust::raw_pointer_cast(&indices[0]), graph.num_unmatched_vertices*sizeof(*graph.unmatched_vertices), cudaMemcpyDeviceToDevice);
+  graph.num_unmatched_vertices[0]=(indices_end-indices.begin());
+  checkCudaErrors(cudaMemcpy(graph_d.num_unmatched_vertices, graph.num_unmatched_vertices, sizeof(*graph.num_unmatched_vertices), cudaMemcpyHostToDevice));
+  checkCudaErrors(cudaMemcpy(graph.unmatched_vertices, thrust::raw_pointer_cast(&indices[0]), graph.num_unmatched_vertices[0]*sizeof(*graph.unmatched_vertices), cudaMemcpyDeviceToHost));
+  //checkCudaErrors(cudaMemcpy(graph_d.unmatched_vertices, thrust::raw_pointer_cast(&indices[0]), graph.num_unmatched_vertices[0]*sizeof(*graph.unmatched_vertices), cudaMemcpyDeviceToDevice));
+  checkCudaErrors(cudaMemcpy(graph_d.unmatched_vertices, graph.unmatched_vertices, graph.num_unmatched_vertices[0]*sizeof(*graph.unmatched_vertices), cudaMemcpyHostToDevice));
 
   if (exec_protocol){
 

@@ -336,7 +336,7 @@ __device__ void findUnmatchedNeighbor(CSRGraph graph,unsigned int startingVertex
         unsigned int start = graph.srcPtr[startingVertex];
         unsigned int end = graph.srcPtr[startingVertex + 1];
         
-        printf("BID %d edgeIndex %d startingVertex %d\n", blockIdx.x,*edgeIndex, startingVertex);
+        //printf("BID %d edgeIndex %d startingVertex %d\n", blockIdx.x,*edgeIndex, startingVertex);
         for(; *edgeIndex < end-start; (*edgeIndex)++) { // Delete Neighbors of startingVertex
             if (graph.matching[startingVertex]>-1 && !visited_s[graph.matching[startingVertex]]){
                     *neighbor = graph.matching[startingVertex];

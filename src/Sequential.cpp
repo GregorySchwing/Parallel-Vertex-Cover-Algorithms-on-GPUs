@@ -24,7 +24,7 @@ unsigned int Sequential(CSRGraph graph, unsigned int minimum)
         //stack.stack[j] = graph.visited[j];
         stack.stack[j] = 0;
     }
-    for (unsigned int j = 0; j < graph.num_unmatched_vertices; ++j)
+    for (unsigned int j = 0; j < graph.num_unmatched_vertices[0]; ++j)
     {
         //stack.stack[j] = graph.visited[j];
         printf("%d ",graph.unmatched_vertices[j]);

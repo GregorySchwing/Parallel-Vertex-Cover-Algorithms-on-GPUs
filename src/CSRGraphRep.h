@@ -8,7 +8,7 @@ struct CSRGraph{
     unsigned int* srcPtr;
     int* degree;
     int *matching;
-    int num_unmatched_vertices;
+    unsigned int *num_unmatched_vertices;
     unsigned int *unmatched_vertices;
 
     int* visited;
