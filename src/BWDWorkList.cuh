@@ -166,8 +166,8 @@ __device__ void readData_DFS_bits(uint32_t* vertexDegree_s, unsigned int * vcSiz
 	}
 	__syncthreads();
 
-	for(unsigned int vertex = threadIdx.x; vertex < vertexNum; vertex += blockDim.x) {
-		vertexDegree_s[vertex] = workList.list[P*vertexNum + vertex];
+	for(unsigned int vertex = threadIdx.x; vertex < (vertexNum+31)/32; vertex += blockDim.x) {
+		vertexDegree_s[vertex] = workList.list[P*(vertexNum+31)/32 + vertex];
 	}
 
 	*vcSize = (uint32_t)workList.listNumDeletedVertices[P];
@@ -254,8 +254,8 @@ __device__ void putData_DFS_bits(uint32_t* vertexDegree_s, unsigned int * vcSize
 
 	__syncthreads();
 
-	for(unsigned int i = threadIdx.x; i < vertexNum; i += blockDim.x) {
-		workList.list[i + (P)*(vertexNum)] = vertexDegree_s[i];
+	for(unsigned int i = threadIdx.x; i < (vertexNum+31)/32; i += blockDim.x) {
+		workList.list[i + (P)*((vertexNum+31)/32)] = vertexDegree_s[i];
 	}
 
 	if(threadIdx.x == 0) {

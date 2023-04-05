@@ -197,15 +197,18 @@ int main(int argc, char *argv[]) {
 
         // Allocate GPU stack
         Stacks stacks_d;
-        stacks_d = allocateStacks(graph.vertexNum,numBlocks,minimum);
-
+        minimum = mm.num_matched_h[0]+2;
+        if(config.useGlobalMemory){
+            stacks_d = allocateStacks_DFS(graph.vertexNum,numBlocks,minimum);
+        } else{
+            stacks_d = allocateStacks_DFS_bits(graph.vertexNum,numBlocks,minimum);
+        }
         //Global Entries Memory Allocation
         int * global_memory_d;
         uint32_t * global_memory_bits_d;
         if(config.useGlobalMemory){
             cudaMalloc((void**)&global_memory_d, sizeof(int)*graph.vertexNum*numBlocks*2);
-        }
-        if(config.useGlobalMemory){
+        }else{
             cudaMalloc((void**)&global_memory_bits_d, sizeof(uint32_t)*((graph.vertexNum+31)/32)*numBlocks*2);
         }
         unsigned int * minimum_d;

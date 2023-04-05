@@ -8,7 +8,7 @@
 #include "Counters.cuh"
 #include "BWDWorkList.cuh"
 #include "helperFunctions.cuh"
-
+#include "bitmask.cuh"
 #if USE_GLOBAL_MEMORY
 __global__ void GlobalWorkList_global_DFS_bits_kernel(Stacks stacks, unsigned int * minimum, unsigned int * solution_mutex, WorkList workList, CSRGraph graph, Counters* counters, 
     int* first_to_dequeue_global, uint32_t* global_memory_bits, int* NODES_PER_SM) {
@@ -45,12 +45,12 @@ __global__ void GlobalWorkList_shared_DFS_bits_kernel(Stacks stacks, unsigned in
     // Define the vertexDegree_s
 
     #if USE_GLOBAL_MEMORY
-    uint32_t * vertexDegrees_s = &global_memory_bits[graph.vertexNum*(2*blockIdx.x)];
-    uint32_t * vertexDegrees_s2 = &global_memory_bits[graph.vertexNum*(2*blockIdx.x + 1)];
+    uint32_t * vertexDegrees_s = &global_memory_bits[(graph.vertexNum+31)/32*(2*blockIdx.x)];
+    uint32_t * vertexDegrees_s2 = &global_memory_bits[(graph.vertexNum+31)/32*(2*blockIdx.x + 1)];
     #else
     extern __shared__ uint32_t shared_mem_uint32_t[];
     uint32_t * vertexDegrees_s = shared_mem_uint32_t;
-    uint32_t * vertexDegrees_s2 = &shared_mem_uint32_t[graph.vertexNum];
+    uint32_t * vertexDegrees_s2 = &shared_mem_uint32_t[(graph.vertexNum+31)/32];
     #endif
 
     bool dequeueOrPopNextItr = true; 
@@ -72,7 +72,8 @@ __global__ void GlobalWorkList_shared_DFS_bits_kernel(Stacks stacks, unsigned in
         }
         numDeletedVertices = (uint32_t)workList.listNumDeletedVertices[0];
         edgeIndex = (workList.listNumDeletedVertices[0] >> 32);
-        vertexDegrees_s[numDeletedVertices]=1;
+        setVertex(numDeletedVertices,vertexDegrees_s);
+        //vertexDegrees_s[numDeletedVertices]=1;
         //if (threadIdx.x == 0)
             //printf("numDeletedVertices %d edgeIndex %d \n", numDeletedVertices, edgeIndex);
         dequeueOrPopNextItr = false;

@@ -2,6 +2,7 @@
 #define HELPFUNC_H
 
 #include "config.h"
+#include "bitmask.cuh"
 
 __device__ long long int square(int num){
     return num*num;
@@ -369,13 +370,13 @@ __device__ void findUnmatchedNeighbor_bits(CSRGraph graph,unsigned int startingV
         
         //printf("BID %d edgeIndex %d startingVertex %d\n", blockIdx.x,*edgeIndex, startingVertex);
         for(; *edgeIndex < end-start; (*edgeIndex)++) { // Delete Neighbors of startingVertex
-            if (graph.matching[startingVertex]>-1 && !visited_s[graph.matching[startingVertex]]){
+            if (graph.matching[startingVertex]>-1 && !checkVertex(graph.matching[startingVertex],visited_s)){
                     *neighbor = graph.matching[startingVertex];
                     printf("bid %d matched edge %d->%d \n", blockIdx.x,startingVertex, *neighbor);
                     *foundNeighbor=1;
                     break;
             } else {
-                if (!visited_s[graph.dst[start + *edgeIndex]]){
+                if (!checkVertex(graph.dst[start + *edgeIndex],visited_s)){
                     *neighbor = graph.dst[start + *edgeIndex];
                     *foundNeighbor=2;
                     printf("bid %d unmatched edge %d->%d \n", blockIdx.x,startingVertex, *neighbor);
@@ -413,7 +414,7 @@ __device__ void prepareRightChild_bits(CSRGraph graph,uint32_t* vertexDegrees_s,
         *numDeletedVertices2 = *numDeletedVertices;
         *edgeIndex2 = *edgeIndex;
     }
-    for(unsigned int vertex = threadIdx.x; vertex<graph.vertexNum; vertex+=blockDim.x){
+    for(unsigned int vertex = threadIdx.x; vertex<(graph.vertexNum+31)/32; vertex+=blockDim.x){
         vertexDegrees_s2[vertex] = vertexDegrees_s[vertex];
     }
 
@@ -442,7 +443,7 @@ __device__ void prepareLeftChild(int* vertexDegrees_s, unsigned int* numDeletedV
 __device__ void prepareLeftChild_bits(uint32_t* vertexDegrees_s, unsigned int* numDeletedVertices, unsigned int* edgeIndex, unsigned int* neighbor){
 
     if (threadIdx.x==0){
-        vertexDegrees_s[*neighbor]=1;
+        setVertex(*neighbor,vertexDegrees_s);
         *numDeletedVertices=*neighbor;
         *edgeIndex=0;
     }

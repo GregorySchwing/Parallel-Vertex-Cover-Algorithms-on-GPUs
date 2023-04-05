@@ -37,8 +37,8 @@ __device__ void popStack_DFS(unsigned int vertexNum, int* vertexDegrees_s, unsig
 __device__ void popStack_DFS_bits(unsigned int vertexNum, uint32_t* vertexDegrees_s, unsigned int* numDeletedVertices, unsigned int* edgeIndex,volatile uint32_t * stackVertexDegrees, 
     volatile uint64_t* stackNumDeletedVertices, int * stackTop){
 
-    for(unsigned int vertex = threadIdx.x; vertex < vertexNum; vertex += blockDim.x) {
-        vertexDegrees_s[vertex] = stackVertexDegrees[(*stackTop)*vertexNum + vertex];
+    for(unsigned int vertex = threadIdx.x; vertex < (vertexNum+31)/32; vertex += blockDim.x) {
+        vertexDegrees_s[vertex] = stackVertexDegrees[(*stackTop)*(vertexNum+31)/32 + vertex];
     }
 
     *numDeletedVertices = (uint32_t)stackNumDeletedVertices[*stackTop];
@@ -82,8 +82,8 @@ __device__ void pushStack_DFS_bits(unsigned int vertexNum, uint32_t* vertexDegre
     volatile uint64_t* stackNumDeletedVertices, int * stackTop){
 
     ++(*stackTop);
-    for(unsigned int vertex = threadIdx.x; vertex < vertexNum ; vertex += blockDim.x) {
-        stackVertexDegrees[(*stackTop)*vertexNum + vertex] = vertexDegrees_s[vertex];
+    for(unsigned int vertex = threadIdx.x; vertex < (vertexNum+31)/32 ; vertex += blockDim.x) {
+        stackVertexDegrees[(*stackTop)*(vertexNum+31)/32 + vertex] = vertexDegrees_s[vertex];
     }
     if(threadIdx.x == 0) {
         uint32_t leastSignificantWord = *numDeletedVertices;
