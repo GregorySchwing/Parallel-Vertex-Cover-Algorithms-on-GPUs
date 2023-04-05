@@ -156,6 +156,30 @@ __device__ void readData_DFS(int* vertexDegree_s, unsigned int * vcSize, unsigne
 }
 
 
+__device__ void readData_DFS_bits(uint32_t* vertexDegree_s, unsigned int * vcSize, unsigned int * edgeIndex,WorkList workList, unsigned int vertexNum){	
+	__shared__ unsigned int P;
+	unsigned int Pos;
+	if (threadIdx.x==0){
+	Pos = atomicAdd(head(const_cast<HT*>(workList.head_tail)), 1);
+	P = Pos % workList.size;
+	waitForTicket(P, 2 * (Pos / workList.size) + 1,workList);
+	}
+	__syncthreads();
+
+	for(unsigned int vertex = threadIdx.x; vertex < vertexNum; vertex += blockDim.x) {
+		vertexDegree_s[vertex] = workList.list[P*vertexNum + vertex];
+	}
+
+	*vcSize = (uint32_t)workList.listNumDeletedVertices[P];
+	*edgeIndex = (workList.listNumDeletedVertices[P] >> 32);
+	__syncthreads();
+	if (threadIdx.x==0){
+	workList.tickets[P] = 2 * ((Pos + workList.size) / workList.size);
+	}
+}
+
+
+
 __device__ void putData(int* vertexDegree_s, unsigned int * vcSize, WorkList workList,unsigned int vertexNum){
 	__shared__ unsigned int P;
 	unsigned int Pos;
@@ -217,6 +241,39 @@ __device__ void putData_DFS(int* vertexDegree_s, unsigned int * vcSize, unsigned
 }
 
 
+__device__ void putData_DFS_bits(uint32_t* vertexDegree_s, unsigned int * vcSize, unsigned int * edgeIndex, WorkList workList,unsigned int vertexNum){
+	__shared__ unsigned int P;
+	unsigned int Pos;
+	unsigned int B;
+	if (threadIdx.x==0){
+	Pos = atomicAdd(tail(const_cast<HT*>(workList.head_tail)), 1);
+	P = Pos % workList.size;
+	B = 2 * (Pos /workList.size);
+	waitForTicket(P, B, workList);
+	}
+
+	__syncthreads();
+
+	for(unsigned int i = threadIdx.x; i < vertexNum; i += blockDim.x) {
+		workList.list[i + (P)*(vertexNum)] = vertexDegree_s[i];
+	}
+
+	if(threadIdx.x == 0) {
+		uint32_t leastSignificantWord = *vcSize;
+		uint32_t mostSignificantWord = *edgeIndex;
+		uint64_t edgePair = (uint64_t) mostSignificantWord << 32 | leastSignificantWord;
+		workList.listNumDeletedVertices[P] = edgePair;
+	}
+	__threadfence();
+	__syncthreads();
+	if (threadIdx.x==0){
+		workList.tickets[P] = B + 1;
+		atomicAdd(&workList.counter->numEnqueued,1);
+	}
+}
+
+
+
 __device__ inline bool enqueue(int* vertexDegree_s, WorkList workList, unsigned int vertexNum,unsigned int * vcSize){
 	__shared__  bool writeData;
 	if (threadIdx.x==0){
@@ -249,6 +306,24 @@ __device__ inline bool enqueue_DFS(int* vertexDegree_s, WorkList workList, unsig
 	
 	return writeData;
 }
+
+
+__device__ inline bool enqueue_DFS_bits(uint32_t* vertexDegree_s, WorkList workList, unsigned int vertexNum,unsigned int * vcSize,unsigned int * edgeIndex){
+	__shared__  bool writeData;
+	if (threadIdx.x==0){
+		writeData = ensureEnqueue(workList);
+	}
+
+	__syncthreads();
+	
+	if (writeData)
+	{
+		putData_DFS_bits(vertexDegree_s, vcSize, edgeIndex, workList, vertexNum);
+	}
+	
+	return writeData;
+}
+
 
 
 __device__ inline bool dequeue(int* vertexDegree_s, WorkList workList, unsigned int vertexNum,unsigned int * vcSize){	
@@ -315,6 +390,50 @@ __device__ inline bool dequeue_DFS(int* vertexDegree_s, WorkList workList, unsig
 
 		if (hasData){
 			readData_DFS(vertexDegree_s, vcSize, edgeIndex, workList, vertexNum);
+			if (threadIdx.x==0){
+				Counter tempCounter;
+				tempCounter.numWaiting = -1;
+				tempCounter.numEnqueued = -2;
+				atomicAdd(&workList.counter->combined,tempCounter.combined);
+			}
+			return true;
+		}
+
+		if (threadIdx.x==0){
+			Counter tempCounter;
+			tempCounter.combined = atomicOr(&workList.counter->combined,0);
+			if (tempCounter.numWaiting==gridDim.x && tempCounter.numEnqueued==0){
+				isWorkDone=true;
+			}
+		}
+
+		__syncthreads();
+		sleepBWD(expoBackOff++);
+	}
+	return false;
+}
+
+
+__device__ inline bool dequeue_DFS_bits(uint32_t* vertexDegree_s, WorkList workList, unsigned int vertexNum,unsigned int * vcSize,unsigned int * edgeIndex){	
+	unsigned int expoBackOff = 0;
+
+	__shared__  bool isWorkDone;
+	if (threadIdx.x==0){
+		isWorkDone = false;
+		atomicAdd(&workList.counter->numWaiting,1);
+	}
+	__syncthreads();
+
+	__shared__  bool hasData;
+	while (!isWorkDone) {
+
+		if (threadIdx.x==0){
+			hasData = ensureDequeue(workList);
+		}
+		__syncthreads();
+
+		if (hasData){
+			readData_DFS_bits(vertexDegree_s, vcSize, edgeIndex, workList, vertexNum);
 			if (threadIdx.x==0){
 				Counter tempCounter;
 				tempCounter.numWaiting = -1;

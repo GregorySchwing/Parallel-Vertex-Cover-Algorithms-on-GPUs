@@ -10,6 +10,8 @@
 #include "LocalStacks.cuh"
 #include "GlobalWorkList.cuh"
 #include "GlobalWorkListDFS.cuh"
+#include "GlobalWorkListDFS_bits.cuh"
+
 #include "LocalStacksParameterized.cuh"
 #include "GlobalWorkListParameterized.cuh"
 #undef USE_GLOBAL_MEMORY
@@ -17,6 +19,8 @@
 #include "LocalStacks.cuh"
 #include "GlobalWorkList.cuh"
 #include "GlobalWorkListDFS.cuh"
+#include "GlobalWorkListDFS_bits.cuh"
+
 #include "LocalStacksParameterized.cuh"
 #include "GlobalWorkListParameterized.cuh"
 #undef USE_GLOBAL_MEMORY
@@ -197,10 +201,13 @@ int main(int argc, char *argv[]) {
 
         //Global Entries Memory Allocation
         int * global_memory_d;
+        uint32_t * global_memory_bits_d;
         if(config.useGlobalMemory){
             cudaMalloc((void**)&global_memory_d, sizeof(int)*graph.vertexNum*numBlocks*2);
         }
-
+        if(config.useGlobalMemory){
+            cudaMalloc((void**)&global_memory_bits_d, sizeof(uint32_t)*((graph.vertexNum+31)/32)*numBlocks*2);
+        }
         unsigned int * minimum_d;
         unsigned int * solution_mutex_d;
         cudaMalloc((void**) &minimum_d, sizeof(unsigned int));
@@ -262,6 +269,7 @@ int main(int argc, char *argv[]) {
                 GlobalWorkListParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, k_d, kFound_d, NODES_PER_SM_d);
             } else if(config.version == HYBRID && config.instance==MVC) {
                 GlobalWorkList_global_DFS_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, minimum_d, solution_mutex_d, workList_d, graph4m_d, counters_d, first_to_dequeue_global_d, global_memory_d, NODES_PER_SM_d);
+                //GlobalWorkList_global_DFS_bits_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, minimum_d, solution_mutex_d, workList_d, graph4m_d, counters_d, first_to_dequeue_global_d, global_memory_bits_d, NODES_PER_SM_d);
             } else if(config.version == STACK_ONLY && config.instance==PVC){
                 LocalStacksParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, graph_d, global_memory_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
             } else if(config.version == STACK_ONLY && config.instance==MVC) {
@@ -271,7 +279,8 @@ int main(int argc, char *argv[]) {
             if (config.version == HYBRID && config.instance==PVC){
                 GlobalWorkListParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, k_d, kFound_d, NODES_PER_SM_d);
             } else if(config.version == HYBRID && config.instance==MVC) {
-                GlobalWorkList_shared_DFS_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, minimum_d, solution_mutex_d, workList_d, graph4m_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
+                //GlobalWorkList_shared_DFS_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, minimum_d, solution_mutex_d, workList_d, graph4m_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
+                GlobalWorkList_shared_DFS_bits_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, minimum_d, solution_mutex_d, workList_d, graph4m_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
             } else if(config.version == STACK_ONLY && config.instance==PVC){
                 LocalStacksParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, graph_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
             } else if(config.version == STACK_ONLY && config.instance==MVC) {
