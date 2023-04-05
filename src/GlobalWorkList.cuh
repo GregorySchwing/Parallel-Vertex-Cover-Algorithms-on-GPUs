@@ -1,3 +1,5 @@
+#ifndef GLOBALWORKLIST_H
+#define GLOBALWORKLIST_H
 
 #include <stdio.h>
 #include <stdint.h>
@@ -9,6 +11,44 @@
 #include "BWDWorkList.cuh"
 #include "helperFunctions.cuh"
 
+
+#include <cuda_runtime_api.h> 
+#include <cuda.h> 
+#include <cooperative_groups.h>
+using namespace cooperative_groups;
+
+struct ForGlobalKernelArgs
+{
+    Stacks *stacks;
+    unsigned int * minimum;
+    WorkList *workList; 
+    CSRGraph *graph;
+    Counters* counters;
+    int* first_to_dequeue_global; 
+    int* global_memory; 
+    int* NODES_PER_SM;
+};
+
+struct ForSharedKernelArgs
+{
+    Stacks stacks;
+    unsigned int * minimum;
+    WorkList workList; 
+    CSRGraph graph;
+    Counters* counters;
+    int* first_to_dequeue_global; 
+    int* global_memory; 
+    int* NODES_PER_SM;
+};
+
+#if USE_GLOBAL_MEMORY
+__global__ void GlobalWorkList_global_kernel(ForGlobalKernelArgs fbArgs) {
+#else
+__global__ void GlobalWorkList_shared_kernel(ForSharedKernelArgs fbArgs) {
+#endif
+
+/*
+
 #if USE_GLOBAL_MEMORY
 __global__ void GlobalWorkList_global_kernel(Stacks stacks, unsigned int * minimum, WorkList workList, CSRGraph graph, Counters* counters, 
     int* first_to_dequeue_global, int* global_memory, int* NODES_PER_SM) {
@@ -16,7 +56,7 @@ __global__ void GlobalWorkList_global_kernel(Stacks stacks, unsigned int * minim
 __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * minimum, WorkList workList, CSRGraph graph, Counters* counters, 
     int* first_to_dequeue_global, int* NODES_PER_SM) {
 #endif
-
+*/
     __shared__ Counters blockCounters;
     initializeCounters(&blockCounters);
 
@@ -28,21 +68,21 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * minim
     #endif
 
     int stackTop = -1;
-    unsigned int stackSize = (stacks.minimum + 1);
-    volatile int * stackVertexDegrees = &stacks.stacks[blockIdx.x * stackSize * graph.vertexNum];
-    volatile unsigned int * stackNumDeletedVertices = &stacks.stacksNumDeletedVertices[blockIdx.x * stackSize];
+    unsigned int stackSize = (fbArgs.stacks.minimum + 1);
+    volatile int * stackVertexDegrees = &fbArgs.stacks.stacks[blockIdx.x * stackSize * fbArgs.graph.vertexNum];
+    volatile unsigned int * stackNumDeletedVertices = &fbArgs.stacks.stacksNumDeletedVertices[blockIdx.x * stackSize];
 
     // Define the vertexDegree_s
     unsigned int numDeletedVertices;
     unsigned int numDeletedVertices2;
     
     #if USE_GLOBAL_MEMORY
-    int * vertexDegrees_s = &global_memory[graph.vertexNum*(2*blockIdx.x)];
-    int * vertexDegrees_s2 = &global_memory[graph.vertexNum*(2*blockIdx.x + 1)];
+    int * vertexDegrees_s = &global_memory[fbArgs.graph.vertexNum*(2*blockIdx.x)];
+    int * vertexDegrees_s2 = &global_memory[fbArgs.graph.vertexNum*(2*blockIdx.x + 1)];
     #else
     extern __shared__ int shared_mem[];
     int * vertexDegrees_s = shared_mem;
-    int * vertexDegrees_s2 = &shared_mem[graph.vertexNum];
+    int * vertexDegrees_s2 = &shared_mem[fbArgs.graph.vertexNum];
     #endif
 
     bool dequeueOrPopNextItr = true; 
@@ -50,7 +90,7 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * minim
 
     __shared__ bool first_to_dequeue;
     if (threadIdx.x==0){
-        if(atomicCAS(first_to_dequeue_global,0,1) == 0) { 
+        if(atomicCAS(fbArgs.first_to_dequeue_global,0,1) == 0) { 
             first_to_dequeue = true;
         } else {
             first_to_dequeue = false;
@@ -58,20 +98,20 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * minim
     }
     __syncthreads();
     if (first_to_dequeue){
-        for(unsigned int vertex = threadIdx.x; vertex < graph.vertexNum; vertex += blockDim.x) {
-            vertexDegrees_s[vertex]=workList.list[vertex];
+        for(unsigned int vertex = threadIdx.x; vertex < fbArgs.graph.vertexNum; vertex += blockDim.x) {
+            vertexDegrees_s[vertex]=fbArgs.workList.list[vertex];
         }
-        numDeletedVertices = workList.listNumDeletedVertices[0];
+        numDeletedVertices = fbArgs.workList.listNumDeletedVertices[0];
         dequeueOrPopNextItr = false;
     }
 
     __syncthreads();
-    
+
     while(true){
         if(dequeueOrPopNextItr) {
             if(stackTop != -1) { // Local stack is not empty, pop from the local stack
                 startTime(POP_FROM_STACK,&blockCounters);
-                popStack(graph.vertexNum, vertexDegrees_s, &numDeletedVertices, stackVertexDegrees, stackNumDeletedVertices, &stackTop);               
+                popStack(fbArgs.graph.vertexNum, vertexDegrees_s, &numDeletedVertices, stackVertexDegrees, stackNumDeletedVertices, &stackTop);               
                 endTime(POP_FROM_STACK,&blockCounters);
 
                 #if USE_COUNTERS
@@ -83,7 +123,7 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * minim
             } else { // Local stack is empty, read from the global workList
                 startTime(TERMINATE,&blockCounters);
                 startTime(DEQUEUE,&blockCounters);
-                if(!dequeue(vertexDegrees_s, workList, graph.vertexNum, &numDeletedVertices)) {   
+                if(!dequeue(vertexDegrees_s, fbArgs.workList, fbArgs.graph.vertexNum, &numDeletedVertices)) {   
                     endTime(TERMINATE,&blockCounters);
                     break;
                 }
@@ -99,7 +139,7 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * minim
 
         __shared__ unsigned int minimum_s;
         if(threadIdx.x == 0) {
-            minimum_s = atomicOr(minimum,0);
+            minimum_s = atomicOr(fbArgs.minimum,0);
         }
 
         __syncthreads();
@@ -107,12 +147,12 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * minim
         unsigned int iterationCounter = 0, numDeletedVerticesLeaf, numDeletedVerticesTriangle, numDeletedVerticesHighDegree;
         do{
             startTime(LEAF_REDUCTION,&blockCounters);
-            numDeletedVerticesLeaf = leafReductionRule(graph.vertexNum, vertexDegrees_s, graph, vertexDegrees_s2);
+            numDeletedVerticesLeaf = leafReductionRule(fbArgs.graph.vertexNum, vertexDegrees_s, fbArgs.graph, vertexDegrees_s2);
             endTime(LEAF_REDUCTION,&blockCounters);
             numDeletedVertices += numDeletedVerticesLeaf;
             if(iterationCounter==0 || numDeletedVerticesLeaf > 0 || numDeletedVerticesHighDegree > 0){
                 startTime(TRIANGLE_REDUCTION,&blockCounters);
-                numDeletedVerticesTriangle = triangleReductionRule(graph.vertexNum, vertexDegrees_s, graph, vertexDegrees_s2);
+                numDeletedVerticesTriangle = triangleReductionRule(fbArgs.graph.vertexNum, vertexDegrees_s, fbArgs.graph, vertexDegrees_s2);
                 endTime(TRIANGLE_REDUCTION,&blockCounters);
                 numDeletedVertices += numDeletedVerticesTriangle;
             } else {
@@ -120,7 +160,7 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * minim
             }
             if(iterationCounter==0 || numDeletedVerticesLeaf > 0 || numDeletedVerticesTriangle > 0){
                 startTime(HIGH_DEGREE_REDUCTION,&blockCounters);
-                numDeletedVerticesHighDegree = highDegreeReductionRule(graph.vertexNum, vertexDegrees_s, graph, vertexDegrees_s2,numDeletedVertices,minimum_s);
+                numDeletedVerticesHighDegree = highDegreeReductionRule(fbArgs.graph.vertexNum, vertexDegrees_s, fbArgs.graph, vertexDegrees_s2,numDeletedVertices,minimum_s);
                 endTime(HIGH_DEGREE_REDUCTION,&blockCounters);
                 numDeletedVertices += numDeletedVerticesHighDegree;
             }else {
@@ -129,10 +169,10 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * minim
             ++iterationCounter;
         }while(numDeletedVerticesTriangle > 0 || numDeletedVerticesHighDegree > 0);
         
-        unsigned int numOfEdges = findNumOfEdges(graph.vertexNum, vertexDegrees_s, vertexDegrees_s2);
+        unsigned int numOfEdges = findNumOfEdges(fbArgs.graph.vertexNum, vertexDegrees_s, vertexDegrees_s2);
 
         if(threadIdx.x == 0) {
-            minimum_s = atomicOr(minimum,0);
+            minimum_s = atomicOr(fbArgs.minimum,0);
         }
         __syncthreads();
 
@@ -143,13 +183,13 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * minim
             unsigned int maxVertex;
             int maxDegree;
             startTime(MAX_DEGREE,&blockCounters);
-            findMaxDegree(graph.vertexNum, &maxVertex, &maxDegree, vertexDegrees_s, vertexDegrees_s2);
+            findMaxDegree(fbArgs.graph.vertexNum, &maxVertex, &maxDegree, vertexDegrees_s, vertexDegrees_s2);
             endTime(MAX_DEGREE,&blockCounters);
 
             __syncthreads();
             if(maxDegree == 0) { // Reached the bottom of the tree, minimum vertex cover possibly found
                 if(threadIdx.x==0){
-                    atomicMin(minimum, numDeletedVertices);
+                    atomicMin(fbArgs.minimum, numDeletedVertices);
                 }
 
                 dequeueOrPopNextItr = true;
@@ -157,15 +197,15 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * minim
             } else { // Vertex cover not found, need to branch
 
                 startTime(PREPARE_RIGHT_CHILD,&blockCounters);
-                deleteNeighborsOfMaxDegreeVertex(graph,vertexDegrees_s, &numDeletedVertices, vertexDegrees_s2, &numDeletedVertices2, maxDegree, maxVertex);
+                deleteNeighborsOfMaxDegreeVertex(fbArgs.graph,vertexDegrees_s, &numDeletedVertices, vertexDegrees_s2, &numDeletedVertices2, maxDegree, maxVertex);
                 endTime(PREPARE_RIGHT_CHILD,&blockCounters);
 
                 __syncthreads();
 
                 bool enqueueSuccess;
-                if(checkThreshold(workList)){
+                if(checkThreshold(fbArgs.workList)){
                     startTime(ENQUEUE,&blockCounters);
-                    enqueueSuccess = enqueue(vertexDegrees_s2, workList, graph.vertexNum, &numDeletedVertices2);
+                    enqueueSuccess = enqueue(vertexDegrees_s2, fbArgs.workList, fbArgs.graph.vertexNum, &numDeletedVertices2);
                 } else  {
                     enqueueSuccess = false;
                 }
@@ -174,7 +214,7 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * minim
                 
                 if(!enqueueSuccess) {
                     startTime(PUSH_TO_STACK,&blockCounters);
-                    pushStack(graph.vertexNum, vertexDegrees_s2, &numDeletedVertices2, stackVertexDegrees, stackNumDeletedVertices, &stackTop);                    
+                    pushStack(fbArgs.graph.vertexNum, vertexDegrees_s2, &numDeletedVertices2, stackVertexDegrees, stackNumDeletedVertices, &stackTop);                    
                     maxDepth(stackTop, &blockCounters);
                     endTime(PUSH_TO_STACK,&blockCounters);
                     __syncthreads(); 
@@ -184,7 +224,7 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * minim
 
                 startTime(PREPARE_LEFT_CHILD,&blockCounters);
                 // Prepare the child that removes the neighbors of the max vertex to be processed on the next iteration
-                deleteMaxDegreeVertex(graph, vertexDegrees_s, &numDeletedVertices, maxVertex);
+                deleteMaxDegreeVertex(fbArgs.graph, vertexDegrees_s, &numDeletedVertices, maxVertex);
                 endTime(PREPARE_LEFT_CHILD,&blockCounters);
 
                 dequeueOrPopNextItr = false;
@@ -199,3 +239,4 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * minim
     }
     #endif
 }
+#endif

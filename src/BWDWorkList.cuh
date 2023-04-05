@@ -2,6 +2,10 @@
 #define BWDWORKLIST_H
 
 #include "config.h"
+#include <cuda_runtime_api.h> 
+#include <cuda.h> 
+#include <cooperative_groups.h>
+using namespace cooperative_groups;
 typedef unsigned int Ticket;
 typedef unsigned long long int HT;
 
@@ -180,6 +184,8 @@ __device__ inline bool enqueue(int* vertexDegree_s, WorkList workList, unsigned 
 __device__ inline bool dequeue(int* vertexDegree_s, WorkList workList, unsigned int vertexNum,unsigned int * vcSize){	
 	unsigned int expoBackOff = 0;
 
+    cooperative_groups::grid_group g = cooperative_groups::this_grid(); 
+
 	__shared__  bool isWorkDone;
 	if (threadIdx.x==0){
 		isWorkDone = false;
@@ -212,10 +218,16 @@ __device__ inline bool dequeue(int* vertexDegree_s, WorkList workList, unsigned 
 			if (tempCounter.numWaiting==gridDim.x && tempCounter.numEnqueued==0){
 				isWorkDone=true;
 			}
+			printf("blockID %d isworkdone %d tempcounter nw %d gridDim %d  nw==gd %d neq %d neq==0 %d nc %d \n", 
+			blockIdx.x, isWorkDone, tempCounter.numWaiting, gridDim.x, tempCounter.numWaiting==gridDim.x, 
+			tempCounter.numEnqueued,tempCounter.numEnqueued==0,
+			tempCounter.combined
+			);
 		}
 
 		__syncthreads();
 		sleepBWD(expoBackOff++);
+		//g.sync();
 	}
 	return false;
 }
@@ -233,7 +245,7 @@ __device__ inline bool dequeueParameterized(int* vertexDegree_s, WorkList workLi
 	__shared__  bool hasData;
 
 	while (!isWorkDone) {
-
+		printf("blockID %d ahnging\n",blockIdx.x);
 		if (threadIdx.x==0){
 			hasData = ensureDequeue(workList);
 		}
@@ -256,6 +268,15 @@ __device__ inline bool dequeueParameterized(int* vertexDegree_s, WorkList workLi
 			if ((tempCounter.numWaiting==gridDim.x && tempCounter.numEnqueued==0) || atomicOr(kFound,0)){
 				isWorkDone=true;
 			}
+			// Take atomic snapshot of Counter
+			if (tempCounter.numWaiting==gridDim.x && tempCounter.numEnqueued==0){
+				isWorkDone=true;
+			}
+			printf("blockID %d isworkdone %d tempcounter nw %d gridDim %d  nw==gd %d neq %d neq==0 %d nc %d \n", 
+			blockIdx.x, isWorkDone, tempCounter.numWaiting, gridDim.x, tempCounter.numWaiting==gridDim.x, 
+			tempCounter.numEnqueued,tempCounter.numEnqueued==0,
+			tempCounter.combined
+			);
 		}
 
 		__syncthreads();

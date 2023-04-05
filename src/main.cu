@@ -1,6 +1,7 @@
 #include <chrono> 
 #include <time.h>
 #include <math.h>
+#include <stdexcept>
 #include "config.h"
 #include "stack.cuh"
 #include "Sequential.h"
@@ -19,10 +20,15 @@
 #include "GlobalWorkListParameterized.cuh"
 #undef USE_GLOBAL_MEMORY
 #include "SequentialParameterized.h"
-
+#include <cuda_runtime_api.h> 
+#include <cuda.h> 
+#include <cooperative_groups.h>
 using namespace std;
 
+
+
 int main(int argc, char *argv[]) {
+    ForSharedKernelArgs fbArgs;
 
     Config config = parseArgs(argc,argv);
     printf("\nGraph file: %s",config.graphFileName);
@@ -108,7 +114,7 @@ int main(int argc, char *argv[]) {
             if (config.version == HYBRID && config.instance==PVC){
                 cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkListParameterized_global_kernel, numThreadsPerBlock, 0);
             } else if(config.version == HYBRID && config.instance==MVC) {
-                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkList_global_kernel, numThreadsPerBlock, 0);
+                //udaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkList_global_kernel, numThreadsPerBlock, 0);
             } else if(config.version == STACK_ONLY && config.instance==PVC){
                 cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacksParameterized_global_kernel, numThreadsPerBlock, 0);
             } else if(config.version == STACK_ONLY && config.instance==MVC) {
@@ -154,11 +160,12 @@ int main(int argc, char *argv[]) {
         #endif
 
         // Allocate GPU graph
-        CSRGraph graph_d = allocateGraph(graph);
+        CSRGraph graph_d;
+        fbArgs.graph = allocateGraph(graph);
 
         // Allocate GPU stack
         Stacks stacks_d;
-        stacks_d = allocateStacks(graph.vertexNum,numBlocks,minimum);
+        fbArgs.stacks = allocateStacks(graph.vertexNum,numBlocks,minimum);
 
         //Global Entries Memory Allocation
         int * global_memory_d;
@@ -198,7 +205,7 @@ int main(int argc, char *argv[]) {
         if(config.version == HYBRID){
             cudaMalloc((void**)&first_to_dequeue_global_d, sizeof(int));
             cudaMemcpy(first_to_dequeue_global_d, &first_to_dequeue_global, sizeof(int), cudaMemcpyHostToDevice);
-            workList_d =  allocateWorkList(graph, config, numBlocks);    
+            fbArgs.workList =  allocateWorkList(graph, config, numBlocks);    
         } else {
             cudaMalloc((void**)&pathCounter_d, sizeof(unsigned int));
             cudaMemcpy(pathCounter_d, &pathCounter, sizeof(unsigned int), cudaMemcpyHostToDevice);
@@ -212,16 +219,29 @@ int main(int argc, char *argv[]) {
         }
         sharedMemNeeded *= sizeof(int);
         
+        int supportsCoopLaunch = 0;
+        int dev = 0;
+        cudaDeviceGetAttribute(&supportsCoopLaunch, cudaDevAttrCooperativeLaunch, dev); 
+        if( supportsCoopLaunch != 1)
+            throw std::runtime_error("Cooperative Launch is not supported on this machine configuration.");
+
         cudaEvent_t start, stop;
         cudaDeviceSynchronize();
         cudaEventCreate(&start);
         cudaEventCreate(&stop);
         cudaEventRecord(start);
+
+        fbArgs.minimum=minimum_d;
+        fbArgs.counters=counters_d;
+        fbArgs.first_to_dequeue_global=first_to_dequeue_global_d;
+        fbArgs.NODES_PER_SM=NODES_PER_SM_d;
+
+        void *kernel_args[] = {&fbArgs};
         if (config.useGlobalMemory){
             if (config.version == HYBRID && config.instance==PVC){
                 GlobalWorkListParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, k_d, kFound_d, NODES_PER_SM_d);
             } else if(config.version == HYBRID && config.instance==MVC) {
-                GlobalWorkList_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, NODES_PER_SM_d);
+                //GlobalWorkList_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, NODES_PER_SM_d);
             } else if(config.version == STACK_ONLY && config.instance==PVC){
                 LocalStacksParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, graph_d, global_memory_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
             } else if(config.version == STACK_ONLY && config.instance==MVC) {
@@ -231,7 +251,8 @@ int main(int argc, char *argv[]) {
             if (config.version == HYBRID && config.instance==PVC){
                 GlobalWorkListParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, k_d, kFound_d, NODES_PER_SM_d);
             } else if(config.version == HYBRID && config.instance==MVC) {
-                GlobalWorkList_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
+                //GlobalWorkList_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
+                cudaLaunchCooperativeKernel((void *)GlobalWorkList_shared_kernel, numBlocks, numThreadsPerBlock, (void **) (&kernel_args), sharedMemNeeded);
             } else if(config.version == STACK_ONLY && config.instance==PVC){
                 LocalStacksParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, graph_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
             } else if(config.version == STACK_ONLY && config.instance==MVC) {
@@ -273,18 +294,20 @@ int main(int argc, char *argv[]) {
         graph.del();
         cudaFree(minimum_d);
         cudaFree(counters_d);
-        cudaFreeGraph(graph_d);
+        cudaFreeGraph(fbArgs.graph);
 
-        cudaFreeStacks(stacks_d);
+        cudaFreeStacks(fbArgs.stacks);
         
         #if USE_GLOBAL_MEMORY
         cudaFree(global_memory_d);
+    
         #endif
 
         if(config.version == HYBRID){
-            cudaFree(pathCounter_d);
-            cudaFreeWorkList(workList_d);
+            cudaFreeWorkList(fbArgs.workList);
             cudaFree(first_to_dequeue_global_d);
+        } else {
+            cudaFree(pathCounter_d);
         }
 
     }
