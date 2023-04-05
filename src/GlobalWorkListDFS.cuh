@@ -68,13 +68,11 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
     if (first_to_dequeue){
         for(unsigned int vertex = threadIdx.x; vertex < graph.vertexNum; vertex += blockDim.x) {
             vertexDegrees_s[vertex]=workList.list[vertex];
-            printf("graph.matching[%d]=%d\n", vertex, graph.matching[vertex]);
+            //printf("graph.matching[%d]=%d\n", vertex, graph.matching[vertex]);
         }
         numDeletedVertices = (uint32_t)workList.listNumDeletedVertices[0];
         edgeIndex = (workList.listNumDeletedVertices[0] >> 32);
         vertexDegrees_s[numDeletedVertices]=1;
-        if (threadIdx.x == 0)
-            printf("numDeletedVertices %d edgeIndex %d \n", numDeletedVertices, edgeIndex);
         dequeueOrPopNextItr = false;
     }
 

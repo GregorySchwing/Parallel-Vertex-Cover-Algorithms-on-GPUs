@@ -432,12 +432,12 @@ WorkList allocateWorkList_DFS(CSRGraph graph, Config config, unsigned int numBlo
 	HT *head_tail_d;
 	int* count_d;
 	Counter * counter_d;
-	cudaMalloc((void**) &list_d, (graph.vertexNum) * sizeof(int) * workList.size);
-	cudaMalloc((void**) &listNumDeletedVertices_d, sizeof(uint64_t) * workList.size);
-	cudaMalloc((void**) &tickets_d, sizeof(Ticket) * workList.size);
-	cudaMalloc((void**) &head_tail_d, sizeof(HT));
-	cudaMalloc((void**) &count_d, sizeof(int));
-	cudaMalloc((void**) &counter_d, sizeof(Counter));
+	checkCudaErrors(cudaMalloc((void**) &list_d, (graph.vertexNum) * sizeof(int) * workList.size));
+	checkCudaErrors(cudaMalloc((void**) &listNumDeletedVertices_d, sizeof(uint64_t) * workList.size));
+	checkCudaErrors(cudaMalloc((void**) &tickets_d, sizeof(Ticket) * workList.size));
+	checkCudaErrors(cudaMalloc((void**) &head_tail_d, sizeof(HT)));
+	checkCudaErrors(cudaMalloc((void**) &count_d, sizeof(int)));
+	checkCudaErrors(cudaMalloc((void**) &counter_d, sizeof(Counter)));
 	
 	workList.list = list_d;
 	workList.listNumDeletedVertices = listNumDeletedVertices_d;
@@ -449,18 +449,18 @@ WorkList allocateWorkList_DFS(CSRGraph graph, Config config, unsigned int numBlo
 	HT head_tail = 0x0ULL;
 	Counter counter;
 	counter.combined = 0;
-	cudaMemcpy(head_tail_d,&head_tail,sizeof(HT),cudaMemcpyHostToDevice);
+	checkCudaErrors(cudaMemcpy(head_tail_d,&head_tail,sizeof(HT),cudaMemcpyHostToDevice));
 	//cudaMemcpy((void*)list_d, graph.degree, (graph.vertexNum) * sizeof(int), cudaMemcpyHostToDevice);
-	cudaMemset((void*)&list_d[0], 0, (graph.vertexNum) * sizeof(int));
+	checkCudaErrors(cudaMemset((void*)&list_d[0], 0, (graph.vertexNum) * sizeof(int)));
 	uint32_t leastSignificantWord = graph.unmatched_vertices[0];
 	uint32_t mostSignificantWord = 0;
 	uint64_t edgePair = (uint64_t) mostSignificantWord << 32 | leastSignificantWord;
 	//cudaMemset((void*)&listNumDeletedVertices_d[0], edgePair, sizeof(uint64_t));
-	cudaMemcpy((void*)listNumDeletedVertices_d, &edgePair ,sizeof(uint64_t),cudaMemcpyHostToDevice);
+	checkCudaErrors(cudaMemcpy((void*)listNumDeletedVertices_d, &edgePair ,sizeof(uint64_t),cudaMemcpyHostToDevice));
 
-	cudaMemset((void*)&tickets_d[0], 0, workList.size * sizeof(Ticket));
-	cudaMemset(count_d, 0, sizeof(int));
-	cudaMemcpy(counter_d, &counter ,sizeof(Counter),cudaMemcpyHostToDevice);
+	checkCudaErrors(cudaMemset((void*)&tickets_d[0], 0, workList.size * sizeof(Ticket)));
+	checkCudaErrors(cudaMemset(count_d, 0, sizeof(int)));
+	checkCudaErrors(cudaMemcpy(counter_d, &counter ,sizeof(Counter),cudaMemcpyHostToDevice));
 
 	return workList;
 }
