@@ -113,8 +113,8 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
 
         __shared__ unsigned int minimum_s;
         if(threadIdx.x == 0) {
-            minimum_s = atomicOr(minimum,graph.matching[numDeletedVertices]==-1&&!vertexDegrees_s[numDeletedVertices]);
-            //minimum_s = atomicOr(minimum,graph.matching[numDeletedVertices]==-1&&numDeletedVertices!=graph.unmatched_vertices[0]);
+            //minimum_s = atomicOr(minimum,graph.matching[numDeletedVertices]==-1&&!vertexDegrees_s[numDeletedVertices]);
+            minimum_s = atomicOr(minimum,graph.matching[numDeletedVertices]==-1&&numDeletedVertices!=graph.unmatched_vertices[0]);
         }
 
         __syncthreads();
@@ -122,17 +122,17 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
         //unsigned int numOfEdges = findNumOfEdges(graph.vertexNum, vertexDegrees_s, vertexDegrees_s2);
 
         if(threadIdx.x == 0) {
-            minimum_s = atomicOr(minimum,graph.matching[numDeletedVertices]==-1&&!vertexDegrees_s[numDeletedVertices]);
-//            minimum_s = atomicOr(minimum,graph.matching[numDeletedVertices]==-1&&numDeletedVertices!=graph.unmatched_vertices[0]);
+//            minimum_s = atomicOr(minimum,graph.matching[numDeletedVertices]==-1&&!vertexDegrees_s[numDeletedVertices]);
+            minimum_s = atomicOr(minimum,graph.matching[numDeletedVertices]==-1&&numDeletedVertices!=graph.unmatched_vertices[0]);
 
         }
         
         if(threadIdx.x == 0) {
     
-            if(graph.matching[numDeletedVertices]==-1&&!vertexDegrees_s[numDeletedVertices]){
+            //if(graph.matching[numDeletedVertices]==-1&&!vertexDegrees_s[numDeletedVertices]){
 
-            //if(graph.matching[numDeletedVertices]==-1&&numDeletedVertices!=graph.unmatched_vertices[0]){
-                printf("Found solution of starting with %d and ending with %d\n",graph.unmatched_vertices[0],numDeletedVertices);
+            if(graph.matching[numDeletedVertices]==-1&&numDeletedVertices!=graph.unmatched_vertices[0]){
+                //printf("Found solution of starting with %d and ending with %d\n",graph.unmatched_vertices[0],numDeletedVertices);
                 if(0 == atomicCAS(solution_mutex, 0, 1)){
                     // Write stack of starting vertices to solution array.
                     //copySolution(graph.vertexNum,graph.solution,graph.solution_length,graph.solution_last_vertex,&numDeletedVertices,vertexDegrees_s,&depth);
@@ -169,9 +169,8 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
                 dequeueOrPopNextItr = true;
 
             } else { // Vertex cover not found, need to branch
-                if (true){
 
-                //if (foundNeighbor==2){
+                if (foundNeighbor==2){
 
                     startTime(PREPARE_RIGHT_CHILD,&blockCounters);
                     // Right child increments backtracking indices without incrementing depth
