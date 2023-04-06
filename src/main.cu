@@ -243,12 +243,15 @@ int main(int argc, char *argv[]) {
             sharedMemNeeded=0;
         }
         void *kernel_args[] = {&fbArgs};
+        cudaStream_t stream1, stream2;
+        cudaStreamCreate(&stream1);
+        cudaStreamCreate(&stream2);
         if (config.useGlobalMemory){
             if (config.version == HYBRID && config.instance==PVC){
                 GlobalWorkListParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, k_d, kFound_d, NODES_PER_SM_d);
             } else if(config.version == HYBRID && config.instance==MVC) {
                 //GlobalWorkList_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, NODES_PER_SM_d);
-                cudaLaunchCooperativeKernel((void *)GlobalWorkList_global_kernel, numBlocks, numThreadsPerBlock, (void **) (&kernel_args), sharedMemNeeded);
+                cudaLaunchCooperativeKernel((void *)GlobalWorkList_global_kernel, numBlocks, numThreadsPerBlock, (void **) (&kernel_args), sharedMemNeeded,stream1);
             } else if(config.version == STACK_ONLY && config.instance==PVC){
                 LocalStacksParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, graph_d, global_memory_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
             } else if(config.version == STACK_ONLY && config.instance==MVC) {
@@ -259,7 +262,25 @@ int main(int argc, char *argv[]) {
                 GlobalWorkListParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, k_d, kFound_d, NODES_PER_SM_d);
             } else if(config.version == HYBRID && config.instance==MVC) {
                 //GlobalWorkList_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
-                cudaLaunchCooperativeKernel((void *)GlobalWorkList_shared_kernel, numBlocks, numThreadsPerBlock, (void **) (&kernel_args), sharedMemNeeded);
+                Counter counter_h;
+                int workListCount_h = 0;
+                cudaError_t error = cudaLaunchCooperativeKernel((void *)GlobalWorkList_shared_kernel, numBlocks, numThreadsPerBlock, (void **) (&kernel_args), sharedMemNeeded,stream1);
+                // CSQ returns
+                // cudaSuccess if done == 0
+                // cudaErrorNotReady if not done == 600
+                cudaError_t running = cudaStreamQuery(stream1);
+                printf("STATUS %d\n",running);
+                
+                while(cudaStreamQuery(stream1)){
+                    cudaMemcpyAsync(&counter_h, fbArgs.workList.counter, sizeof(Counter), cudaMemcpyDeviceToHost, stream2);
+                    cudaMemcpyAsync(&workListCount_h, fbArgs.workList.count, sizeof(int), cudaMemcpyDeviceToHost, stream2);
+                    cudaStreamSynchronize(stream2);
+                    printf("%d %d %d %d\n",workListCount_h, 
+                                           counter_h.numEnqueued, 
+                                           counter_h.numWaiting, 
+                                           counter_h.combined);
+                }
+                
             } else if(config.version == STACK_ONLY && config.instance==PVC){
                 LocalStacksParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, graph_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
             } else if(config.version == STACK_ONLY && config.instance==MVC) {
