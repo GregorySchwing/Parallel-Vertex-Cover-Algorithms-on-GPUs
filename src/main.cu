@@ -224,7 +224,9 @@ int main(int argc, char *argv[]) {
         Counter counter_h;
         int workListCount_h = 0;
         unsigned int workList_size_h = config.globalListSize;
-        HT Pos_h;
+        HT Pos_h, iter=0;
+        FILE *fp;  
+        fp = fopen("log.txt", "w");//opening file  
         if (config.useGlobalMemory){
             if (config.version == HYBRID && config.instance==PVC){
                 GlobalWorkListParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, k_d, kFound_d, NODES_PER_SM_d);
@@ -257,7 +259,8 @@ int main(int argc, char *argv[]) {
                     cudaMemcpyAsync(&Pos_h, workList_d.head_tail, sizeof(HT), cudaMemcpyDeviceToHost, stream2);
 
                     cudaStreamSynchronize(stream2);
-                    printf("%d %d %d %d\n",workListCount_h%workList_size_h, 
+                    fprintf(fp,"%lu %d %d %d %d\n",iter++,
+                                           Pos_h%workList_size_h, 
                                            counter_h.numEnqueued, 
                                            counter_h.numWaiting, 
                                            counter_h.combined);
