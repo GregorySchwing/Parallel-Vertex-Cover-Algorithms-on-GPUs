@@ -231,7 +231,24 @@ int main(int argc, char *argv[]) {
             if (config.version == HYBRID && config.instance==PVC){
                 GlobalWorkListParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, k_d, kFound_d, NODES_PER_SM_d);
             } else if(config.version == HYBRID && config.instance==MVC) {
-                GlobalWorkList_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, NODES_PER_SM_d);
+                GlobalWorkList_global_kernel <<< numBlocks , numThreadsPerBlock, 0, stream1 >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, NODES_PER_SM_d);
+               // CSQ returns
+                // cudaSuccess if done == 0
+                // cudaErrorNotReady if not done == 600
+                cudaError_t running = cudaStreamQuery(stream1);
+                printf("STATUS %d\n",running);
+                //GlobalWorkList_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
+                Counter counter_h;
+                int workListCount_h = 0;
+                cudaError_t error = cudaGetLastError();   // add this line, and check the error code
+                while(cudaStreamQuery(stream1)){
+                    cudaMemcpyAsync(&counter_h, workList_d.counter, sizeof(Counter), cudaMemcpyDeviceToHost, stream2);
+                    cudaStreamSynchronize(stream2);
+                    fprintf(fp,"%lu %d %d %d %d\n",iter++,
+                                           counter_h.numEnqueued, 
+                                           counter_h.numWaiting, 
+                                           counter_h.combined);
+                }
             } else if(config.version == STACK_ONLY && config.instance==PVC){
                 LocalStacksParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, graph_d, global_memory_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
             } else if(config.version == STACK_ONLY && config.instance==MVC) {
