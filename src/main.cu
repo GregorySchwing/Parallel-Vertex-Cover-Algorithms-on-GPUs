@@ -20,6 +20,7 @@
 #include "GlobalWorkListParameterized.cuh"
 #undef USE_GLOBAL_MEMORY
 #include "SequentialParameterized.h"
+#include "KernelArgs.cuh"
 
 #include <cuda_runtime_api.h> 
 #include <cuda.h> 
@@ -29,8 +30,7 @@ using namespace std;
 
 
 int main(int argc, char *argv[]) {
-    ForSharedKernelArgs fbArgs;
-    ForGlobalKernelArgs fbArgs2;
+    KernelArgs fbArgs;
 
     Config config = parseArgs(argc,argv);
     printf("\nGraph file: %s",config.graphFileName);
@@ -238,13 +238,17 @@ int main(int argc, char *argv[]) {
         fbArgs.counters=counters_d;
         fbArgs.first_to_dequeue_global=first_to_dequeue_global_d;
         fbArgs.NODES_PER_SM=NODES_PER_SM_d;
-
+        if(config.useGlobalMemory){
+            fbArgs.global_memory=global_memory_d;
+            sharedMemNeeded=0;
+        }
         void *kernel_args[] = {&fbArgs};
         if (config.useGlobalMemory){
             if (config.version == HYBRID && config.instance==PVC){
                 GlobalWorkListParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, k_d, kFound_d, NODES_PER_SM_d);
             } else if(config.version == HYBRID && config.instance==MVC) {
                 //GlobalWorkList_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, NODES_PER_SM_d);
+                cudaLaunchCooperativeKernel((void *)GlobalWorkList_global_kernel, numBlocks, numThreadsPerBlock, (void **) (&kernel_args), sharedMemNeeded);
             } else if(config.version == STACK_ONLY && config.instance==PVC){
                 LocalStacksParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, graph_d, global_memory_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
             } else if(config.version == STACK_ONLY && config.instance==MVC) {

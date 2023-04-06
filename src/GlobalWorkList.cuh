@@ -1,6 +1,3 @@
-#ifndef GLOBALWORKLIST_H
-#define GLOBALWORKLIST_H
-
 #include <stdio.h>
 #include <stdint.h>
 #include <assert.h>
@@ -10,6 +7,7 @@
 #include "Counters.cuh"
 #include "BWDWorkList.cuh"
 #include "helperFunctions.cuh"
+#include "KernelArgs.cuh"
 
 
 #include <cuda_runtime_api.h> 
@@ -17,34 +15,10 @@
 #include <cooperative_groups.h>
 using namespace cooperative_groups;
 
-struct ForGlobalKernelArgs
-{
-    Stacks *stacks;
-    unsigned int * minimum;
-    WorkList *workList; 
-    CSRGraph *graph;
-    Counters* counters;
-    int* first_to_dequeue_global; 
-    int* global_memory; 
-    int* NODES_PER_SM;
-};
-
-struct ForSharedKernelArgs
-{
-    Stacks stacks;
-    unsigned int * minimum;
-    WorkList workList; 
-    CSRGraph graph;
-    Counters* counters;
-    int* first_to_dequeue_global; 
-    int* global_memory; 
-    int* NODES_PER_SM;
-};
-
 #if USE_GLOBAL_MEMORY
-__global__ void GlobalWorkList_global_kernel(ForGlobalKernelArgs fbArgs) {
+__global__ void GlobalWorkList_global_kernel(KernelArgs fbArgs) {
 #else
-__global__ void GlobalWorkList_shared_kernel(ForSharedKernelArgs fbArgs) {
+__global__ void GlobalWorkList_shared_kernel(KernelArgs fbArgs) {
 #endif
 
 /*
@@ -77,8 +51,8 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * minim
     unsigned int numDeletedVertices2;
     
     #if USE_GLOBAL_MEMORY
-    int * vertexDegrees_s = &global_memory[fbArgs.graph.vertexNum*(2*blockIdx.x)];
-    int * vertexDegrees_s2 = &global_memory[fbArgs.graph.vertexNum*(2*blockIdx.x + 1)];
+    int * vertexDegrees_s = &fbArgs.global_memory[fbArgs.graph.vertexNum*(2*blockIdx.x)];
+    int * vertexDegrees_s2 = &fbArgs.global_memory[fbArgs.graph.vertexNum*(2*blockIdx.x + 1)];
     #else
     extern __shared__ int shared_mem[];
     int * vertexDegrees_s = shared_mem;
@@ -239,4 +213,3 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * minim
     }
     #endif
 }
-#endif

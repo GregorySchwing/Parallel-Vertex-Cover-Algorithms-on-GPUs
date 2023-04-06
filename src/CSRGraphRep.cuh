@@ -1,3 +1,5 @@
+#ifndef CSRGraphRep_CUH
+#define CSRGraphRep_CUH
 #include "CSRGraphRep.h"
 
 CSRGraph allocateGraph(CSRGraph graph){
@@ -28,3 +30,5 @@ void cudaFreeGraph(CSRGraph graph){
     cudaFree(graph.srcPtr);
     cudaFree(graph.degree);
 }
+
+#endif

@@ -218,11 +218,13 @@ __device__ inline bool dequeue(int* vertexDegree_s, WorkList workList, unsigned 
 			if (tempCounter.numWaiting==gridDim.x && tempCounter.numEnqueued==0){
 				isWorkDone=true;
 			}
+			/*
 			printf("blockID %d isworkdone %d tempcounter nw %d gridDim %d  nw==gd %d neq %d neq==0 %d nc %d \n", 
 			blockIdx.x, isWorkDone, tempCounter.numWaiting, gridDim.x, tempCounter.numWaiting==gridDim.x, 
 			tempCounter.numEnqueued,tempCounter.numEnqueued==0,
 			tempCounter.combined
 			);
+			*/
 		}
 
 		__syncthreads();
@@ -245,7 +247,7 @@ __device__ inline bool dequeueParameterized(int* vertexDegree_s, WorkList workLi
 	__shared__  bool hasData;
 
 	while (!isWorkDone) {
-		printf("blockID %d ahnging\n",blockIdx.x);
+		//printf("blockID %d ahnging\n",blockIdx.x);
 		if (threadIdx.x==0){
 			hasData = ensureDequeue(workList);
 		}
@@ -272,11 +274,13 @@ __device__ inline bool dequeueParameterized(int* vertexDegree_s, WorkList workLi
 			if (tempCounter.numWaiting==gridDim.x && tempCounter.numEnqueued==0){
 				isWorkDone=true;
 			}
+			/*
 			printf("blockID %d isworkdone %d tempcounter nw %d gridDim %d  nw==gd %d neq %d neq==0 %d nc %d \n", 
 			blockIdx.x, isWorkDone, tempCounter.numWaiting, gridDim.x, tempCounter.numWaiting==gridDim.x, 
 			tempCounter.numEnqueued,tempCounter.numEnqueued==0,
 			tempCounter.combined
 			);
+			*/
 		}
 
 		__syncthreads();
