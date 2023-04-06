@@ -20,6 +20,7 @@
 #include "GlobalWorkListParameterized.cuh"
 #undef USE_GLOBAL_MEMORY
 #include "SequentialParameterized.h"
+
 #include <cuda_runtime_api.h> 
 #include <cuda.h> 
 #include <cooperative_groups.h>
@@ -29,6 +30,7 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
     ForSharedKernelArgs fbArgs;
+    ForGlobalKernelArgs fbArgs2;
 
     Config config = parseArgs(argc,argv);
     printf("\nGraph file: %s",config.graphFileName);
@@ -110,11 +112,20 @@ int main(int argc, char *argv[]) {
         printf("\nOur Config :\n");
         int numThreadsPerBlock = config.blockDim;
         int numBlocksPerSm; 
+
+        int sharedMemNeeded = graph.vertexNum;
+        if(graph.vertexNum > numThreadsPerBlock*2){
+            sharedMemNeeded+=graph.vertexNum;
+        } else {
+            sharedMemNeeded+=numThreadsPerBlock*2;
+        }
+        sharedMemNeeded *= sizeof(int);
+
         if (config.useGlobalMemory){
             if (config.version == HYBRID && config.instance==PVC){
                 cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkListParameterized_global_kernel, numThreadsPerBlock, 0);
             } else if(config.version == HYBRID && config.instance==MVC) {
-                //udaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkList_global_kernel, numThreadsPerBlock, 0);
+                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkList_global_kernel, numThreadsPerBlock, 0);
             } else if(config.version == STACK_ONLY && config.instance==PVC){
                 cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacksParameterized_global_kernel, numThreadsPerBlock, 0);
             } else if(config.version == STACK_ONLY && config.instance==MVC) {
@@ -122,13 +133,13 @@ int main(int argc, char *argv[]) {
             }
         } else {
             if (config.version == HYBRID && config.instance==PVC){
-                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkListParameterized_shared_kernel, numThreadsPerBlock, 0);
+                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkListParameterized_shared_kernel, numThreadsPerBlock, sharedMemNeeded);
             } else if(config.version == HYBRID && config.instance==MVC) {
-                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkList_shared_kernel, numThreadsPerBlock, 0);
+                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkList_shared_kernel, numThreadsPerBlock, sharedMemNeeded);
             } else if(config.version == STACK_ONLY && config.instance==PVC){
-                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacksParameterized_shared_kernel, numThreadsPerBlock, 0);
+                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacksParameterized_shared_kernel, numThreadsPerBlock, sharedMemNeeded);
             } else if(config.version == STACK_ONLY && config.instance==MVC) {
-                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacks_shared_kernel, numThreadsPerBlock, 0);
+                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacks_shared_kernel, numThreadsPerBlock, sharedMemNeeded);
             }
         }
 
@@ -210,14 +221,6 @@ int main(int argc, char *argv[]) {
             cudaMalloc((void**)&pathCounter_d, sizeof(unsigned int));
             cudaMemcpy(pathCounter_d, &pathCounter, sizeof(unsigned int), cudaMemcpyHostToDevice);
         }
-
-        int sharedMemNeeded = graph.vertexNum;
-        if(graph.vertexNum > numThreadsPerBlock*2){
-            sharedMemNeeded+=graph.vertexNum;
-        } else {
-            sharedMemNeeded+=numThreadsPerBlock*2;
-        }
-        sharedMemNeeded *= sizeof(int);
         
         int supportsCoopLaunch = 0;
         int dev = 0;
