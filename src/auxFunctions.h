@@ -10,6 +10,7 @@
 #include <iostream>
 
 CSRGraph createCSRGraphFromFile(const char *filename);
+CSRGraph createCSRGraphFromFile_memopt(const char *filename);
 unsigned int RemoveMaxApproximateMVC(CSRGraph graph);
 unsigned int RemoveEdgeApproximateMVC(CSRGraph graph);
 bool check_graph(CSRGraph graph);
