@@ -21,6 +21,7 @@
 #include "GlobalWorkListParameterized.cuh"
 #undef USE_GLOBAL_MEMORY
 #include "SequentialParameterized.h"
+#include "ThrustGraph.h"
 
 using namespace std;
 
@@ -47,45 +48,33 @@ int main(int argc, char *argv[]) {
     printf("\nUUID: %s\n",config.outputFilePrefix);
 
 
-    CSRGraph graph = createCSRGraphFromFile(config.graphFileName);
-    performChecks(graph, config);
+    ThrustGraph graph2 = createCSRGraphFromFile_memopt(config.graphFileName);
+    CSRGraph graph;
+    //graph.create(graph2.vertexNum, graph2.edgeNum);
+    // Allocate GPU graph
+    CSRGraph graph4m_d;// = allocateGraph2(graph);
 
+    //createfromThrustGraph(graph,graph2);
+    //createGPUfromThrustGraph(graph4m_d,graph2);
+
+    //performChecks(graph, config);
 
     // Allocate GPU graph
-    CSRGraph graph4m_d = allocateGraph(graph);
+    //CSRGraph graph4m_d = allocateGraph(graph);
     struct match mm;
     int exec_policy = 1;
-    create_match(graph, graph4m_d,&mm,exec_policy);
-    maxmatch(graph,graph4m_d, &mm,exec_policy);
+    create_match(graph2.vertexNum,&mm,exec_policy);
+    maxmatch_thrust(graph2,&mm,exec_policy);
+    exit(1);
     add_edges_to_unmatched_from_last_vertex(graph, graph4m_d, &mm, exec_policy);
     unsigned long ref_size = create_mcm(graph);
     printf("\rgpu mm starting size %lu ref size %lu\n", mm.match_count_h/2, ref_size);
 
 
-
-    //PCSR *pcsr = new PCSR(graph.vertexNum, graph.vertexNum, true, -1);
-
-
     chrono::time_point<std::chrono::system_clock> begin, end;
 	std::chrono::duration<double> elapsed_seconds_max, elapsed_seconds_edge, elapsed_seconds_mvc;
 
-    begin = std::chrono::system_clock::now(); 
-    unsigned int RemoveMaxMinimum = RemoveMaxApproximateMVC(graph);
-    end = std::chrono::system_clock::now(); 
-	elapsed_seconds_max = end - begin; 
-
-    printf("\nElapsed Time for Approximate Remove Max: %f\n",elapsed_seconds_max.count());
-    printf("Approximate Remove Max Minimum is: %u\n", RemoveMaxMinimum);
-    fflush(stdout);
-
-    begin = std::chrono::system_clock::now();
-    unsigned int RemoveEdgeMinimum = RemoveEdgeApproximateMVC(graph);
-    end = std::chrono::system_clock::now(); 
-	elapsed_seconds_edge = end - begin; 
-
-    printf("Elapsed Time for Approximate Remove Edge: %f\n",elapsed_seconds_edge.count());
-    printf("Approximate Remove Edge Minimum is: %u\n", RemoveEdgeMinimum);
-    fflush(stdout);
+    //PCSR *pcsr = new PCSR(graph.vertexNum, graph.vertexNum, true, -1);
 
     //unsigned int minimum = (RemoveMaxMinimum < RemoveEdgeMinimum) ? RemoveMaxMinimum : RemoveEdgeMinimum;
     unsigned int minimum = mm.match_count_h+2;
@@ -105,8 +94,8 @@ int main(int argc, char *argv[]) {
             elapsed_seconds_mvc = end - begin; 
         } 
 
-        printResults(config, RemoveMaxMinimum, RemoveEdgeMinimum, elapsed_seconds_max.count(), elapsed_seconds_edge.count(), minimum, 
-            elapsed_seconds_mvc.count(), graph.vertexNum, graph.edgeNum, kFound);
+        //printResults(config, RemoveMaxMinimum, RemoveEdgeMinimum, elapsed_seconds_max.count(), elapsed_seconds_edge.count(), minimum, 
+        //    elapsed_seconds_mvc.count(), graph.vertexNum, graph.edgeNum, kFound);
 
         printf("\nElapsed time: %fs",elapsed_seconds_mvc.count());
     } else {
@@ -356,8 +345,8 @@ int main(int argc, char *argv[]) {
         cudaEventElapsedTime(&milliseconds, start, stop);
         printf("Elapsed time: %fms \n", milliseconds);
 
-        printResults(config, RemoveMaxMinimum, RemoveEdgeMinimum, elapsed_seconds_max.count(), elapsed_seconds_edge.count(), minimum, milliseconds, numBlocks, 
-            numBlocksPerSm, numThreadsPerSM, graph.vertexNum-1, graph.edgeNum, kFound);
+        //printResults(config, RemoveMaxMinimum, RemoveEdgeMinimum, elapsed_seconds_max.count(), elapsed_seconds_edge.count(), minimum, milliseconds, numBlocks, 
+        //    numBlocksPerSm, numThreadsPerSM, graph.vertexNum-1, graph.edgeNum, kFound);
 
         #if USE_COUNTERS
         printCountersInFile(config,counters_d,numBlocks);

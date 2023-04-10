@@ -13,10 +13,24 @@ void create_match(CSRGraph & graph,CSRGraph & graph_d,struct match * m, int exec
   }
 }
 
+void create_match(int vertexNum,struct match * m, int exec_protocol){
+
+  if(exec_protocol){
+    m->match_device = create_match_gpu_struct(vertexNum);
+  }
+}
+
 void maxmatch(CSRGraph & graph,CSRGraph & graph_d,struct match * m, int exec_protocol){
     mm_gpu_csc (graph,graph_d, m, exec_protocol);
     if (true){
       check_match(graph,graph_d,m);
+    }
+}
+
+void maxmatch_thrust(ThrustGraph & graph, struct match * m, int exec_protocol){
+    mm_gpu_csc (graph, m, exec_protocol);
+    if (true){
+      //check_match(graph,graph_d,m);
     }
 }
 

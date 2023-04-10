@@ -46,6 +46,7 @@
 #include <thrust/transform.h>
 //using mt = thrust::complex<int>;
 #include "bfstdcsc.h"
+#include "ThrustGraph.h"
 
 struct is_less_than_0
 {
@@ -185,6 +186,81 @@ int mm_gpu_csc(CSRGraph & graph,CSRGraph & graph_d,struct match * m, int exec_pr
 
   return 0;
 }//end bfs_gpu_td_csc_sc
+
+int mm_gpu_csc(ThrustGraph & graph,struct match * m, int exec_protocol){
+  float t_mm;
+  float t_mm_t = 0.0;
+  float t_thrust;
+  float t_thrust_t = 0.0;
+  int i,dimGrid;
+  cudaEvent_t start, stop;
+  cudaEventCreate(&start);
+  cudaEventCreate(&stop);
+
+  unsigned int *CP_h = thrust::raw_pointer_cast(graph.offsets_h.data() );
+  unsigned int *IC_h  = thrust::raw_pointer_cast( graph.values_h.data() );
+  int *m_h  = thrust::raw_pointer_cast( graph.matching_h.data() );
+
+  int n = graph.vertexNum;
+  int edgeNum = graph.edgeNum;
+  int repetition = 1;
+
+  unsigned int *CP_d= thrust::raw_pointer_cast(graph.offsets_d.data() );
+  unsigned int *IC_d  = thrust::raw_pointer_cast( graph.values_d.data() );
+  int *m_d= thrust::raw_pointer_cast( graph.matching_d.data() );
+  int *req_d= m->match_device.req_d;
+  int *c= m->match_device.c;
+  int result, resultSum = 0;
+
+  srand(1);
+  /*computing MM */
+  dimGrid = (n + THREADS_PER_BLOCK)/THREADS_PER_BLOCK;
+  for (i = 0; i<repetition; i++){
+    *c = 1;
+    //d = 0;
+    checkCudaErrors(cudaMemset(req_d,0,sizeof(*req_d)*n));
+    checkCudaErrors(cudaMemset(m_d,0,sizeof(*m_d)*n));
+    int count = 0;
+    while (*c && ++count < NR_MAX_MATCH_ROUNDS){
+      //d = d + 1;
+      *c = 0;
+      cudaEventRecord(start);
+      gaSelect<<<dimGrid,THREADS_PER_BLOCK>>>(m_d, c, n, rand());
+      grRequest<<<dimGrid,THREADS_PER_BLOCK>>>(CP_d,IC_d,req_d, m_d, n);
+      grRespond<<<dimGrid,THREADS_PER_BLOCK>>>(CP_d,IC_d,req_d, m_d, n);
+      gMatch<<<dimGrid,THREADS_PER_BLOCK>>>(m_d, req_d, n);
+      cudaEventRecord(stop);
+      cudaEventSynchronize(stop);
+      cudaEventElapsedTime(&t_mm,start,stop);
+      t_mm_t += t_mm;
+    }
+    cudaEventRecord(start);
+    using namespace thrust::placeholders;
+    thrust::device_ptr<int> m_vec=thrust::device_pointer_cast(m_d);
+    thrust::for_each(m_vec, m_vec+n, _1 -= 4);
+    
+    result = thrust::count(m_vec, m_vec+n, -1);
+    cudaEventSynchronize(stop);
+    cudaEventElapsedTime(&t_thrust,start,stop);
+    t_thrust_t += t_thrust;
+    resultSum += result;
+
+  }
+  printf("\nbfs_gpu_mm_csc_sc::t_sum=%lfms \n",t_mm_t+t_thrust_t);
+  
+  int print_t = 1;
+  if (print_t){
+    printf("mm_gpu_csc::average time mm = %lfms, avg matched %f, avg unmatched %f, total %d\n",(t_mm_t+t_thrust_t)/repetition, 
+      (float)n-((float)resultSum/(float)repetition), ((float)resultSum/(float)repetition), n);
+  }
+  
+  graph.matching_h = graph.matching_d;
+
+  checkCudaErrors(cudaEventDestroy(start));
+  checkCudaErrors(cudaEventDestroy(stop));
+
+  return 0;
+}
 
 int mm_gpu_csc_from_mis(CSRGraph & graph,CSRGraph & graph_d,struct match * m,struct MIS * mis, int exec_protocol){
 //int  mm_gpu_csc (unsigned int *IC_h,unsigned int *CP_h,int *m_h,int *_m_d,int *req_h,int *c_h,int edgeNum,int n,int repetition, int exec_protocol){

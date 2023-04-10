@@ -25,6 +25,7 @@
 #define I_SIZE ((3/2)*THREADS_PER_BLOCK)
 #include <stdio.h>
 #include "CSRGraphRep.h"
+#include "ThrustGraph.h"
 
 /*define Structure of Arrays (SoA) for the sparse matrix A representing
  unweighted graphs in the CSC format*/
@@ -240,7 +241,7 @@ void extract_single_path_gpu_w_blossoms(CSRGraph & graph,CSRGraph & graph_d,stru
 void process_single_path_gpu_w_blossoms(CSRGraph & graph,CSRGraph & graph_d,struct bfs * b,struct match * mm, struct paths * p,int exec_protocol);
 void identify_blossoms_and_launch_bfs_from_inside_vertices(CSRGraph & graph,CSRGraph & graph_d,struct bfs * b,struct match * mm, struct paths * p,int exec_protocol);
 int check_graph_gpu(int * CP_d, int * CP_h, int N, int * IC_d, int * IC_h, int edgeNum);
-
+int mm_gpu_csc(ThrustGraph & graph,struct match * m, int exec_protocol);
 int mm_gpu_csc(CSRGraph & graph,CSRGraph & graph_d,struct match * m, int exec_protocol);
 int mm_gpu_csc_from_mis(CSRGraph & graph,CSRGraph & graph_d,struct match * m,struct MIS * mis, int exec_protocol);
 int mis_gpu(CSRGraph & graph,CSRGraph & graph_d,struct MIS * mis, int exec_protocol);

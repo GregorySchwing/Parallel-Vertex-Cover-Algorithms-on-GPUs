@@ -31,18 +31,11 @@ Match_GPU create_match_gpu_struct(int N){
 
   Match_GPU match_device;
 
-  /*Allocate device memory for the vector m_d */
-  checkCudaErrors(cudaMalloc(reinterpret_cast<void **>(&match_device.m_d),sizeof(*match_device.m_d)*(N)));
-
   /*Allocate device memory for the vector req_d */
   checkCudaErrors(cudaMalloc(reinterpret_cast<void **>(&match_device.req_d),sizeof(*match_device.req_d)*(N)));
 
   /*allocate unified memory for integer variable c for control of while loop*/
   checkCudaErrors(cudaMallocManaged(reinterpret_cast<void **>(&match_device.c),sizeof(*match_device.c)));
-
-  /*Allocate device memory for the vector m_d */
-  checkCudaErrors(cudaMalloc(reinterpret_cast<void **>(&match_device.num_matched_d),sizeof(*match_device.num_matched_d)*(1)));
-
 
   return match_device;
 }

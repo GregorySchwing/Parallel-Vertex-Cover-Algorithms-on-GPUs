@@ -2,6 +2,8 @@
 #define AUX_H
 
 #include "CSRGraphRep.h"
+#include "ThrustGraph.h"
+
 #include "config.h"
 #include <cerrno>
 
@@ -10,6 +12,9 @@
 #include <iostream>
 
 CSRGraph createCSRGraphFromFile(const char *filename);
+ThrustGraph createCSRGraphFromFile_memopt(const char *filename);
+CSRGraph createfromThrustGraph(ThrustGraph & tg); // Initializes the graph rep
+
 unsigned int RemoveMaxApproximateMVC(CSRGraph graph);
 unsigned int RemoveEdgeApproximateMVC(CSRGraph graph);
 bool check_graph(CSRGraph graph);

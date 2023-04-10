@@ -13,6 +13,7 @@ struct CSRGraph{
 
     int* visited;
     void create(unsigned int xn,unsigned int xm); // Initializes the graph rep
+
     void copy(CSRGraph graph);
     void deleteVertex(unsigned int v);
     unsigned int findMaxDegree();
