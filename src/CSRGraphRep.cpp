@@ -26,6 +26,28 @@ void CSRGraph::create(unsigned int xn,unsigned int xm){
         }
     }
 
+
+void CSRGraph::create_memopt(unsigned int xn,unsigned int xm){
+        vertexNum =xn;
+        edgeNum =xm;
+
+        /*
+        srcPtr = thrust::raw_pointer_cast( offsets_d.data() );
+        dst = thrust::raw_pointer_cast( values_d.data() );
+        degree = thrust::raw_pointer_cast( degrees_d.data() );
+        */
+        srcPtr = thrust::raw_pointer_cast( offsets_h.data() );
+        dst = thrust::raw_pointer_cast( values_h.data() );
+        degree = thrust::raw_pointer_cast( degrees_h.data() );
+        matching = (int*)malloc(sizeof(int)*vertexNum);
+        unmatched_vertices = (unsigned int*)malloc(sizeof(unsigned int)*vertexNum);
+        num_unmatched_vertices = (unsigned int*)malloc(sizeof(unsigned int));
+
+        for(unsigned int i=0;i<vertexNum;i++){
+            matching[i]=0;
+        }
+    }
+
 void CSRGraph::copy(CSRGraph g){
     vertexNum =g.vertexNum;
     edgeNum =g.edgeNum;

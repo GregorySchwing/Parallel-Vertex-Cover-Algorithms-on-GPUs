@@ -49,10 +49,9 @@ int main(int argc, char *argv[]) {
 
     CSRGraph graph = createCSRGraphFromFile_memopt(config.graphFileName);
     performChecks(graph, config);
-    printf("DONE!\n");
-    exit(1);
+
     // Allocate GPU graph
-    CSRGraph graph4m_d = allocateGraph(graph);
+    CSRGraph graph4m_d = allocateGraph_memopt(graph);
     struct match mm;
     int exec_policy = 1;
     create_match(graph, graph4m_d,&mm,exec_policy);
