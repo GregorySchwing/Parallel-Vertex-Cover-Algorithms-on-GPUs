@@ -47,11 +47,12 @@ int main(int argc, char *argv[]) {
     printf("\nUUID: %s\n",config.outputFilePrefix);
 
 
-    CSRGraph graph = createCSRGraphFromFile_memopt(config.graphFileName);
+    CSRGraph graph = createCSRGraphFromFile(config.graphFileName);
     performChecks(graph, config);
 
+
     // Allocate GPU graph
-    CSRGraph graph4m_d = allocateGraph_memopt(graph);
+    CSRGraph graph4m_d = allocateGraph(graph);
     struct match mm;
     int exec_policy = 1;
     create_match(graph, graph4m_d,&mm,exec_policy);
