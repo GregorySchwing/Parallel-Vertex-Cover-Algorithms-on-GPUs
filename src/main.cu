@@ -9,12 +9,14 @@
 #define USE_GLOBAL_MEMORY 0
 #include "LocalStacks.cuh"
 #include "GlobalWorkList.cuh"
+#include "GlobalWorkListDFS.cuh"
 #include "LocalStacksParameterized.cuh"
 #include "GlobalWorkListParameterized.cuh"
 #undef USE_GLOBAL_MEMORY
 #define USE_GLOBAL_MEMORY 1
 #include "LocalStacks.cuh"
 #include "GlobalWorkList.cuh"
+#include "GlobalWorkListDFS.cuh"
 #include "LocalStacksParameterized.cuh"
 #include "GlobalWorkListParameterized.cuh"
 #undef USE_GLOBAL_MEMORY
@@ -22,14 +24,47 @@
 
 using namespace std;
 
+#include "matching/match.h"
+#include "boostmcm.h"
+#include "bfstdcsc.h"
+//#include <PCSR.h>
+
+
+inline void checkLastErrorCUDA(const char *file, int line)
+{
+  cudaError_t code = cudaGetLastError();
+  if (code != cudaSuccess) {
+    fprintf(stderr, "GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+    exit(code);
+  }
+}
+
+
 int main(int argc, char *argv[]) {
 
     Config config = parseArgs(argc,argv);
     printf("\nGraph file: %s",config.graphFileName);
     printf("\nUUID: %s\n",config.outputFilePrefix);
 
+
     CSRGraph graph = createCSRGraphFromFile(config.graphFileName);
     performChecks(graph, config);
+
+
+    // Allocate GPU graph
+    CSRGraph graph4m_d = allocateGraph(graph);
+    struct match mm;
+    int exec_policy = 1;
+    create_match(graph, graph4m_d,&mm,exec_policy);
+    maxmatch(graph,graph4m_d, &mm,exec_policy);
+    add_edges_to_unmatched_from_last_vertex(graph, graph4m_d, &mm, exec_policy);
+    unsigned long ref_size = create_mcm(graph);
+    printf("\rgpu mm starting size %lu ref size %lu\n", mm.match_count_h/2, ref_size);
+
+
+
+    //PCSR *pcsr = new PCSR(graph.vertexNum, graph.vertexNum, true, -1);
+
 
     chrono::time_point<std::chrono::system_clock> begin, end;
 	std::chrono::duration<double> elapsed_seconds_max, elapsed_seconds_edge, elapsed_seconds_mvc;
@@ -167,7 +202,9 @@ int main(int argc, char *argv[]) {
         }
 
         unsigned int * minimum_d;
+        unsigned int * solution_mutex_d;
         cudaMalloc((void**) &minimum_d, sizeof(unsigned int));
+        cudaMalloc((void**) &solution_mutex_d, sizeof(unsigned int));
 
         // Allocate counter for each block
         Counters* counters_d;
@@ -175,6 +212,9 @@ int main(int argc, char *argv[]) {
 
         // Copy minimum
         cudaMemcpy(minimum_d, &minimum, sizeof(unsigned int), cudaMemcpyHostToDevice);
+
+        cudaMemset(minimum_d, 0, sizeof(unsigned int));
+        cudaMemset(solution_mutex_d, 0, sizeof(unsigned int));
 
         unsigned int *k_d = NULL;
         unsigned int *kFound_d = NULL;
@@ -199,7 +239,7 @@ int main(int argc, char *argv[]) {
         if(config.version == HYBRID){
             cudaMalloc((void**)&first_to_dequeue_global_d, sizeof(int));
             cudaMemcpy(first_to_dequeue_global_d, &first_to_dequeue_global, sizeof(int), cudaMemcpyHostToDevice);
-            workList_d =  allocateWorkList(graph, config, numBlocks);    
+            workList_d =  allocateWorkList_DFS(graph, config, numBlocks);    
         } else {
             cudaMalloc((void**)&pathCounter_d, sizeof(unsigned int));
             cudaMemcpy(pathCounter_d, &pathCounter, sizeof(unsigned int), cudaMemcpyHostToDevice);
@@ -249,6 +289,7 @@ int main(int argc, char *argv[]) {
                                            counter_h.numWaiting, 
                                            counter_h.combined);
                 }
+
             } else if(config.version == STACK_ONLY && config.instance==PVC){
                 LocalStacksParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, graph_d, global_memory_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
             } else if(config.version == STACK_ONLY && config.instance==MVC) {
@@ -292,6 +333,7 @@ int main(int argc, char *argv[]) {
         cudaEventSynchronize(stop);
 
         cudaError_t err = cudaDeviceSynchronize();
+        checkLastErrorCUDA(__FILE__, __LINE__);
         if(err != cudaSuccess) {
             printf("GPU Error: %s\n", cudaGetErrorString(err));
             exit(1);
@@ -321,6 +363,7 @@ int main(int argc, char *argv[]) {
             cudaFree(k_d);
         }
         graph.del();
+
         cudaFree(minimum_d);
         cudaFree(counters_d);
         cudaFreeGraph(graph_d);
@@ -337,7 +380,6 @@ int main(int argc, char *argv[]) {
         }else{
             cudaFree(pathCounter_d);
         }
-
     }
 
     if(config.instance == PVC){

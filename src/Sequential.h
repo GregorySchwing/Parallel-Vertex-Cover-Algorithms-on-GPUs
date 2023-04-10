@@ -5,7 +5,7 @@
 #include "helperFunctions.h"
 #include "stack.h"
 #include <stdlib.h>
-
+#define NUM_LEVELS 1
 unsigned int Sequential(CSRGraph graph, unsigned int minimum);
 
 #endif

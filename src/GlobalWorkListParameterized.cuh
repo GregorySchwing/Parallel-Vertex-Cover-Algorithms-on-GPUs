@@ -29,7 +29,7 @@ __global__ void GlobalWorkListParameterized_shared_kernel(Stacks stacks, WorkLis
 
     unsigned int stackSize = (stacks.minimum + 1);
     volatile int * stackVertexDegrees = &stacks.stacks[blockIdx.x * stackSize * graph.vertexNum];
-    volatile unsigned int * stackNumDeletedVertices = &stacks.stacksNumDeletedVertices[blockIdx.x * stackSize];
+    volatile uint64_t* stackNumDeletedVertices = &stacks.stacksNumDeletedVertices[blockIdx.x * stackSize];
     int stackTop = -1;
 
     // Define the vertexDegree_s

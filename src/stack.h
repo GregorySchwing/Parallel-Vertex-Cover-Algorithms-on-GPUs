@@ -5,9 +5,11 @@
 
 struct Stack
 {
+    bool foundSolution;
     unsigned int size;
     int top;
     int *stack;
+    unsigned int *startVertex;
     unsigned int *stackNumDeletedVertices;
     void print(int numVertices);
 };

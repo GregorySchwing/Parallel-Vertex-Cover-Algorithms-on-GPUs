@@ -3,6 +3,11 @@
 
 #include "CSRGraphRep.h"
 #include "config.h"
+#include <cerrno>
+
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <iostream>
 
 CSRGraph createCSRGraphFromFile(const char *filename);
 unsigned int RemoveMaxApproximateMVC(CSRGraph graph);

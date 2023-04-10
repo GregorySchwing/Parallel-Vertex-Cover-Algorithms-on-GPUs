@@ -14,7 +14,7 @@ struct WorkList{
 	unsigned int size;
 	unsigned int threshold;
     volatile int* list;
-    volatile unsigned int* listNumDeletedVertices;
+    volatile uint64_t* listNumDeletedVertices;
     volatile Ticket *tickets;
     HT *head_tail;
 	int* count;
@@ -132,6 +132,30 @@ __device__ void readData(int* vertexDegree_s, unsigned int * vcSize, WorkList wo
 	}
 }
 
+
+__device__ void readData_DFS(int* vertexDegree_s, unsigned int * vcSize, unsigned int * edgeIndex,WorkList workList, unsigned int vertexNum){	
+	__shared__ unsigned int P;
+	unsigned int Pos;
+	if (threadIdx.x==0){
+	Pos = atomicAdd(head(const_cast<HT*>(workList.head_tail)), 1);
+	P = Pos % workList.size;
+	waitForTicket(P, 2 * (Pos / workList.size) + 1,workList);
+	}
+	__syncthreads();
+
+	for(unsigned int vertex = threadIdx.x; vertex < vertexNum; vertex += blockDim.x) {
+		vertexDegree_s[vertex] = workList.list[P*vertexNum + vertex];
+	}
+
+	*vcSize = (uint32_t)workList.listNumDeletedVertices[P];
+	*edgeIndex = (workList.listNumDeletedVertices[P] >> 32);
+	__syncthreads();
+	if (threadIdx.x==0){
+	workList.tickets[P] = 2 * ((Pos + workList.size) / workList.size);
+	}
+}
+
+
 __device__ void putData(int* vertexDegree_s, unsigned int * vcSize, WorkList workList,unsigned int vertexNum){
 	__shared__ unsigned int P;
 	unsigned int Pos;
@@ -160,6 +184,39 @@ __device__ void putData(int* vertexDegree_s, unsigned int * vcSize, WorkList wor
 	}
 }
 
+
+__device__ void putData_DFS(int* vertexDegree_s, unsigned int * vcSize, unsigned int * edgeIndex, WorkList workList,unsigned int vertexNum){
+	__shared__ unsigned int P;
+	unsigned int Pos;
+	unsigned int B;
+	if (threadIdx.x==0){
+	Pos = atomicAdd(tail(const_cast<HT*>(workList.head_tail)), 1);
+	P = Pos % workList.size;
+	B = 2 * (Pos /workList.size);
+	waitForTicket(P, B, workList);
+	}
+
+	__syncthreads();
+
+	for(unsigned int i = threadIdx.x; i < vertexNum; i += blockDim.x) {
+		workList.list[i + (P)*(vertexNum)] = vertexDegree_s[i];
+	}
+
+	if(threadIdx.x == 0) {
+		uint32_t leastSignificantWord = *vcSize;
+		uint32_t mostSignificantWord = *edgeIndex;
+		uint64_t edgePair = (uint64_t) mostSignificantWord << 32 | leastSignificantWord;
+		workList.listNumDeletedVertices[P] = edgePair;
+	}
+	__threadfence();
+	__syncthreads();
+	if (threadIdx.x==0){
+		workList.tickets[P] = B + 1;
+		atomicAdd(&workList.counter->numEnqueued,1);
+	}
+}
+
+
 __device__ inline bool enqueue(int* vertexDegree_s, WorkList workList, unsigned int vertexNum,unsigned int * vcSize){
 	__shared__  bool writeData;
 	if (threadIdx.x==0){
@@ -171,6 +228,23 @@ __device__ inline bool enqueue(int* vertexDegree_s, WorkList workList, unsigned 
 	if (writeData)
 	{
 		putData(vertexDegree_s, vcSize, workList, vertexNum);
+	}
+	
+	return writeData;
+}
+
+
+__device__ inline bool enqueue_DFS(int* vertexDegree_s, WorkList workList, unsigned int vertexNum,unsigned int * vcSize,unsigned int * edgeIndex){
+	__shared__  bool writeData;
+	if (threadIdx.x==0){
+		writeData = ensureEnqueue(workList);
+	}
+
+	__syncthreads();
+	
+	if (writeData)
+	{
+		putData_DFS(vertexDegree_s, vcSize, edgeIndex, workList, vertexNum);
 	}
 	
 	return writeData;
@@ -197,6 +271,50 @@ __device__ inline bool dequeue(int* vertexDegree_s, WorkList workList, unsigned 
 
 		if (hasData){
 			readData(vertexDegree_s, vcSize, workList, vertexNum);
+			if (threadIdx.x==0){
+				Counter tempCounter;
+				tempCounter.numWaiting = -1;
+				tempCounter.numEnqueued = -2;
+				atomicAdd(&workList.counter->combined,tempCounter.combined);
+			}
+			return true;
+		}
+
+		if (threadIdx.x==0){
+			Counter tempCounter;
+			tempCounter.combined = atomicOr(&workList.counter->combined,0);
+			if (tempCounter.numWaiting==gridDim.x && tempCounter.numEnqueued==0){
+				isWorkDone=true;
+			}
+		}
+
+		__syncthreads();
+		sleepBWD(expoBackOff++);
+	}
+	return false;
+}
+
+
+__device__ inline bool dequeue_DFS(int* vertexDegree_s, WorkList workList, unsigned int vertexNum,unsigned int * vcSize,unsigned int * edgeIndex){	
+	unsigned int expoBackOff = 0;
+
+	__shared__  bool isWorkDone;
+	if (threadIdx.x==0){
+		isWorkDone = false;
+		atomicAdd(&workList.counter->numWaiting,1);
+	}
+	__syncthreads();
+
+	__shared__  bool hasData;
+	while (!isWorkDone) {
+
+		if (threadIdx.x==0){
+			hasData = ensureDequeue(workList);
+		}
+		__syncthreads();
+
+		if (hasData){
+			readData_DFS(vertexDegree_s, vcSize, edgeIndex, workList, vertexNum);
 			if (threadIdx.x==0){
 				Counter tempCounter;
 				tempCounter.numWaiting = -1;
@@ -271,13 +389,13 @@ WorkList allocateWorkList(CSRGraph graph, Config config, unsigned int numBlocks)
 	workList.threshold = config.globalListThreshold * workList.size;
 
 	volatile int* list_d;
-	volatile unsigned int * listNumDeletedVertices_d;
+	volatile uint64_t* listNumDeletedVertices_d;
 	volatile Ticket *tickets_d;
 	HT *head_tail_d;
 	int* count_d;
 	Counter * counter_d;
 	cudaMalloc((void**) &list_d, (graph.vertexNum) * sizeof(int) * workList.size);
-	cudaMalloc((void**) &listNumDeletedVertices_d, sizeof(unsigned int) * workList.size);
+	cudaMalloc((void**) &listNumDeletedVertices_d, sizeof(uint64_t) * workList.size);
 	cudaMalloc((void**) &tickets_d, sizeof(Ticket) * workList.size);
 	cudaMalloc((void**) &head_tail_d, sizeof(HT));
 	cudaMalloc((void**) &count_d, sizeof(int));
@@ -295,7 +413,7 @@ WorkList allocateWorkList(CSRGraph graph, Config config, unsigned int numBlocks)
 	counter.combined = 0;
 	cudaMemcpy(head_tail_d,&head_tail,sizeof(HT),cudaMemcpyHostToDevice);
 	cudaMemcpy((void*)list_d, graph.degree, (graph.vertexNum) * sizeof(int), cudaMemcpyHostToDevice);
-	cudaMemset((void*)&listNumDeletedVertices_d[0], 0, sizeof(unsigned int));
+	cudaMemset((void*)&listNumDeletedVertices_d[0], 0, sizeof(uint64_t));
 	cudaMemset((void*)&tickets_d[0], 0, workList.size * sizeof(Ticket));
 	cudaMemset(count_d, 0, sizeof(int));
 	cudaMemcpy(counter_d, &counter ,sizeof(Counter),cudaMemcpyHostToDevice);
@@ -303,6 +421,49 @@ WorkList allocateWorkList(CSRGraph graph, Config config, unsigned int numBlocks)
 	return workList;
 }
 
+WorkList allocateWorkList_DFS(CSRGraph graph, Config config, unsigned int numBlocks){
+	WorkList workList;
+	workList.size = config.globalListSize;
+	workList.threshold = config.globalListThreshold * workList.size;
+
+	volatile int* list_d;
+	volatile uint64_t* listNumDeletedVertices_d;
+	volatile Ticket *tickets_d;
+	HT *head_tail_d;
+	int* count_d;
+	Counter * counter_d;
+	cudaMalloc((void**) &list_d, (graph.vertexNum) * sizeof(int) * workList.size);
+	cudaMalloc((void**) &listNumDeletedVertices_d, sizeof(uint64_t) * workList.size);
+	cudaMalloc((void**) &tickets_d, sizeof(Ticket) * workList.size);
+	cudaMalloc((void**) &head_tail_d, sizeof(HT));
+	cudaMalloc((void**) &count_d, sizeof(int));
+	cudaMalloc((void**) &counter_d, sizeof(Counter));
+	
+	workList.list = list_d;
+	workList.listNumDeletedVertices = listNumDeletedVertices_d;
+	workList.tickets = tickets_d;
+	workList.head_tail = head_tail_d;
+	workList.count=count_d;
+	workList.counter = counter_d;
+
+	HT head_tail = 0x0ULL;
+	Counter counter;
+	counter.combined = 0;
+	cudaMemcpy(head_tail_d,&head_tail,sizeof(HT),cudaMemcpyHostToDevice);
+	//cudaMemcpy((void*)list_d, graph.degree, (graph.vertexNum) * sizeof(int), cudaMemcpyHostToDevice);
+	cudaMemset((void*)&list_d[0], 0, (graph.vertexNum) * sizeof(int));
+	uint32_t leastSignificantWord = graph.unmatched_vertices[0];
+	uint32_t mostSignificantWord = 0;
+	uint64_t edgePair = (uint64_t) mostSignificantWord << 32 | leastSignificantWord;
+	//cudaMemset((void*)&listNumDeletedVertices_d[0], edgePair, sizeof(uint64_t));
+	cudaMemcpy((void*)listNumDeletedVertices_d, &edgePair ,sizeof(uint64_t),cudaMemcpyHostToDevice);
+
+	cudaMemset((void*)&tickets_d[0], 0, workList.size * sizeof(Ticket));
+	cudaMemset(count_d, 0, sizeof(int));
+	cudaMemcpy(counter_d, &counter ,sizeof(Counter),cudaMemcpyHostToDevice);
+
+	return workList;
+}
 void cudaFreeWorkList(WorkList workList){
 	cudaFree((void*)workList.list);
 	cudaFree(workList.head_tail);

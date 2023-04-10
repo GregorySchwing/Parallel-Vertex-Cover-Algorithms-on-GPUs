@@ -1,0 +1,77 @@
+========= COMPUTE-SANITIZER
+
+Graph file: ../test/test_graphs/Power-Grid.txt
+UUID: 1
+
+bfs_gpu_mm_csc_sc::t_sum=130.276871ms 
+mm_gpu_csc::average time mm = 130.276871ms, avg matched 3650.000000, avg unmatched 1292.000000, total 4942
+Matching is correct.
+Matching is correct.
+Matched vertices 3650; matched edges 1825
+
+num unmatched 1291
+
+Elapsed Time for Boost MCM: 0.226674
+
+Boost MCM size: 2171
+
+gpu mm starting size 1825 ref size 2171
+
+Elapsed Time for Approximate Remove Max: 0.002005
+Approximate Remove Max Minimum is: 2203
+Elapsed Time for Approximate Remove Edge: 0.113189
+Approximate Remove Edge Minimum is: 2221
+
+Device name: Quadro RTX 5000 with Max-Q Design
+
+NumOfMultiProcessors : 48
+MaxThreadsPerMultiProcessor : 1024
+MaxThreadsPerBlock : 1024
+MaxSharedMemPerMultiProcessor : 65536
+
+Optimal BlockDim : 1024
+
+Use Shared Mem : 1
+
+Our Config :
+NumOfThreadPerBlocks : 1024
+NumOfBlocks : 48
+NumOfBlockPerSM : 1
+NumOfThreadsPerSM : 1024
+
+========= Program hit cudaErrorLaunchOutOfResources (error 701) due to "too many resources requested for launch" on CUDA API call to cudaLaunchKernel.
+=========     Saved host backtrace up to driver entry point at error
+=========     Host Frame: [0x3495c3]
+=========                in /lib/x86_64-linux-gnu/libcuda.so.1
+=========     Host Frame:cudaLaunchKernel [0xbf0b8]
+=========                in /home/greg/Desktop/Parallel-Vertex-Cover-Algorithms-on-GPUs/src/../debugbuild/vc
+=========     Host Frame:/usr/local/cuda/include/cuda_runtime.h:211:cudaError cudaLaunchKernel<char>(char const *, dim3, dim3, void**, unsigned long, CUstream_st*) [0x2bdef]
+=========                in /home/greg/Desktop/Parallel-Vertex-Cover-Algorithms-on-GPUs/src/../debugbuild/vc
+=========     Host Frame:/tmp/tmpxft_0003c6cb_00000000-6_main.compute_80.cudafe1.stub.c:1:__device_stub__Z32GlobalWorkList_shared_DFS_kernel6StacksPjS0_8WorkList8CSRGraphP8CountersPiS5_(Stacks&, unsigned int*, unsigned int*, WorkList&, CSRGraph&, Counters*, int*, int*) [0x2a749]
+=========                in /home/greg/Desktop/Parallel-Vertex-Cover-Algorithms-on-GPUs/src/../debugbuild/vc
+=========     Host Frame:/home/greg/Desktop/Parallel-Vertex-Cover-Algorithms-on-GPUs/src/GlobalWorkListDFS.cuh:17:GlobalWorkList_shared_DFS_kernel(Stacks, unsigned int*, unsigned int*, WorkList, CSRGraph, Counters*, int*, int*) [0x2a7bd]
+=========                in /home/greg/Desktop/Parallel-Vertex-Cover-Algorithms-on-GPUs/src/../debugbuild/vc
+=========     Host Frame:/home/greg/Desktop/Parallel-Vertex-Cover-Algorithms-on-GPUs/src/main.cu:275:main [0x29a6f]
+=========                in /home/greg/Desktop/Parallel-Vertex-Cover-Algorithms-on-GPUs/src/../debugbuild/vc
+=========     Host Frame:../csu/libc-start.c:342:__libc_start_main [0x24083]
+=========                in /lib/x86_64-linux-gnu/libc.so.6
+=========     Host Frame:_start [0xd18e]
+=========                in /home/greg/Desktop/Parallel-Vertex-Cover-Algorithms-on-GPUs/src/../debugbuild/vc
+========= 
+========= Program hit cudaErrorLaunchOutOfResources (error 701) due to "too many resources requested for launch" on CUDA API call to cudaGetLastError.
+=========     Saved host backtrace up to driver entry point at error
+=========     Host Frame: [0x3495c3]
+=========                in /lib/x86_64-linux-gnu/libcuda.so.1
+=========     Host Frame:cudaGetLastError [0x9cbc4]
+=========                in /home/greg/Desktop/Parallel-Vertex-Cover-Algorithms-on-GPUs/src/../debugbuild/vc
+=========     Host Frame:/home/greg/Desktop/Parallel-Vertex-Cover-Algorithms-on-GPUs/src/main.cu:35:checkLastErrorCUDA(char const *, int) [0x2beb7]
+=========                in /home/greg/Desktop/Parallel-Vertex-Cover-Algorithms-on-GPUs/src/../debugbuild/vc
+=========     Host Frame:/home/greg/Desktop/Parallel-Vertex-Cover-Algorithms-on-GPUs/src/main.cu:287:main [0x29cf1]
+=========                in /home/greg/Desktop/Parallel-Vertex-Cover-Algorithms-on-GPUs/src/../debugbuild/vc
+=========     Host Frame:../csu/libc-start.c:342:__libc_start_main [0x24083]
+=========                in /lib/x86_64-linux-gnu/libc.so.6
+=========     Host Frame:_start [0xd18e]
+=========                in /home/greg/Desktop/Parallel-Vertex-Cover-Algorithms-on-GPUs/src/../debugbuild/vc
+========= 
+========= Target application returned an error
+========= ERROR SUMMARY: 2 errors

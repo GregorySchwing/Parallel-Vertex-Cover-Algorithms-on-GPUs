@@ -163,7 +163,7 @@ __global__ void LocalStacksParameterized_shared_kernel(Stacks stacks, CSRGraph g
         if(!vcFound && !minExceeded) {
             unsigned int stackSize = (stacks.minimum + 1);
             volatile int * stackVertexDegrees = &stacks.stacks[blockIdx.x * stackSize * graph.vertexNum];
-            volatile unsigned int * stackNumDeletedVertices = &stacks.stacksNumDeletedVertices[blockIdx.x * stackSize];
+            volatile uint64_t* stackNumDeletedVertices = &stacks.stacksNumDeletedVertices[blockIdx.x * stackSize];
             int stackTop = -1;
 
             // go into while loop 
