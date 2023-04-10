@@ -149,8 +149,10 @@ CSRGraph createCSRGraphFromFile(const char *filename)
 		unsigned int v0, v1;
 		int result = fscanf(fp, "%u%u", &v0, &v1);
 
-		edgeList[0][i] = v0-1;
-		edgeList[1][i] = v1-1;
+		//edgeList[0][i] = v0-1;
+		//edgeList[1][i] = v1-1;
+		edgeList[0][i] = v0;
+		edgeList[1][i] = v1;
 	}
 
 	fclose(fp);
