@@ -136,7 +136,7 @@ CSRGraph createCSRGraphFromFile(const char *filename)
 	FILE *fp;
 	fp = fopen(filename, "r");
 
-	fscanf(fp, "%u%u", &vertexNum, &edgeNum);
+	int result = fscanf(fp, "%u%u", &vertexNum, &edgeNum);
 
 	graph.create(vertexNum, edgeNum);
 
@@ -147,7 +147,8 @@ CSRGraph createCSRGraphFromFile(const char *filename)
 	for (unsigned int i = 0; i < edgeNum; i++)
 	{
 		unsigned int v0, v1;
-		fscanf(fp, "%u%u", &v0, &v1);
+		int result = fscanf(fp, "%u%u", &v0, &v1);
+
 		edgeList[0][i] = v0-1;
 		edgeList[1][i] = v1-1;
 	}
@@ -431,7 +432,7 @@ void setBlockDimAndUseGlobalMemory(Config &config, CSRGraph graph, int maxShared
 		}
 	}
 
-	printf("\nOptimal BlockDim : %d\n", optimalBlockDim);
+	printf("\nOptimal BlockDim : %lld\n", optimalBlockDim);
 	fflush(stdout);
 	if (config.blockDim == 0)
 	{
@@ -441,7 +442,7 @@ void setBlockDimAndUseGlobalMemory(Config &config, CSRGraph graph, int maxShared
 	{
 		if (config.blockDim < minBlockDim)
 		{
-			fprintf(stderr, "\nPlease Choose A BlockDim greater than or equal to : %d\n", minBlockDim);
+			fprintf(stderr, "\nPlease Choose A BlockDim greater than or equal to : %lld\n", minBlockDim);
 			exit(0);
 		}
 		else if (config.blockDim < optimalBlockDim && useSharedMem == 1)
@@ -449,7 +450,7 @@ void setBlockDimAndUseGlobalMemory(Config &config, CSRGraph graph, int maxShared
 			useSharedMem = 0;
 			if (config.userDefMemory && (config.useGlobalMemory == 0))
 			{
-				fprintf(stderr, "\nCannot use shared memory with this configuration, please choose a greater blockDim.\n", minBlockDim);
+				fprintf(stderr, "\nCannot use shared memory with this configuration, please choose a greater blockDim %lld.\n", minBlockDim);
 				exit(0);
 			}
 			printf("\nTo use shared memory choose a greater blockDim.\n");
