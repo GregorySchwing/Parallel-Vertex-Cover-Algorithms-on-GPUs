@@ -87,8 +87,8 @@ int main(int argc, char *argv[]) {
     printf("Approximate Remove Edge Minimum is: %u\n", RemoveEdgeMinimum);
     fflush(stdout);
 
-    unsigned int minimum = (RemoveMaxMinimum < RemoveEdgeMinimum) ? RemoveMaxMinimum : RemoveEdgeMinimum;
-
+    //unsigned int minimum = (RemoveMaxMinimum < RemoveEdgeMinimum) ? RemoveMaxMinimum : RemoveEdgeMinimum;
+    unsigned int minimum = mm.match_count_h+2;
     unsigned int k = config.k; 
     unsigned int kFound = 0;
 
@@ -132,8 +132,12 @@ int main(int argc, char *argv[]) {
         cudaDeviceGetAttribute(&maxSharedMemPerMultiProcessor,cudaDevAttrMaxSharedMemoryPerMultiprocessor,0);
         printf("MaxSharedMemPerMultiProcessor : %d\n",maxSharedMemPerMultiProcessor);
 
-        setBlockDimAndUseGlobalMemory(config,graph,maxSharedMemPerMultiProcessor,prop.totalGlobalMem, maxThreadsPerMultiProcessor, maxThreadsPerBlock, 
+
+        setBlockDimAndUseGlobalMemory_DFS(config,graph,maxSharedMemPerMultiProcessor,prop.totalGlobalMem, maxThreadsPerMultiProcessor, maxThreadsPerBlock, 
             maxThreadsPerMultiProcessor, numOfMultiProcessors, minimum);
+
+        //setBlockDimAndUseGlobalMemory(config,graph,maxSharedMemPerMultiProcessor,prop.totalGlobalMem, maxThreadsPerMultiProcessor, maxThreadsPerBlock, 
+        //    maxThreadsPerMultiProcessor, numOfMultiProcessors, minimum);
         performChecks(graph, config);
 
         printf("\nOur Config :\n");
@@ -271,7 +275,9 @@ int main(int argc, char *argv[]) {
             if (config.version == HYBRID && config.instance==PVC){
                 GlobalWorkListParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, k_d, kFound_d, NODES_PER_SM_d);
             } else if(config.version == HYBRID && config.instance==MVC) {
-                GlobalWorkList_global_kernel <<< numBlocks , numThreadsPerBlock, 0, stream1 >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, NODES_PER_SM_d);
+                //GlobalWorkList_global_kernel <<< numBlocks , numThreadsPerBlock, 0, stream1 >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, NODES_PER_SM_d);
+                GlobalWorkList_global_DFS_kernel <<< numBlocks , numThreadsPerBlock, 0, stream1 >>> (stacks_d, minimum_d, solution_mutex_d, workList_d, graph4m_d, counters_d, first_to_dequeue_global_d, global_memory_d, NODES_PER_SM_d);
+
                // CSQ returns
                 // cudaSuccess if done == 0
                 // cudaErrorNotReady if not done == 600
@@ -299,7 +305,7 @@ int main(int argc, char *argv[]) {
             if (config.version == HYBRID && config.instance==PVC){
                 GlobalWorkListParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, k_d, kFound_d, NODES_PER_SM_d);
             } else if(config.version == HYBRID && config.instance==MVC) {
-                GlobalWorkList_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded, stream1 >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
+                GlobalWorkList_shared_DFS_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded, stream1 >>> (stacks_d, minimum_d,  solution_mutex_d,workList_d, graph4m_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
                // CSQ returns
                 // cudaSuccess if done == 0
                 // cudaErrorNotReady if not done == 600

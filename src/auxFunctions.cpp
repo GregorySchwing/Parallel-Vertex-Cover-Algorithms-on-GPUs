@@ -358,6 +358,113 @@ void performChecks(CSRGraph graph, Config config)
 	assert(ceil(log2((float)config.globalListSize)) == floor(log2((float)config.globalListSize)));
 }
 
+void setBlockDimAndUseGlobalMemory_DFS(Config &config, CSRGraph graph, int maxSharedMemPerSM, long long maxGlobalMemory, int maxNumThreadsPerSM,
+								   int maxThreadsPerBlock, int maxThreadsPerMultiProcessor, int numOfMultiProcessors, int minimum)
+{
+	long long minNumBlocks = (maxNumThreadsPerSM / maxThreadsPerBlock) * numOfMultiProcessors;
+	if (config.numBlocks)
+	{
+		minNumBlocks = (long long)config.numBlocks;
+	}
+
+	long long minStackSize;
+	if (config.blockDim)
+	{
+		long long NumBlocks = (maxNumThreadsPerSM / config.blockDim) * numOfMultiProcessors;
+		minStackSize = ((long long)minimum * (long long)(graph.vertexNum + 1) * (long long)sizeof(int)) * NumBlocks;
+	}
+	else
+	{
+		minStackSize = ((long long)minimum * (long long)(graph.vertexNum + 1) * (long long)sizeof(int)) * minNumBlocks;
+	}
+
+	int numSharedMemVariables = 50;
+	long long globalListSize;
+	if (config.version == HYBRID)
+	{
+		globalListSize = (long long)config.globalListSize * (long long)(graph.vertexNum + 1) * (long long)sizeof(int);
+	}
+	else
+	{
+		globalListSize = 0;
+	}
+	long long consumedGlobalMem = (long long)(1024 * 1024 * 1024 * 2.5) + globalListSize;
+	long long availableGlobalMem = maxGlobalMemory - consumedGlobalMem;
+	long long maxNumBlocksGlobalMem = MIN(availableGlobalMem / ((long long)minimum * (long long)(graph.vertexNum + 1) * (long long)sizeof(int)), maxNumThreadsPerSM * numOfMultiProcessors / 64);
+	long long minNumBlocksGlobalMem = MIN(availableGlobalMem / ((long long)minimum * (long long)(graph.vertexNum + 1) * (long long)sizeof(int)), maxNumThreadsPerSM * numOfMultiProcessors / maxThreadsPerBlock);
+	long long minBlockDimGlobalMem = maxNumThreadsPerSM * numOfMultiProcessors / maxNumBlocksGlobalMem;
+	minBlockDimGlobalMem = pow(2, floor(log2((double)minBlockDimGlobalMem)));
+	if ((long long)(consumedGlobalMem + minStackSize) > maxGlobalMemory && maxNumBlocksGlobalMem < 1)
+	{
+		fprintf(stderr, "\nPlease Choose A WorkList Size smaller than : %d ", config.globalListSize);
+		exit(0);
+	}
+	else if ((long long)(consumedGlobalMem + minStackSize) > maxGlobalMemory)
+	{
+		config.numBlocks = maxNumBlocksGlobalMem;
+	}
+
+	long long minBlockDim = MIN(1024, minBlockDimGlobalMem);
+	for (long long i = 64; i < 1024; i = i * 2)
+	{
+		if (maxNumThreadsPerSM * numOfMultiProcessors / i <= maxNumBlocksGlobalMem)
+		{
+			minBlockDim = i;
+			break;
+		}
+	}
+
+	long long maxBlockDim = 1024;
+	long long optimalBlockDim = maxBlockDim;
+	bool useSharedMem = false;
+
+	for (long long blockDim = minBlockDim; blockDim <= maxBlockDim; blockDim *= 2)
+	{
+		long long maxBlocksPerSMBlockDim = maxNumThreadsPerSM / blockDim;
+		long long sharedMemNeeded = (graph.vertexNum + MAX(graph.vertexNum, 2 * blockDim) + numSharedMemVariables) * sizeof(int);
+		long long sharedMemPerSM = maxBlocksPerSMBlockDim * sharedMemNeeded;
+
+		if (maxSharedMemPerSM >= sharedMemPerSM)
+		{
+			optimalBlockDim = blockDim;
+			useSharedMem = true;
+			break;
+		}
+	}
+
+	printf("\nOptimal BlockDim : %lld\n", optimalBlockDim);
+	fflush(stdout);
+	if (config.blockDim == 0)
+	{
+		config.blockDim = optimalBlockDim;
+	}
+	else
+	{
+		if (config.blockDim < minBlockDim)
+		{
+			fprintf(stderr, "\nPlease Choose A BlockDim greater than or equal to : %lld\n", minBlockDim);
+			exit(0);
+		}
+		else if (config.blockDim < optimalBlockDim && useSharedMem == 1)
+		{
+			useSharedMem = 0;
+			if (config.userDefMemory && (config.useGlobalMemory == 0))
+			{
+				fprintf(stderr, "\nCannot use shared memory with this configuration, please choose a greater blockDim %lld.\n", minBlockDim);
+				exit(0);
+			}
+			printf("\nTo use shared memory choose a greater blockDim.\n");
+		}
+	}
+	printf("\nUse Shared Mem : %d\n", useSharedMem);
+
+	if (!config.userDefMemory)
+	{
+		config.useGlobalMemory = !useSharedMem;
+	}
+}
+
+
 void setBlockDimAndUseGlobalMemory(Config &config, CSRGraph graph, int maxSharedMemPerSM, long long maxGlobalMemory, int maxNumThreadsPerSM,
 								   int maxThreadsPerBlock, int maxThreadsPerMultiProcessor, int numOfMultiProcessors, int minimum)
 {
