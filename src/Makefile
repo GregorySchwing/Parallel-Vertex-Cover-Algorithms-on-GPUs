@@ -4,11 +4,15 @@ DEFS= -DUSE_COUNTERS=$(USE_COUNTERS)
 
 NVCC_FLAGS= -maxrregcount=31 -O3 -w -gencode arch=compute_70,code=sm_70 -std=c++11 
 
-output: auxFunctions.o CSRGraphRep.o main.o Sequential.o helperFunctions.o SequentialParameterized.o
-	nvcc $(NVCC_FLAGS) auxFunctions.o CSRGraphRep.o helperFunctions.o Sequential.o SequentialParameterized.o main.o -o output
+output: auxFunctions.o CSRGraphRep.o main.o Sequential.o helperFunctions.o SequentialParameterized.o ThrustGraph.o
+	nvcc $(NVCC_FLAGS) auxFunctions.o CSRGraphRep.o helperFunctions.o Sequential.o SequentialParameterized.o ThrustGraph.o main.o -o output
 
 main.o: main.cu 
 	nvcc -c $(NVCC_FLAGS) $(DEFS) main.cu
+
+
+ThrustGraph.o: main.cu 
+	nvcc -c $(NVCC_FLAGS) $(DEFS) ThrustGraph.cu
 
 auxFunctions.o: auxFunctions.cpp auxFunctions.h config.h
 	g++ -c -O3 $(DEFS) auxFunctions.cpp

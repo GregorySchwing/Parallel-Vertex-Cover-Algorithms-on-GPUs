@@ -19,7 +19,7 @@
 #include "GlobalWorkListParameterized.cuh"
 #undef USE_GLOBAL_MEMORY
 #include "SequentialParameterized.h"
-
+#include "ThrustGraph.h"
 using namespace std;
 
 int main(int argc, char *argv[]) {
@@ -27,9 +27,9 @@ int main(int argc, char *argv[]) {
     Config config = parseArgs(argc,argv);
     printf("\nGraph file: %s",config.graphFileName);
     printf("\nUUID: %s\n",config.outputFilePrefix);
-
+    ThrustGraph graph2 = createCSRGraphFromFile_memopt(config.graphFileName);
     CSRGraph graph = createCSRGraphFromFile(config.graphFileName);
-    performChecks(graph, config);
+    //performChecks(graph, config);
 
     chrono::time_point<std::chrono::system_clock> begin, end;
 	std::chrono::duration<double> elapsed_seconds_max, elapsed_seconds_edge, elapsed_seconds_mvc;
@@ -99,7 +99,7 @@ int main(int argc, char *argv[]) {
 
         setBlockDimAndUseGlobalMemory(config,graph,maxSharedMemPerMultiProcessor,prop.totalGlobalMem, maxThreadsPerMultiProcessor, maxThreadsPerBlock, 
             maxThreadsPerMultiProcessor, numOfMultiProcessors, minimum);
-        performChecks(graph, config);
+        //performChecks(graph, config);
 
         printf("\nOur Config :\n");
         int numThreadsPerBlock = config.blockDim;
