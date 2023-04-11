@@ -39,6 +39,10 @@ int main(int argc, char *argv[]) {
     maxmatch_thrust(graph2,&mm,exec_policy);
     add_edges_to_unmatched_from_last_vertex(graph2, &mm, exec_policy);
 
+    unsigned long ref_size = create_mcm(graph2);
+    printf("\rgpu mm starting size %lu ref size %lu\n", (graph2.vertexNum-graph2.unmatched_vertices_h[0])/2, ref_size);
+
+
     graph.vertexNum = graph2.vertexNum;
     graph.edgeNum = graph2.edgeNum;
     graph.srcPtr = thrust::raw_pointer_cast(graph2.offsets_h.data());
