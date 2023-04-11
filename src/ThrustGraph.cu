@@ -6,7 +6,7 @@ template <typename T>
 __global__ void setNumInArray(int *arrays, T *index, T *value, int num_index)
 {
     int tid = threadIdx.x + blockDim.x * blockIdx.x;
-    if (tid > num_index && value[tid]>0)
+    if (tid >= num_index)
         return;
     arrays[index[tid]] = value[tid];
 }

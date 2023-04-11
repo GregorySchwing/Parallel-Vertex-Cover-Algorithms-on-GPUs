@@ -94,8 +94,8 @@ int main(int argc, char *argv[]) {
 
     //unsigned int minimum = (RemoveMaxMinimum < RemoveEdgeMinimum) ? RemoveMaxMinimum : RemoveEdgeMinimum;
     //unsigned int minimum = (graph2.vertexNum-graph2.num_unmatched_vertices_h[0]+2);
-    unsigned int minimum = (graph2.vertexNum-graph2.num_unmatched_vertices_h[0]+2)/10;
-
+    //unsigned int minimum = (graph2.vertexNum-graph2.num_unmatched_vertices_h[0]+2)/10;
+    unsigned int minimum = 100;
     // Need to either shrink the graph rep or use a heuristic to determine a good path length.
     printf("External min %u\n",minimum);
 
@@ -148,7 +148,7 @@ int main(int argc, char *argv[]) {
 
         //setBlockDimAndUseGlobalMemory(config,graph,maxSharedMemPerMultiProcessor,prop.totalGlobalMem, maxThreadsPerMultiProcessor, maxThreadsPerBlock, 
         //    maxThreadsPerMultiProcessor, numOfMultiProcessors, minimum);
-        performChecks(graph, config);
+        //performChecks(graph, config);
 
         printf("\nOur Config :\n");
         int numThreadsPerBlock = config.blockDim;
@@ -208,6 +208,7 @@ int main(int argc, char *argv[]) {
         // Allocate GPU stack
         Stacks stacks_d;
         stacks_d = allocateStacks(graph2.vertexNum,numBlocks,minimum);
+        cudaError_t error = cudaGetLastError();   // add this line, and check the error code
 
         //Global Entries Memory Allocation
         int * global_memory_d;
@@ -258,7 +259,7 @@ int main(int argc, char *argv[]) {
             cudaMalloc((void**)&pathCounter_d, sizeof(unsigned int));
             cudaMemcpy(pathCounter_d, &pathCounter, sizeof(unsigned int), cudaMemcpyHostToDevice);
         }
-
+        error = cudaGetLastError();   // add this line, and check the error code
         int sharedMemNeeded = graph2.vertexNum;
         if(graph2.vertexNum > numThreadsPerBlock*2){
             sharedMemNeeded+=graph2.vertexNum;
