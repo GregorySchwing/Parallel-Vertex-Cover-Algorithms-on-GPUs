@@ -50,9 +50,7 @@ int main(int argc, char *argv[]) {
 
     ThrustGraph graph2 = createCSRGraphFromFile_memopt(config.graphFileName);
     CSRGraph graph;
-    //graph.create(graph2.vertexNum, graph2.edgeNum);
-    // Allocate GPU graph
-    CSRGraph graph4m_d;// = allocateGraph2(graph);
+    CSRGraph graph4m_d;
 
     //createfromThrustGraph(graph,graph2);
     //createGPUfromThrustGraph(graph4m_d,graph2);
@@ -66,11 +64,28 @@ int main(int argc, char *argv[]) {
     create_match(graph2.vertexNum,&mm,exec_policy);
     maxmatch_thrust(graph2,&mm,exec_policy);
     add_edges_to_unmatched_from_last_vertex(graph2, &mm, exec_policy);
-    exit(1);
 
-    unsigned long ref_size = create_mcm(graph);
-    printf("\rgpu mm starting size %lu ref size %lu\n", mm.match_count_h/2, ref_size);
+    unsigned long ref_size = create_mcm(graph2);
+    printf("\rgpu mm starting size %lu ref size %lu\n", (graph2.vertexNum-graph2.unmatched_vertices_h[0])/2, ref_size);
 
+    graph.vertexNum = graph2.vertexNum;
+    graph.edgeNum = graph2.edgeNum;
+    graph.srcPtr = thrust::raw_pointer_cast(graph2.offsets_h.data());
+    graph.dst = thrust::raw_pointer_cast(graph2.values_h.data());
+    graph.degree = thrust::raw_pointer_cast(graph2.degrees_h.data());
+    graph.matching = thrust::raw_pointer_cast(graph2.matching_h.data());
+    graph.unmatched_vertices = (unsigned int *)thrust::raw_pointer_cast(graph2.unmatched_vertices_h.data());
+    graph.num_unmatched_vertices = (unsigned int *)thrust::raw_pointer_cast(graph2.num_unmatched_vertices_h.data());
+
+
+    graph4m_d.vertexNum = graph2.vertexNum;
+    graph4m_d.edgeNum = graph2.edgeNum;
+    graph4m_d.srcPtr = thrust::raw_pointer_cast(graph2.offsets_d.data());
+    graph4m_d.dst = thrust::raw_pointer_cast(graph2.values_d.data());
+    graph4m_d.degree = thrust::raw_pointer_cast(graph2.degrees_d.data());
+    graph4m_d.matching = thrust::raw_pointer_cast(graph2.matching_d.data());
+    graph4m_d.unmatched_vertices = (unsigned int *)thrust::raw_pointer_cast(graph2.unmatched_vertices_d.data());
+    graph4m_d.num_unmatched_vertices = (unsigned int *)thrust::raw_pointer_cast(graph2.num_unmatched_vertices_d.data());
 
     chrono::time_point<std::chrono::system_clock> begin, end;
 	std::chrono::duration<double> elapsed_seconds_max, elapsed_seconds_edge, elapsed_seconds_mvc;
@@ -78,7 +93,7 @@ int main(int argc, char *argv[]) {
     //PCSR *pcsr = new PCSR(graph.vertexNum, graph.vertexNum, true, -1);
 
     //unsigned int minimum = (RemoveMaxMinimum < RemoveEdgeMinimum) ? RemoveMaxMinimum : RemoveEdgeMinimum;
-    unsigned int minimum = mm.match_count_h+2;
+    unsigned int minimum = graph2.vertexNum-graph2.unmatched_vertices_h[0]+2;
     unsigned int k = config.k; 
     unsigned int kFound = 0;
 
@@ -123,7 +138,7 @@ int main(int argc, char *argv[]) {
         printf("MaxSharedMemPerMultiProcessor : %d\n",maxSharedMemPerMultiProcessor);
 
 
-        setBlockDimAndUseGlobalMemory_DFS(config,graph,maxSharedMemPerMultiProcessor,prop.totalGlobalMem, maxThreadsPerMultiProcessor, maxThreadsPerBlock, 
+        setBlockDimAndUseGlobalMemory_DFS(config,graph.vertexNum,maxSharedMemPerMultiProcessor,prop.totalGlobalMem, maxThreadsPerMultiProcessor, maxThreadsPerBlock, 
             maxThreadsPerMultiProcessor, numOfMultiProcessors, minimum);
 
         //setBlockDimAndUseGlobalMemory(config,graph,maxSharedMemPerMultiProcessor,prop.totalGlobalMem, maxThreadsPerMultiProcessor, maxThreadsPerBlock, 
@@ -183,16 +198,16 @@ int main(int argc, char *argv[]) {
         #endif
 
         // Allocate GPU graph
-        CSRGraph graph_d = allocateGraph(graph);
+        CSRGraph graph_d ;// = allocateGraph(graph);
 
         // Allocate GPU stack
         Stacks stacks_d;
-        stacks_d = allocateStacks(graph.vertexNum,numBlocks,minimum);
+        stacks_d = allocateStacks(graph2.vertexNum,numBlocks,minimum);
 
         //Global Entries Memory Allocation
         int * global_memory_d;
         if(config.useGlobalMemory){
-            cudaMalloc((void**)&global_memory_d, sizeof(int)*graph.vertexNum*numBlocks*2);
+            cudaMalloc((void**)&global_memory_d, sizeof(int)*graph2.vertexNum*numBlocks*2);
         }
 
         unsigned int * minimum_d;
@@ -239,9 +254,9 @@ int main(int argc, char *argv[]) {
             cudaMemcpy(pathCounter_d, &pathCounter, sizeof(unsigned int), cudaMemcpyHostToDevice);
         }
 
-        int sharedMemNeeded = graph.vertexNum;
-        if(graph.vertexNum > numThreadsPerBlock*2){
-            sharedMemNeeded+=graph.vertexNum;
+        int sharedMemNeeded = graph2.vertexNum;
+        if(graph2.vertexNum > numThreadsPerBlock*2){
+            sharedMemNeeded+=graph2.vertexNum;
         } else {
             sharedMemNeeded+=numThreadsPerBlock*2;
         }
@@ -358,11 +373,11 @@ int main(int argc, char *argv[]) {
         if(config.instance == PVC){
             cudaFree(k_d);
         }
-        graph.del();
+        //graph.del();
 
         cudaFree(minimum_d);
         cudaFree(counters_d);
-        cudaFreeGraph(graph_d);
+        //cudaFreeGraph(graph_d);
 
         cudaFreeStacks(stacks_d);
         

@@ -360,7 +360,7 @@ void performChecks(CSRGraph graph, Config config)
 	assert(ceil(log2((float)config.globalListSize)) == floor(log2((float)config.globalListSize)));
 }
 
-void setBlockDimAndUseGlobalMemory_DFS(Config &config, CSRGraph graph, int maxSharedMemPerSM, long long maxGlobalMemory, int maxNumThreadsPerSM,
+void setBlockDimAndUseGlobalMemory_DFS(Config &config, int vertexNum, int maxSharedMemPerSM, long long maxGlobalMemory, int maxNumThreadsPerSM,
 								   int maxThreadsPerBlock, int maxThreadsPerMultiProcessor, int numOfMultiProcessors, int minimum)
 {
 	long long minNumBlocks = (maxNumThreadsPerSM / maxThreadsPerBlock) * numOfMultiProcessors;
@@ -373,18 +373,18 @@ void setBlockDimAndUseGlobalMemory_DFS(Config &config, CSRGraph graph, int maxSh
 	if (config.blockDim)
 	{
 		long long NumBlocks = (maxNumThreadsPerSM / config.blockDim) * numOfMultiProcessors;
-		minStackSize = ((long long)minimum * (long long)(graph.vertexNum + 1) * (long long)sizeof(int)) * NumBlocks;
+		minStackSize = ((long long)minimum * (long long)(vertexNum + 1) * (long long)sizeof(int)) * NumBlocks;
 	}
 	else
 	{
-		minStackSize = ((long long)minimum * (long long)(graph.vertexNum + 1) * (long long)sizeof(int)) * minNumBlocks;
+		minStackSize = ((long long)minimum * (long long)(vertexNum + 1) * (long long)sizeof(int)) * minNumBlocks;
 	}
 
 	int numSharedMemVariables = 50;
 	long long globalListSize;
 	if (config.version == HYBRID)
 	{
-		globalListSize = (long long)config.globalListSize * (long long)(graph.vertexNum + 1) * (long long)sizeof(int);
+		globalListSize = (long long)config.globalListSize * (long long)(vertexNum + 1) * (long long)sizeof(int);
 	}
 	else
 	{
@@ -392,8 +392,8 @@ void setBlockDimAndUseGlobalMemory_DFS(Config &config, CSRGraph graph, int maxSh
 	}
 	long long consumedGlobalMem = (long long)(1024 * 1024 * 1024 * 2.5) + globalListSize;
 	long long availableGlobalMem = maxGlobalMemory - consumedGlobalMem;
-	long long maxNumBlocksGlobalMem = MIN(availableGlobalMem / ((long long)minimum * (long long)(graph.vertexNum + 1) * (long long)sizeof(int)), maxNumThreadsPerSM * numOfMultiProcessors / 64);
-	long long minNumBlocksGlobalMem = MIN(availableGlobalMem / ((long long)minimum * (long long)(graph.vertexNum + 1) * (long long)sizeof(int)), maxNumThreadsPerSM * numOfMultiProcessors / maxThreadsPerBlock);
+	long long maxNumBlocksGlobalMem = MIN(availableGlobalMem / ((long long)minimum * (long long)(vertexNum + 1) * (long long)sizeof(int)), maxNumThreadsPerSM * numOfMultiProcessors / 64);
+	long long minNumBlocksGlobalMem = MIN(availableGlobalMem / ((long long)minimum * (long long)(vertexNum + 1) * (long long)sizeof(int)), maxNumThreadsPerSM * numOfMultiProcessors / maxThreadsPerBlock);
 	long long minBlockDimGlobalMem = maxNumThreadsPerSM * numOfMultiProcessors / maxNumBlocksGlobalMem;
 	minBlockDimGlobalMem = pow(2, floor(log2((double)minBlockDimGlobalMem)));
 	if ((long long)(consumedGlobalMem + minStackSize) > maxGlobalMemory && maxNumBlocksGlobalMem < 1)
@@ -423,7 +423,7 @@ void setBlockDimAndUseGlobalMemory_DFS(Config &config, CSRGraph graph, int maxSh
 	for (long long blockDim = minBlockDim; blockDim <= maxBlockDim; blockDim *= 2)
 	{
 		long long maxBlocksPerSMBlockDim = maxNumThreadsPerSM / blockDim;
-		long long sharedMemNeeded = (graph.vertexNum + MAX(graph.vertexNum, 2 * blockDim) + numSharedMemVariables) * sizeof(int);
+		long long sharedMemNeeded = (vertexNum + MAX(vertexNum, 2 * blockDim) + numSharedMemVariables) * sizeof(int);
 		long long sharedMemPerSM = maxBlocksPerSMBlockDim * sharedMemNeeded;
 
 		if (maxSharedMemPerSM >= sharedMemPerSM)
