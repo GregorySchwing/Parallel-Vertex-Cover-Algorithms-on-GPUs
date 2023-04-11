@@ -65,8 +65,8 @@ int main(int argc, char *argv[]) {
     maxmatch_thrust(graph2,&mm,exec_policy);
     add_edges_to_unmatched_from_last_vertex(graph2, &mm, exec_policy);
 
-    unsigned long ref_size = create_mcm(graph2);
-    printf("\rgpu mm starting size %lu ref size %lu\n", (graph2.vertexNum-graph2.unmatched_vertices_h[0])/2, ref_size);
+    //unsigned long ref_size = create_mcm(graph2);
+    //printf("\rgpu mm starting size %lu ref size %lu\n", (graph2.vertexNum-graph2.unmatched_vertices_h[0])/2, ref_size);
 
     graph.vertexNum = graph2.vertexNum;
     graph.edgeNum = graph2.edgeNum;
@@ -93,7 +93,12 @@ int main(int argc, char *argv[]) {
     //PCSR *pcsr = new PCSR(graph.vertexNum, graph.vertexNum, true, -1);
 
     //unsigned int minimum = (RemoveMaxMinimum < RemoveEdgeMinimum) ? RemoveMaxMinimum : RemoveEdgeMinimum;
-    unsigned int minimum = graph2.vertexNum-graph2.unmatched_vertices_h[0]+2;
+    //unsigned int minimum = (graph2.vertexNum-graph2.num_unmatched_vertices_h[0]+2);
+    unsigned int minimum = (graph2.vertexNum-graph2.num_unmatched_vertices_h[0]+2)/10;
+
+    // Need to either shrink the graph rep or use a heuristic to determine a good path length.
+    printf("External min %u\n",minimum);
+
     unsigned int k = config.k; 
     unsigned int kFound = 0;
 

@@ -577,6 +577,8 @@ void add_edges_to_unmatched_from_last_vertex_gpu_csc(ThrustGraph & graph,struct 
   // Copy sources into column array IC at CP[N] to CP[N+1]
   thrust::copy(thrust::device, indices.begin(), indices_end, graph.unmatched_vertices_d.begin());
   graph.num_unmatched_vertices_h[0]=(indices_end-indices.begin());
+  printf("\nnum unmatched in struct %d\n", graph.num_unmatched_vertices_h[0]);
+
   graph.num_unmatched_vertices_d=graph.num_unmatched_vertices_h;
   graph.unmatched_vertices_h=graph.unmatched_vertices_d;
 
