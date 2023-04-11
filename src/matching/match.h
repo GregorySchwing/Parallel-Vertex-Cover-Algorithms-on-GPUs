@@ -24,6 +24,7 @@ void create_match(CSRGraph & graph,CSRGraph & graph_d,struct match * m, int exec
 void maxmatch(CSRGraph & graph,CSRGraph & graph_d,struct match * m, int exec_protocol);
 void maxmatch_thrust(ThrustGraph & graph, struct match * m, int exec_protocol);
 void maxmatch_from_mis(CSRGraph & graph,CSRGraph & graph_d,struct match * m, struct MIS * mis, int exec_protocol);
+void add_edges_to_unmatched_from_last_vertex(ThrustGraph & graph,struct match * m,int exec_protocol);
 void add_edges_to_unmatched_from_last_vertex(CSRGraph & graph,CSRGraph & graph_d,struct match * m,int exec_protocol);
 void set_unmatched_as_source(unsigned int *IC, unsigned int *CP, int * m_h, int n, int edgeNum);
 void check_match(CSRGraph & graph,CSRGraph & graph_d,struct match * m);

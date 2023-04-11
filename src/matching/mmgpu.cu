@@ -538,3 +538,50 @@ void add_edges_to_unmatched_from_last_vertex_gpu_csc(CSRGraph & graph,CSRGraph &
 
   return;
 }//end bfs_gpu_td_csc_sc
+
+void add_edges_to_unmatched_from_last_vertex_gpu_csc(ThrustGraph & graph,struct match * m,int exec_protocol){
+
+  cudaEvent_t start, stop;
+  cudaEventCreate(&start);
+  cudaEventCreate(&stop);
+
+  // Local copies are only used when exec_protocol is 0
+  // This is turning into a debug mode execution.
+  /*Allocate device memory for the vector CP_d */
+  unsigned int *CP_d= thrust::raw_pointer_cast(graph.offsets_d.data() );
+  unsigned int *IC_d  = thrust::raw_pointer_cast( graph.values_d.data() );
+  int *m_d= thrust::raw_pointer_cast( graph.matching_d.data() );
+
+
+  thrust::device_ptr<int> m_vec=thrust::device_pointer_cast(m_d);
+  thrust::device_ptr<int> deg_vec=thrust::device_pointer_cast(&graph.degrees_d[0]);
+  thrust::device_vector<int> masked_matching(graph.vertexNum);
+
+  thrust::transform(m_vec, m_vec+graph.vertexNum, deg_vec, masked_matching.begin(), thrust::multiplies<int>());
+  using namespace thrust;
+  using namespace thrust::placeholders;
+
+ // storage for the nonzero indices
+ thrust::device_vector<int> indices(graph.vertexNum);
+ // compute indices of nonzero elements
+ typedef thrust::device_vector<int>::iterator IndexIterator;
+ IndexIterator indices_end = thrust::copy_if(thrust::make_counting_iterator(0),
+                                             thrust::make_counting_iterator((int)(graph.vertexNum)),
+                                             &masked_matching[0],
+                                             indices.begin(),
+                                             _1 < 0);
+
+  printf("\nnum unmatched %d\n", indices_end-indices.begin());
+  m->num_matched_h[0] = graph.vertexNum-(indices_end-indices.begin());
+
+  // Copy sources into column array IC at CP[N] to CP[N+1]
+  thrust::copy(thrust::device, indices.begin(), indices_end, graph.unmatched_vertices_d.begin());
+  graph.num_unmatched_vertices_h[0]=(indices_end-indices.begin());
+  graph.num_unmatched_vertices_d=graph.num_unmatched_vertices_h;
+  graph.unmatched_vertices_h=graph.unmatched_vertices_d;
+
+  checkCudaErrors(cudaEventDestroy(start));
+  checkCudaErrors(cudaEventDestroy(stop));
+
+  return;
+}//end bfs_gpu_td_csc_sc

@@ -112,6 +112,8 @@ ThrustGraph createCSRGraphFromFile_memopt(const char *filename)
 	graph.matching_d.resize(vertexNum);
 	graph.unmatched_vertices_h.resize(vertexNum);
 	graph.unmatched_vertices_d.resize(vertexNum);
+	graph.num_unmatched_vertices_h.resize(1);
+	graph.num_unmatched_vertices_d.resize(1);
 	printf("DONE\n");
 	//graph.create_memopt(vertexNum, edgeNum);
 	return graph;

@@ -14,6 +14,7 @@ void create_match(CSRGraph & graph,CSRGraph & graph_d,struct match * m, int exec
 }
 
 void create_match(int vertexNum,struct match * m, int exec_protocol){
+  m->num_matched_h = (int *) calloc(1,sizeof(*m->num_matched_h));
 
   if(exec_protocol){
     m->match_device = create_match_gpu_struct(vertexNum);
@@ -44,6 +45,13 @@ void maxmatch_from_mis(CSRGraph & graph,CSRGraph & graph_d,struct match * m, str
 
 void add_edges_to_unmatched_from_last_vertex(CSRGraph & graph,CSRGraph & graph_d,struct match * m, int exec_protocol){
   add_edges_to_unmatched_from_last_vertex_gpu_csc (graph,graph_d,m,exec_protocol);
+  //if (true)
+  //  add_edges_to_unmatched_from_last_vertex_cpu_csc (graph,graph_d,m,exec_protocol);
+
+}
+
+void add_edges_to_unmatched_from_last_vertex(ThrustGraph & graph,struct match * m, int exec_protocol){
+  add_edges_to_unmatched_from_last_vertex_gpu_csc (graph,m,exec_protocol);
   //if (true)
   //  add_edges_to_unmatched_from_last_vertex_cpu_csc (graph,graph_d,m,exec_protocol);
 

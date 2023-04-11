@@ -247,6 +247,8 @@ int mm_gpu_csc_from_mis(CSRGraph & graph,CSRGraph & graph_d,struct match * m,str
 int mis_gpu(CSRGraph & graph,CSRGraph & graph_d,struct MIS * mis, int exec_protocol);
 //int  mm_gpu_csc (unsigned int *IC_h,unsigned int *CP_h,int *m_h,int *_m_d,int *req_h,int *c_h,int edgeNum,int n,int repetition, int exec_protocol);
 void add_edges_to_unmatched_from_last_vertex_cpu_csc(CSRGraph & graph,CSRGraph & graph_d,struct match * m,int exec_protocol);
+void add_edges_to_unmatched_from_last_vertex_gpu_csc(ThrustGraph & graph,struct match * m,int exec_protocol);
+
 void add_edges_to_unmatched_from_last_vertex_gpu_csc(CSRGraph & graph,CSRGraph & graph_d,struct match * m,int exec_protocol);
 unsigned long mcm_boost(unsigned int *IC_h,unsigned int *CP_h, int N);
 unsigned long mcm_boost_headstart(unsigned int *IC_h,unsigned int *CP_h, int *m_h,int N);       // It has a perfect matching of size 8. There are two isolated
