@@ -20,7 +20,9 @@
 #undef USE_GLOBAL_MEMORY
 #include "SequentialParameterized.h"
 #include "ThrustGraph.h"
-
+#include "matching/match.h"
+#include "boostmcm.h"
+#include "bfstdcsc.h"
 using namespace std;
 
 int main(int argc, char *argv[]) {
@@ -30,12 +32,21 @@ int main(int argc, char *argv[]) {
     printf("\nUUID: %s\n",config.outputFilePrefix);
     ThrustGraph graph2 = createCSRGraphFromFile_memopt(config.graphFileName);
     CSRGraph graph;
-        graph.vertexNum = graph2.vertexNum;
+
+    struct match mm;
+    int exec_policy = 1;
+    create_match(graph2.vertexNum,&mm,exec_policy);
+    maxmatch_thrust(graph2,&mm,exec_policy);
+    add_edges_to_unmatched_from_last_vertex(graph2, &mm, exec_policy);
+
+    graph.vertexNum = graph2.vertexNum;
     graph.edgeNum = graph2.edgeNum;
     graph.srcPtr = thrust::raw_pointer_cast(graph2.offsets_h.data());
     graph.dst = thrust::raw_pointer_cast(graph2.values_h.data());
     graph.degree = thrust::raw_pointer_cast(graph2.degrees_h.data());
-
+    graph.matching = thrust::raw_pointer_cast(graph2.matching_h.data());
+    graph.unmatched_vertices = (unsigned int *)thrust::raw_pointer_cast(graph2.unmatched_vertices_h.data());
+    graph.num_unmatched_vertices = (unsigned int *)thrust::raw_pointer_cast(graph2.num_unmatched_vertices_h.data());
 
 
     // = createCSRGraphFromFile(config.graphFileName);
@@ -170,7 +181,9 @@ int main(int argc, char *argv[]) {
         graph_d.srcPtr = thrust::raw_pointer_cast(graph2.offsets_d.data());
         graph_d.dst = thrust::raw_pointer_cast(graph2.values_d.data());
         graph_d.degree = thrust::raw_pointer_cast(graph2.degrees_d.data());
-
+        graph_d.matching = thrust::raw_pointer_cast(graph2.matching_d.data());
+        graph_d.unmatched_vertices = (unsigned int *)thrust::raw_pointer_cast(graph2.unmatched_vertices_d.data());
+        graph_d.num_unmatched_vertices = (unsigned int *)thrust::raw_pointer_cast(graph2.num_unmatched_vertices_d.data());
         // Allocate GPU stack
         Stacks stacks_d;
         stacks_d = allocateStacks(graph.vertexNum,numBlocks,minimum);

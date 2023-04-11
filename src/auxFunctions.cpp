@@ -468,7 +468,7 @@ void printResults(Config config, unsigned int maxApprox, unsigned int edgeApprox
 {
 
 	char outputFilename[500];
-	strcpy(outputFilename, "Results/Results.csv");
+	strcpy(outputFilename, "Results.csv");
 
 	FILE *output_file = fopen(outputFilename, "a");
 
