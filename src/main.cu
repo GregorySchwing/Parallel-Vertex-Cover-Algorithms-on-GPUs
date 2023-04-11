@@ -20,6 +20,7 @@
 #undef USE_GLOBAL_MEMORY
 #include "SequentialParameterized.h"
 #include "ThrustGraph.h"
+
 using namespace std;
 
 int main(int argc, char *argv[]) {
@@ -28,7 +29,16 @@ int main(int argc, char *argv[]) {
     printf("\nGraph file: %s",config.graphFileName);
     printf("\nUUID: %s\n",config.outputFilePrefix);
     ThrustGraph graph2 = createCSRGraphFromFile_memopt(config.graphFileName);
-    CSRGraph graph = createCSRGraphFromFile(config.graphFileName);
+    CSRGraph graph;
+        graph.vertexNum = graph2.vertexNum;
+    graph.edgeNum = graph2.edgeNum;
+    graph.srcPtr = thrust::raw_pointer_cast(graph2.offsets_h.data());
+    graph.dst = thrust::raw_pointer_cast(graph2.values_h.data());
+    graph.degree = thrust::raw_pointer_cast(graph2.degrees_h.data());
+
+
+
+    // = createCSRGraphFromFile(config.graphFileName);
     //performChecks(graph, config);
 
     chrono::time_point<std::chrono::system_clock> begin, end;
@@ -154,7 +164,12 @@ int main(int argc, char *argv[]) {
         #endif
 
         // Allocate GPU graph
-        CSRGraph graph_d = allocateGraph(graph);
+        CSRGraph graph_d;// = allocateGraph(graph);
+        graph_d.vertexNum = graph2.vertexNum;
+        graph_d.edgeNum = graph2.edgeNum;
+        graph_d.srcPtr = thrust::raw_pointer_cast(graph2.offsets_d.data());
+        graph_d.dst = thrust::raw_pointer_cast(graph2.values_d.data());
+        graph_d.degree = thrust::raw_pointer_cast(graph2.degrees_d.data());
 
         // Allocate GPU stack
         Stacks stacks_d;
@@ -270,10 +285,10 @@ int main(int argc, char *argv[]) {
         if(config.instance == PVC){
             cudaFree(k_d);
         }
-        graph.del();
+        //graph.del();
         cudaFree(minimum_d);
         cudaFree(counters_d);
-        cudaFreeGraph(graph_d);
+        //cudaFreeGraph(graph_d);
 
         cudaFreeStacks(stacks_d);
         
