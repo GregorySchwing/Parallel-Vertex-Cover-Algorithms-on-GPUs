@@ -282,9 +282,10 @@ int main(int argc, char *argv[]) {
         #endif
 
         if(config.version == HYBRID){
-            cudaFree(pathCounter_d);
             cudaFreeWorkList(workList_d);
             cudaFree(first_to_dequeue_global_d);
+        } else {
+            cudaFree(pathCounter_d);
         }
 
     }
