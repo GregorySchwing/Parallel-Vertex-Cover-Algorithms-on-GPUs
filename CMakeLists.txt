@@ -23,6 +23,8 @@ file(GLOB_RECURSE vc-gpu_SOURCES "${PROJECT_SOURCE_DIR}/*.cpp")
 file(GLOB_RECURSE maxmatch_SOURCES "${PROJECT_SOURCE_DIR}/matching/*.cpp")
 file(GLOB_RECURSE mis_SOURCES "${PROJECT_SOURCE_DIR}/mis/*.cpp")
 file(GLOB_RECURSE vc-gpu_HEADERS "${PROJECT_SOURCE_DIR}/*.h")
+file(GLOB_RECURSE edmonds_SOURCES "${PROJECT_SOURCE_DIR}/edmonds/*.c")
+file(GLOB_RECURSE edmonds_HEADERS "${PROJECT_SOURCE_DIR}/edmonds/*.h")
 
 file(GLOB_RECURSE vc-gpu_CUDA_SOURCES "${PROJECT_SOURCE_DIR}/*.cu")
 file(GLOB_RECURSE maxmatch_CUDA_SOURCES "${PROJECT_SOURCE_DIR}/matching/*.cu")
@@ -30,6 +32,9 @@ file(GLOB_RECURSE mis_CUDA_SOURCES "${PROJECT_SOURCE_DIR}/mis/*.cu")
 file(GLOB_RECURSE vc-gpu_CUDA_HEADERS "${PROJECT_SOURCE_DIR}/*.cuh")
 file(GLOB_RECURSE maxmatch_CUDA_HEADERS "${PROJECT_SOURCE_DIR}/matching/*.cu")
 file(GLOB_RECURSE mis_CUDA_HEADERS "${PROJECT_SOURCE_DIR}/mis/*.h")
+file(GLOB_RECURSE edmonds_CUDA_SOURCES "${PROJECT_SOURCE_DIR}/edmonds/*.cu")
+file(GLOB_RECURSE edmonds_CUDA_HEADERS "${PROJECT_SOURCE_DIR}/edmonds/*.cuh")
+
 
 set(vc-gpu_INCLUDE_DIRS "")
 foreach (_headerFile ${vc-gpu_HEADERS})
@@ -56,7 +61,7 @@ message(STATUS "mis_SOURCES: ${mis_SOURCES}")
 message(STATUS "pppcsr_INCLUDE_DIRS: ${pppcsr_INCLUDE_DIRS}")
 
 
-add_executable(vc-gpu ${maxmatch_SOURCES} ${mis_SOURCES} ${vc-gpu_CUDA_SOURCES} ${maxmatch_CUDA_SOURCES} ${mis_CUDA_SOURCES} ${vc-gpu_SOURCES})
+add_executable(vc-gpu ${maxmatch_SOURCES} ${edmonds_CUDA_SOURCES} ${mis_SOURCES} ${vc-gpu_CUDA_SOURCES} ${maxmatch_CUDA_SOURCES} ${mis_CUDA_SOURCES} ${vc-gpu_SOURCES} ${edmonds_SOURCES})
 target_include_directories(vc-gpu PRIVATE ${vc-gpu_INCLUDE_DIRS} ${pppcsr_INCLUDE_DIRS})
 target_include_directories(vc-gpu SYSTEM PUBLIC ${CUDAToolkit_INCLUDE_DIRS} "${CUDAToolkit_LIBRARY_ROOT}/samples/common/inc/")
 set_target_properties(vc-gpu PROPERTIES
@@ -68,7 +73,7 @@ message("-- Debug build type detected, GPU_NPT setting CUDA_RESOLVE_DEVICE_SYMBO
 set_property(TARGET vc-gpu PROPERTY CUDA_RESOLVE_DEVICE_SYMBOLS ON)
 target_compile_options(vc-gpu PRIVATE "$<$<AND:$<CONFIG:Debug>,$<COMPILE_LANGUAGE:CUDA>>:-G;-src-in-ptx>")
 else()
-message("-- Release build type detected, -maxrregcount=31;-O3;-w; -gencode arch=compute_70,code=sm_70; -std=c++11")
+message("-- Release build type detected, -maxrregcount=31;-O3;-w; -gencode arch=compute_70,code=sm_70;")
 target_compile_options(vc-gpu PRIVATE "$<$<AND:$<CONFIG:Release>,$<COMPILE_LANGUAGE:CUDA>>:-maxrregcount=31;-O3;-w;-std=c++11>")
 endif()
 #target_link_libraries(vc-gpu parallel-packed-csr cuda)

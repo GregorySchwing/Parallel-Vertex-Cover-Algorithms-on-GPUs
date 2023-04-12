@@ -128,9 +128,10 @@ int Edmonds::max_cardinality_matching()
   int matchc=0;
   //memset(match, -1, sizeof(int) * V);
 
-  for (int u=0;u<V;u++)
+  for (int u=0;u<V;u++){
     if (match[u]==-1)
       matchc+=augment_path(u,find_augmenting_path(u));
+  }
   return matchc;
 }
 

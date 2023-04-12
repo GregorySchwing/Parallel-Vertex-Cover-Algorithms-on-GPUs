@@ -23,6 +23,8 @@
 #include "matching/match.h"
 #include "boostmcm.h"
 #include "bfstdcsc.h"
+#include "edmonds.cuh"
+
 using namespace std;
 
 int main(int argc, char *argv[]) {
@@ -42,7 +44,6 @@ int main(int argc, char *argv[]) {
     unsigned long ref_size = create_mcm(graph2);
     printf("\rgpu mm starting size %lu ref size %lu\n", (graph2.vertexNum-graph2.unmatched_vertices_h[0])/2, ref_size);
 
-
     graph.vertexNum = graph2.vertexNum;
     graph.edgeNum = graph2.edgeNum;
     graph.srcPtr = thrust::raw_pointer_cast(graph2.offsets_h.data());
@@ -52,6 +53,9 @@ int main(int argc, char *argv[]) {
     graph.unmatched_vertices = (unsigned int *)thrust::raw_pointer_cast(graph2.unmatched_vertices_h.data());
     graph.num_unmatched_vertices = (unsigned int *)thrust::raw_pointer_cast(graph2.num_unmatched_vertices_h.data());
 
+    Edmonds e((int*)graph.srcPtr,(int*)graph.dst,graph.matching, graph.vertexNum);
+    int ref2 = e.max_cardinality_matching();
+    //printf("\rref2 size %d\n", (graph2.vertexNum-graph2.unmatched_vertices_h[0])+ref2);
 
     // = createCSRGraphFromFile(config.graphFileName);
     //performChecks(graph, config);
