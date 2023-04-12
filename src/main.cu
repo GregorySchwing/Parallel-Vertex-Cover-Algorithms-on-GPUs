@@ -11,12 +11,14 @@
 #include "GlobalWorkList.cuh"
 #include "LocalStacksParameterized.cuh"
 #include "GlobalWorkListParameterized.cuh"
+#include "GlobalWorkListEdmonds.cuh"
 #undef USE_GLOBAL_MEMORY
 #define USE_GLOBAL_MEMORY 1
 #include "LocalStacks.cuh"
 #include "GlobalWorkList.cuh"
 #include "LocalStacksParameterized.cuh"
 #include "GlobalWorkListParameterized.cuh"
+#include "GlobalWorkListEdmonds.cuh"
 #undef USE_GLOBAL_MEMORY
 #include "SequentialParameterized.h"
 #include "ThrustGraph.h"
@@ -53,15 +55,14 @@ int main(int argc, char *argv[]) {
     graph.unmatched_vertices = (unsigned int *)thrust::raw_pointer_cast(graph2.unmatched_vertices_h.data());
     graph.num_unmatched_vertices = (unsigned int *)thrust::raw_pointer_cast(graph2.num_unmatched_vertices_h.data());
 
-    Edmonds e((int*)graph.srcPtr,(int*)graph.dst,graph.matching, graph.vertexNum);
-    int ref2 = e.max_cardinality_matching();
-    //printf("\rref2 size %d\n", (graph2.vertexNum-graph2.unmatched_vertices_h[0])+ref2);
 
     // = createCSRGraphFromFile(config.graphFileName);
     //performChecks(graph, config);
 
     chrono::time_point<std::chrono::system_clock> begin, end;
 	std::chrono::duration<double> elapsed_seconds_max, elapsed_seconds_edge, elapsed_seconds_mvc;
+
+    /*
 
     begin = std::chrono::system_clock::now(); 
     unsigned int RemoveMaxMinimum = RemoveMaxApproximateMVC(graph);
@@ -81,12 +82,21 @@ int main(int argc, char *argv[]) {
     printf("Approximate Remove Edge Minimum is: %u\n", RemoveEdgeMinimum);
     fflush(stdout);
 
-    unsigned int minimum = (RemoveMaxMinimum < RemoveEdgeMinimum) ? RemoveMaxMinimum : RemoveEdgeMinimum;
+    */
 
+    //unsigned int minimum = (RemoveMaxMinimum < RemoveEdgeMinimum) ? RemoveMaxMinimum : RemoveEdgeMinimum;
+    unsigned int minimum = 1;
     unsigned int k = config.k; 
     unsigned int kFound = 0;
 
     if(config.version == SEQUENTIAL){
+
+        Edmonds e((int*)graph.srcPtr,(int*)graph.dst,graph.matching, graph.vertexNum);
+        int ref2 = e.max_cardinality_matching();
+        //printf("\rref2 size %d\n", (graph2.vertexNum-graph2.unmatched_vertices_h[0])+ref2);
+
+        /*
+
         if(config.instance == PVC){
             begin = std::chrono::system_clock::now();
             minimum = SequentialParameterized(graph, minimum, k, &kFound);
@@ -101,6 +111,8 @@ int main(int argc, char *argv[]) {
 
         printResults(config, RemoveMaxMinimum, RemoveEdgeMinimum, elapsed_seconds_max.count(), elapsed_seconds_edge.count(), minimum, 
             elapsed_seconds_mvc.count(), graph.vertexNum, graph.edgeNum, kFound);
+
+        */
 
         printf("\nElapsed time: %fs",elapsed_seconds_mvc.count());
     } else {
@@ -126,7 +138,7 @@ int main(int argc, char *argv[]) {
         cudaDeviceGetAttribute(&maxSharedMemPerMultiProcessor,cudaDevAttrMaxSharedMemoryPerMultiprocessor,0);
         printf("MaxSharedMemPerMultiProcessor : %d\n",maxSharedMemPerMultiProcessor);
 
-        setBlockDimAndUseGlobalMemory(config,graph,maxSharedMemPerMultiProcessor,prop.totalGlobalMem, maxThreadsPerMultiProcessor, maxThreadsPerBlock, 
+        setBlockDimAndUseGlobalMemoryEdmonds(config,graph,maxSharedMemPerMultiProcessor,prop.totalGlobalMem, maxThreadsPerMultiProcessor, maxThreadsPerBlock, 
             maxThreadsPerMultiProcessor, numOfMultiProcessors, minimum);
         //performChecks(graph, config);
 
@@ -134,25 +146,13 @@ int main(int argc, char *argv[]) {
         int numThreadsPerBlock = config.blockDim;
         int numBlocksPerSm; 
         if (config.useGlobalMemory){
-            if (config.version == HYBRID && config.instance==PVC){
-                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkListParameterized_global_kernel, numThreadsPerBlock, 0);
-            } else if(config.version == HYBRID && config.instance==MVC) {
-                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkList_global_kernel, numThreadsPerBlock, 0);
-            } else if(config.version == STACK_ONLY && config.instance==PVC){
-                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacksParameterized_global_kernel, numThreadsPerBlock, 0);
-            } else if(config.version == STACK_ONLY && config.instance==MVC) {
-                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacks_global_kernel, numThreadsPerBlock, 0);
-            }
+
+            cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkList_global_kernel, numThreadsPerBlock, 0);
+
         } else {
-            if (config.version == HYBRID && config.instance==PVC){
-                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkListParameterized_shared_kernel, numThreadsPerBlock, 0);
-            } else if(config.version == HYBRID && config.instance==MVC) {
-                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkList_shared_kernel, numThreadsPerBlock, 0);
-            } else if(config.version == STACK_ONLY && config.instance==PVC){
-                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacksParameterized_shared_kernel, numThreadsPerBlock, 0);
-            } else if(config.version == STACK_ONLY && config.instance==MVC) {
-                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacks_shared_kernel, numThreadsPerBlock, 0);
-            }
+
+            cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkList_shared_kernel, numThreadsPerBlock, 0);
+
         }
 
         unsigned int tempNumBlocks;
@@ -194,7 +194,7 @@ int main(int argc, char *argv[]) {
         graph_d.num_unmatched_vertices = (unsigned int *)thrust::raw_pointer_cast(graph2.num_unmatched_vertices_d.data());
         // Allocate GPU stack
         Stacks stacks_d;
-        stacks_d = allocateStacks(graph.vertexNum,numBlocks,minimum);
+        stacks_d = allocateEdmondsStacks(graph.vertexNum,numBlocks,minimum);
 
         //Global Entries Memory Allocation
         int * global_memory_d;
@@ -234,7 +234,7 @@ int main(int argc, char *argv[]) {
         if(config.version == HYBRID){
             cudaMalloc((void**)&first_to_dequeue_global_d, sizeof(int));
             cudaMemcpy(first_to_dequeue_global_d, &first_to_dequeue_global, sizeof(int), cudaMemcpyHostToDevice);
-            workList_d =  allocateWorkList(graph, config, numBlocks);    
+            workList_d =  allocateWorkListEdmonds(graph, config, numBlocks);    
         } else {
             cudaMalloc((void**)&pathCounter_d, sizeof(unsigned int));
             cudaMemcpy(pathCounter_d, &pathCounter, sizeof(unsigned int), cudaMemcpyHostToDevice);
@@ -254,25 +254,13 @@ int main(int argc, char *argv[]) {
         cudaEventCreate(&stop);
         cudaEventRecord(start);
         if (config.useGlobalMemory){
-            if (config.version == HYBRID && config.instance==PVC){
-                GlobalWorkListParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, k_d, kFound_d, NODES_PER_SM_d);
-            } else if(config.version == HYBRID && config.instance==MVC) {
-                GlobalWorkList_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, NODES_PER_SM_d);
-            } else if(config.version == STACK_ONLY && config.instance==PVC){
-                LocalStacksParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, graph_d, global_memory_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
-            } else if(config.version == STACK_ONLY && config.instance==MVC) {
-                LocalStacks_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, graph_d, minimum_d, global_memory_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
-            }
+
+            GlobalWorkList_global_Edmonds_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, NODES_PER_SM_d);
+
         } else {
-            if (config.version == HYBRID && config.instance==PVC){
-                GlobalWorkListParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, k_d, kFound_d, NODES_PER_SM_d);
-            } else if(config.version == HYBRID && config.instance==MVC) {
-                GlobalWorkList_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
-            } else if(config.version == STACK_ONLY && config.instance==PVC){
-                LocalStacksParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, graph_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
-            } else if(config.version == STACK_ONLY && config.instance==MVC) {
-                LocalStacks_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, graph_d, minimum_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
-            }
+
+            GlobalWorkList_shared_Edmonds_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
+
         }
         cudaEventRecord(stop);
         cudaEventSynchronize(stop);
@@ -294,8 +282,8 @@ int main(int argc, char *argv[]) {
         cudaEventElapsedTime(&milliseconds, start, stop);
         printf("Elapsed time: %fms \n", milliseconds);
 
-        printResults(config, RemoveMaxMinimum, RemoveEdgeMinimum, elapsed_seconds_max.count(), elapsed_seconds_edge.count(), minimum, milliseconds, numBlocks, 
-            numBlocksPerSm, numThreadsPerSM, graph.vertexNum-1, graph.edgeNum, kFound);
+        //printResults(config, RemoveMaxMinimum, RemoveEdgeMinimum, elapsed_seconds_max.count(), elapsed_seconds_edge.count(), minimum, milliseconds, numBlocks, 
+        //    numBlocksPerSm, numThreadsPerSM, graph.vertexNum-1, graph.edgeNum, kFound);
 
         #if USE_COUNTERS
         printCountersInFile(config,counters_d,numBlocks);

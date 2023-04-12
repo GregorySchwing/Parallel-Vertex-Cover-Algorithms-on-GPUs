@@ -23,8 +23,10 @@ class Edmonds {
 
     /*Allocate device memory for the vector CP_d */
     int *CP, *IC;
-    
     int *match;
+    int *root;
+    int *dist;
+
     int *q;
     int *father;
     int *base;
