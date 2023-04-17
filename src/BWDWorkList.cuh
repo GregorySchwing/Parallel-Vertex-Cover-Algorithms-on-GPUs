@@ -93,6 +93,24 @@ __device__ bool ensureEnqueue(WorkList workList){
 	return ensurance;
 }
 
+__device__ bool ensureEnqueueThread(WorkList workList){
+	int Num = atomicOr(workList.count,0);
+	bool ensurance = false;
+	while (!ensurance && Num < (int)workList.size)
+	{
+		if (atomicAdd(workList.count, 1) < (int)workList.size)
+		{
+			ensurance = true;
+		}
+		else 
+		{
+			Num = atomicSub(workList.count, 1) - 1;
+		}
+	}
+	
+	return ensurance;
+}
+
 
 __device__ void readData(int* vertexDegree_s, unsigned int * vcSize, WorkList workList, unsigned int vertexNum){	
 	__shared__ unsigned int P;
@@ -115,8 +133,8 @@ __device__ void readData(int* vertexDegree_s, unsigned int * vcSize, WorkList wo
 	workList.tickets[P] = 2 * ((Pos + workList.size) / workList.size);
 	}
 }
-
-__device__ void putData(int* vertexDegree_s, unsigned int * vcSize, WorkList workList,unsigned int vertexNum){
+template <typename T>
+__device__ void putData(T* vertexDegree_s, unsigned int * vcSize, WorkList workList,unsigned int vertexNum){
 	__shared__ unsigned int P;
 	unsigned int Pos;
 	unsigned int B;
@@ -143,8 +161,24 @@ __device__ void putData(int* vertexDegree_s, unsigned int * vcSize, WorkList wor
 		atomicAdd(&workList.counter->numEnqueued,1);
 	}
 }
-
-__device__ inline bool enqueue(int* vertexDegree_s, WorkList workList, unsigned int vertexNum,unsigned int * vcSize){
+template <typename T>
+__device__ void putDataThread(T* vertexDegree_s, unsigned int * vcSize, WorkList workList,unsigned int vertexNum){
+	unsigned int P;
+	unsigned int Pos;
+	unsigned int B;
+	Pos = atomicAdd(tail(const_cast<HT*>(workList.head_tail)), 1);
+	P = Pos % workList.size;
+	B = 2 * (Pos /workList.size);
+	waitForTicket(P, B, workList);
+	for(unsigned int i = 0; i < vertexNum; i += blockDim.x) {
+		workList.listBTypeEdges[i + (P)*(vertexNum)] = vertexDegree_s[i];
+	}
+	//workList.listNumDeletedVertices[P] = *vcSize;
+	workList.tickets[P] = B + 1;
+	atomicAdd(&workList.counter->numEnqueued,1);
+}
+template <typename T>
+__device__ inline bool enqueue(T vertexDegree_s, WorkList workList, unsigned int vertexNum,unsigned int * vcSize){
 	__shared__  bool writeData;
 	if (threadIdx.x==0){
 		writeData = ensureEnqueue(workList);
@@ -155,6 +189,18 @@ __device__ inline bool enqueue(int* vertexDegree_s, WorkList workList, unsigned 
 	if (writeData)
 	{
 		putData(vertexDegree_s, vcSize, workList, vertexNum);
+	}
+	
+	return writeData;
+}
+template <typename T>
+__device__ inline bool enqueueThread(T *vertexDegree_s, WorkList workList, unsigned int vertexNum,unsigned int * vcSize){
+	bool writeData;
+	writeData = ensureEnqueueThread(workList);
+	
+	if (writeData)
+	{
+		//putDataThread(vertexDegree_s, vcSize, workList, vertexNum);
 	}
 	
 	return writeData;

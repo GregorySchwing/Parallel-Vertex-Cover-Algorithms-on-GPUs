@@ -46,24 +46,25 @@ WorkList allocateWorkList(CSRGraph graph, pvc::Config config, unsigned int numBl
 
 WorkList allocateWorkListEdges(int vertexNum, pvc::Config config, unsigned int numBlocks){
 	WorkList workList;
-	workList.size = config.globalListSize;
+	workList.size = vertexNum;
 	workList.threshold = config.globalListThreshold * workList.size;
 
-	volatile int* list_d;
-	volatile unsigned int * listNumDeletedVertices_d;
+	volatile uint64_t * listBTypeEdges_d;
+	volatile bool * mutex_d;
+
 	volatile Ticket *tickets_d;
 	HT *head_tail_d;
 	int* count_d;
 	Counter * counter_d;
-	cudaMalloc((void**) &list_d, (vertexNum) * sizeof(int) * workList.size);
-	cudaMalloc((void**) &listNumDeletedVertices_d, sizeof(unsigned int) * workList.size);
+	cudaMalloc((void**) &listBTypeEdges_d, sizeof(uint64_t) * workList.size);
+	cudaMalloc((void**) &mutex_d, sizeof(bool) * workList.size);
 	cudaMalloc((void**) &tickets_d, sizeof(Ticket) * workList.size);
 	cudaMalloc((void**) &head_tail_d, sizeof(HT));
 	cudaMalloc((void**) &count_d, sizeof(int));
 	cudaMalloc((void**) &counter_d, sizeof(Counter));
 	
-	workList.list = list_d;
-	workList.listNumDeletedVertices = listNumDeletedVertices_d;
+	workList.listBTypeEdges = listBTypeEdges_d;
+	workList.mutex = mutex_d;
 	workList.tickets = tickets_d;
 	workList.head_tail = head_tail_d;
 	workList.count=count_d;
@@ -73,7 +74,8 @@ WorkList allocateWorkListEdges(int vertexNum, pvc::Config config, unsigned int n
 	Counter counter;
 	counter.combined = 0;
 	cudaMemcpy(head_tail_d,&head_tail,sizeof(HT),cudaMemcpyHostToDevice);
-	cudaMemset((void*)&listNumDeletedVertices_d[0], 0, sizeof(unsigned int));
+	cudaMemset((void*)mutex_d, 0, workList.size * sizeof(bool));
+	cudaMemset((void*)listBTypeEdges_d, (uint64_t)0, workList.size * sizeof(uint64_t));
 	cudaMemset((void*)&tickets_d[0], 0, workList.size * sizeof(Ticket));
 	cudaMemset(count_d, 0, sizeof(int));
 	cudaMemcpy(counter_d, &counter ,sizeof(Counter),cudaMemcpyHostToDevice);
