@@ -1,27 +1,9 @@
-#ifndef BWDWORKLIST_H
-#define BWDWORKLIST_H
+#ifndef BWDWORKLIST_CUH
+#define BWDWORKLIST_CUH
 
 #include "config.h"
 #include "CSRGraphRep.h"
-
-typedef unsigned int Ticket;
-typedef unsigned long long int HT;
-
-typedef union {
-	struct {int numWaiting; int numEnqueued;};
-	unsigned long long int combined;
-} Counter;
-
-struct WorkList{
-	unsigned int size;
-	unsigned int threshold;
-    volatile int* list;
-    volatile unsigned int* listNumDeletedVertices;
-    volatile Ticket *tickets;
-    HT *head_tail;
-	int* count;
-	Counter * counter;
-};
+#include "BWDWorkList.h"
 
 __device__ bool checkThreshold(WorkList workList){
 
@@ -267,7 +249,7 @@ __device__ inline bool dequeueParameterized(int* vertexDegree_s, WorkList workLi
 }
 
 
-WorkList allocateWorkList(CSRGraph graph, Config config, unsigned int numBlocks){
+WorkList allocateWorkList(CSRGraph graph, pvc::Config config, unsigned int numBlocks){
 	WorkList workList;
 	workList.size = config.globalListSize;
 	workList.threshold = config.globalListThreshold * workList.size;
@@ -307,7 +289,7 @@ WorkList allocateWorkList(CSRGraph graph, Config config, unsigned int numBlocks)
 
 
 
-WorkList allocateWorkListEdmonds(CSRGraph graph, Config config, unsigned int numBlocks){
+WorkList allocateWorkListEdmonds(CSRGraph graph, pvc::Config config, unsigned int numBlocks){
 
 	WorkList workList;
 	workList.size = config.globalListSize;

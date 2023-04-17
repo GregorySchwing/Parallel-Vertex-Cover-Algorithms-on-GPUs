@@ -1,6 +1,6 @@
 
-#ifndef CONFIG_H
-#define CONFIG_H
+#ifndef PVCCONFIG_H
+#define PVCCONFIG_H
 
 #include <unistd.h>
 #include <stdio.h>
@@ -158,7 +158,7 @@ static const char *asString(Instance instance)
         exit(0);
     }
 }
-
+namespace pvc {
 struct Config
 {
     Version version;
@@ -241,5 +241,5 @@ static Config parseArgs(int argc, char **argv)
 
     return config;
 }
-
+}
 #endif

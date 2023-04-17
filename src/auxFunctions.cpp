@@ -583,7 +583,7 @@ void printResults(Config config, unsigned int maxApprox, unsigned int edgeApprox
 	fprintf(
 		output_file,
 		"%s,%s,%u,%u,%s,%s,%d,%f,%d,%d,%d,%u,%d,%d,%u,%f,%u,%f,%u,%u,%u,%f\n",
-		config.outputFilePrefix, config.graphFileName, numVertices, numEdges, asString(config.instance), asString(config.version), config.globalListSize, config.globalListThreshold,
+		config.outputFilePrefix, config.graphFileName, numVertices, numEdges, pvc::asString(config.instance), pvc::asString(config.version), config.globalListSize, config.globalListThreshold,
 		config.startingDepth, config.useGlobalMemory, config.blockDim, numBlocksPerSM, numThreadsPerSM, config.numBlocks, maxApprox, timeMax, edgeApprox, timeEdge, minimum, config.k, k_found, timeMin);
 
 	fclose(output_file);
@@ -601,7 +601,7 @@ void printResults(Config config, unsigned int maxApprox, unsigned int edgeApprox
 	fprintf(
 		output_file,
 		"%s,%s,%u,%u,%s,%s,  ,  ,  ,  ,  ,  ,  ,  ,%u,%f,%u,%f,%u,%u,%u,%f\n",
-		config.outputFilePrefix, config.graphFileName, numVertices, numEdges, asString(config.instance), asString(config.version), maxApprox, timeMax,
+		config.outputFilePrefix, config.graphFileName, numVertices, numEdges, pvc::asString(config.instance), pvc::asString(config.version), maxApprox, timeMax,
 		edgeApprox, timeEdge, minimum, config.k, k_found, timeMin * 1000);
 
 	fclose(output_file);

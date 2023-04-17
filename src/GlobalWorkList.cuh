@@ -6,6 +6,8 @@
 #include "config.h"
 #include "stack.cuh"
 #include "Counters.cuh"
+#include "BWDWorkList.h"
+
 #include "BWDWorkList.cuh"
 #include "helperFunctions.cuh"
 
