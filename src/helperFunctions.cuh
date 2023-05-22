@@ -2,6 +2,7 @@
 #define HELPFUNC_H
 
 #include "config.h"
+enum EdgeType {NotScanned, Prop, Bridge};
 
 __device__ long long int square(int num){
     return num*num;
@@ -22,6 +23,20 @@ __device__ bool binarySearch(unsigned int * arr, unsigned int l, unsigned int r,
     }
   
     return false;
+}
+
+__device__ void setlvl(CSRGraph & graph, int u, int lev){
+    if(lev&1) graph.oddlvl[u] = lev; else graph.evenlvl[u] = lev;
+}
+
+__device__ int minlvl(CSRGraph & graph, int u){
+    return min(graph.oddlvl[u], graph.evenlvl[u]);
+}
+
+__device__ int tenacity(CSRGraph & graph, int u, int v){
+    if(graph.matching[u] == v)
+        return graph.oddlvl[u] + graph.oddlvl[v] + 1;
+    return graph.evenlvl[u] + graph.evenlvl[v] + 1;
 }
 
 __device__ void deleteNeighborsOfMaxDegreeVertex(CSRGraph graph,int* vertexDegrees_s, unsigned int* numDeletedVertices, int* vertexDegrees_s2, 

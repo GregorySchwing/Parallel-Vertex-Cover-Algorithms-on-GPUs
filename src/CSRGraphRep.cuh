@@ -1,4 +1,5 @@
 #include "CSRGraphRep.h"
+const int INF = 1e9;
 
 CSRGraph allocateGraph(CSRGraph graph){
     CSRGraph Graph;
@@ -9,12 +10,34 @@ CSRGraph allocateGraph(CSRGraph graph){
     int *matching_d;
     unsigned int *num_unmatched_vertices_d;
     unsigned int *unmatched_vertices_d;
+
+    int * oddlvl;
+    int * evenlvl;
+    bool* pred;
+    bool* bridges;
+    char* edgeStatus;
+
+    unsigned int *largestVertexChecked;
     cudaMalloc((void**) &dst_d,sizeof(unsigned int)*2*graph.edgeNum);
     cudaMalloc((void**) &srcPtr_d,sizeof(unsigned int)*(graph.vertexNum+1));
     cudaMalloc((void**) &degree_d,sizeof(int)*graph.vertexNum);
     cudaMalloc((void**) &matching_d,sizeof(int)*graph.vertexNum);
     cudaMalloc((void**) &unmatched_vertices_d,sizeof(unsigned int)*(graph.vertexNum));
     cudaMalloc((void**) &num_unmatched_vertices_d,sizeof(unsigned int));
+
+    cudaMalloc((void**) &pred, 2*graph.edgeNum*sizeof(bool));
+    cudaMalloc((void**) &bridges, 2*graph.edgeNum*sizeof(bool));
+    cudaMalloc((void**)&edgeStatus, 2*graph.edgeNum*sizeof(char));
+
+    cudaMalloc((void**)&oddlvl, graph.vertexNum*sizeof(int));
+    cudaMalloc((void**)&evenlvl, graph.vertexNum*sizeof(int));
+
+    cudaMalloc((void**) &largestVertexChecked,sizeof(unsigned int));
+
+
+    cudaMemset(oddlvl, INF, graph.vertexNum*sizeof(int));
+    cudaMemset(evenlvl, INF, graph.vertexNum*sizeof(int));
+    cudaMemset(largestVertexChecked, 0, sizeof(unsigned int));
 
     Graph.vertexNum = graph.vertexNum;
     Graph.edgeNum = graph.edgeNum;
