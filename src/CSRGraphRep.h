@@ -7,7 +7,18 @@ struct CSRGraph{
     unsigned int* dst;
     unsigned int* srcPtr;
     int* degree;
-    
+    int *matching;
+    unsigned int *num_unmatched_vertices;
+    unsigned int *unmatched_vertices;
+
+    int * oddlvl;
+    int * evenlvl;
+    bool* pred;
+    bool* bridges;
+    char* edgeStatus;
+    unsigned int *largestVertexChecked;
+
+    int* visited;
     void create(unsigned int xn,unsigned int xm); // Initializes the graph rep
     void copy(CSRGraph graph);
     void deleteVertex(unsigned int v);

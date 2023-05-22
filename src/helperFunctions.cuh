@@ -2,6 +2,7 @@
 #define HELPFUNC_H
 
 #include "config.h"
+enum EdgeType {NotScanned, Prop, Bridge};
 
 __device__ long long int square(int num){
     return num*num;
@@ -22,6 +23,20 @@ __device__ bool binarySearch(unsigned int * arr, unsigned int l, unsigned int r,
     }
   
     return false;
+}
+
+__device__ void setlvl(CSRGraph & graph, int u, int lev){
+    if(lev&1) graph.oddlvl[u] = lev; else graph.evenlvl[u] = lev;
+}
+
+__device__ int minlvl(CSRGraph & graph, int u){
+    return min(graph.oddlvl[u], graph.evenlvl[u]);
+}
+
+__device__ int tenacity(CSRGraph & graph, int u, int v){
+    if(graph.matching[u] == v)
+        return graph.oddlvl[u] + graph.oddlvl[v] + 1;
+    return graph.evenlvl[u] + graph.evenlvl[v] + 1;
 }
 
 __device__ void deleteNeighborsOfMaxDegreeVertex(CSRGraph graph,int* vertexDegrees_s, unsigned int* numDeletedVertices, int* vertexDegrees_s2, 
@@ -323,6 +338,68 @@ __device__ void findMaxDegree(unsigned int vertexNum, unsigned int *maxVertex, i
     }
     *maxVertex = vertex_s[0];
     *maxDegree = degree_s[0];
+}
+
+
+
+__device__ void findUnmatchedNeighbor(CSRGraph graph,unsigned int startingVertex, unsigned int *edgeIndex, unsigned int *neighbor, unsigned int *foundNeighbor,int *visited_s) {
+    // All threads perform same work.  It would be possible to use warp shuffles to load
+    // the warp with all the neighbors and find the first valid neighbor.
+    // This is the key - use the first valid neighbor, that way the linear
+    // counter can be used to generate all search trees.
+    if (threadIdx.x==0){
+        unsigned int start = graph.srcPtr[startingVertex];
+        unsigned int end = graph.srcPtr[startingVertex + 1];
+        
+        //printf("BID %d edgeIndex %d startingVertex %d\n", blockIdx.x,*edgeIndex, startingVertex);
+        for(; *edgeIndex < end-start; (*edgeIndex)++) { // Delete Neighbors of startingVertex
+            if (graph.matching[startingVertex]>-1 && !visited_s[graph.matching[startingVertex]]){
+                    *neighbor = graph.matching[startingVertex];
+                    printf("bid %d matched edge %d->%d \n", blockIdx.x,startingVertex, *neighbor);
+                    *foundNeighbor=1;
+                    break;
+            } else {
+                if (!visited_s[graph.dst[start + *edgeIndex]]){
+                    *neighbor = graph.dst[start + *edgeIndex];
+                    *foundNeighbor=2;
+                    printf("bid %d unmatched edge %d->%d \n", blockIdx.x,startingVertex, *neighbor);
+                    break;
+                }
+            }
+        }
+    }
+    __syncthreads();
+}
+
+__device__ void prepareRightChild(CSRGraph graph,int* vertexDegrees_s, unsigned int* numDeletedVertices, unsigned int * edgeIndex, int* vertexDegrees_s2, 
+    unsigned int* numDeletedVertices2, unsigned int * edgeIndex2){
+    if (threadIdx.x==0){
+        *numDeletedVertices2 = *numDeletedVertices;
+        *edgeIndex2 = *edgeIndex;
+    }
+    for(unsigned int vertex = threadIdx.x; vertex<graph.vertexNum; vertex+=blockDim.x){
+        vertexDegrees_s2[vertex] = vertexDegrees_s[vertex];
+    }
+
+    __syncthreads();
+
+    if (threadIdx.x==0){
+        *edgeIndex2+=1;
+    }
+    __syncthreads();
+
+}
+
+__device__ void prepareLeftChild(int* vertexDegrees_s, unsigned int* numDeletedVertices, unsigned int* edgeIndex, unsigned int* neighbor){
+
+    if (threadIdx.x==0){
+        vertexDegrees_s[*neighbor]=1;
+        *numDeletedVertices=*neighbor;
+        *edgeIndex=0;
+    }
+
+    __syncthreads();
+
 }
 
 __device__ unsigned int findNumOfEdges(unsigned int vertexNum, int *vertexDegrees_s, int * shared_mem){

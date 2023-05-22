@@ -9,18 +9,23 @@
 #define USE_GLOBAL_MEMORY 0
 #include "LocalStacks.cuh"
 #include "GlobalWorkList.cuh"
+#include "GlobalWorkListDFS.cuh"
+
 #include "LocalStacksParameterized.cuh"
 #include "GlobalWorkListParameterized.cuh"
 #undef USE_GLOBAL_MEMORY
 #define USE_GLOBAL_MEMORY 1
 #include "LocalStacks.cuh"
 #include "GlobalWorkList.cuh"
+#include "GlobalWorkListDFS.cuh"
 #include "LocalStacksParameterized.cuh"
 #include "GlobalWorkListParameterized.cuh"
 #undef USE_GLOBAL_MEMORY
 #include "SequentialParameterized.h"
 
 using namespace std;
+
+
 
 int main(int argc, char *argv[]) {
 
@@ -217,11 +222,31 @@ int main(int argc, char *argv[]) {
         cudaEventCreate(&start);
         cudaEventCreate(&stop);
         cudaEventRecord(start);
+
+
+        #if USE_GLOBAL_MEMORY
+        GlobalDFSKernelArgs args;
+        args.global_memory = global_memory_d; 
+        #else
+        SharedDFSKernelArgs args;
+        #endif
+        args.stacks = stacks_d; 
+        args.minimum = minimum_d; 
+        args.workList = workList_d; 
+        args.graph = graph_d; 
+        args.counters = counters_d; 
+        args.first_to_dequeue_global = first_to_dequeue_global_d; 
+        args.NODES_PER_SM = NODES_PER_SM_d;
+        void *kernel_args[] = {&args};
+
         if (config.useGlobalMemory){
             if (config.version == HYBRID && config.instance==PVC){
                 GlobalWorkListParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, k_d, kFound_d, NODES_PER_SM_d);
             } else if(config.version == HYBRID && config.instance==MVC) {
-                GlobalWorkList_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, NODES_PER_SM_d);
+        
+                cudaLaunchCooperativeKernel((void*)(GlobalWorkList_global_DFS_kernel), numBlocks, numThreadsPerBlock, kernel_args) ;
+                //GlobalWorkList_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, NODES_PER_SM_d);
+
             } else if(config.version == STACK_ONLY && config.instance==PVC){
                 LocalStacksParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, graph_d, global_memory_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
             } else if(config.version == STACK_ONLY && config.instance==MVC) {
@@ -231,7 +256,8 @@ int main(int argc, char *argv[]) {
             if (config.version == HYBRID && config.instance==PVC){
                 GlobalWorkListParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, k_d, kFound_d, NODES_PER_SM_d);
             } else if(config.version == HYBRID && config.instance==MVC) {
-                GlobalWorkList_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
+                cudaLaunchCooperativeKernel((void*)(GlobalWorkList_shared_DFS_kernel), numBlocks, numThreadsPerBlock, kernel_args) ;
+                //GlobalWorkList_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
             } else if(config.version == STACK_ONLY && config.instance==PVC){
                 LocalStacksParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, graph_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
             } else if(config.version == STACK_ONLY && config.instance==MVC) {
@@ -282,9 +308,10 @@ int main(int argc, char *argv[]) {
         #endif
 
         if(config.version == HYBRID){
-            cudaFree(pathCounter_d);
             cudaFreeWorkList(workList_d);
             cudaFree(first_to_dequeue_global_d);
+        } else {
+            cudaFree(pathCounter_d);
         }
 
     }
