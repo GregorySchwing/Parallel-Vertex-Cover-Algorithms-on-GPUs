@@ -8,6 +8,7 @@
 #include "Counters.cuh"
 #include "BWDWorkList.cuh"
 #include "helperFunctions.cuh"
+#include <cooperative_groups.h>
 
 #if USE_GLOBAL_MEMORY
 __global__ void GlobalWorkList_global_DFS_kernel(Stacks stacks, unsigned int * minimum, unsigned int * solution_mutex, WorkList workList, CSRGraph graph, Counters* counters, 
@@ -19,7 +20,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
 
     __shared__ Counters blockCounters;
     initializeCounters(&blockCounters);
-
+    cooperative_groups::grid_group g = cooperative_groups::this_grid(); 
     #if USE_COUNTERS
         __shared__ unsigned int sm_id;
         if (threadIdx.x==0){
@@ -77,9 +78,8 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
             //printf("numDeletedVertices %d edgeIndex %d \n", numDeletedVertices, edgeIndex);
         dequeueOrPopNextItr = false;
     }
-
     __syncthreads();
-    
+    g.sync();
     while(true){
         if(dequeueOrPopNextItr) {
             if(stackTop != -1) { // Local stack is not empty, pop from the local stack
