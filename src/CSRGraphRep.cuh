@@ -80,7 +80,6 @@ CSRGraph allocateGraph(CSRGraph graph){
     unsigned int *bridgeList_counter_d;
 
     bool * removed_d;
-    int * bud_d;
     unsigned int *largestVertexChecked_d;
     cudaMalloc((void**) &dst_d,sizeof(unsigned int)*2*graph.edgeNum);
     cudaMalloc((void**) &srcPtr_d,sizeof(unsigned int)*(graph.vertexNum+1));
@@ -98,7 +97,6 @@ CSRGraph allocateGraph(CSRGraph graph){
 
     cudaMalloc((void**) &largestVertexChecked_d,sizeof(unsigned int));
     cudaMalloc((void**) &removed_d, graph.vertexNum*sizeof(bool));
-    cudaMalloc((void**) &bud_d, graph.vertexNum*sizeof(int));
 
     // Likely too much work.
     //cudaMalloc((void**) &bridgeList_counter_d,sizeof(unsigned int));

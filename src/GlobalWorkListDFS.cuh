@@ -72,14 +72,39 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
 
     __shared__ Counters blockCounters;
     initializeCounters(&blockCounters);
-    if (threadIdx.x==0)
-    printf("BlockID active %d\n", blockIdx.x);
+    //if (threadIdx.x==0)
+    //printf("BlockID active %d\n", blockIdx.x);
     cooperative_groups::grid_group g = cooperative_groups::this_grid(); 
     #if USE_COUNTERS
         __shared__ unsigned int sm_id;
         if (threadIdx.x==0){
             sm_id=get_smid();
         }
+    #endif
+
+    int stackTop = -1;
+    unsigned int stackSize = (stacks.minimum + 1);
+    volatile int * stackVertexDegrees = &stacks.stacks[blockIdx.x * stackSize * graph.vertexNum];
+    volatile unsigned int * stackNumDeletedVertices = &stacks.stacksNumDeletedVertices[blockIdx.x * stackSize];
+
+    // Define the vertexDegree_s
+    unsigned int numDeletedVertices;
+    unsigned int numDeletedVertices2;
+    
+
+    // vertexDegrees_s == stack1
+    // vertexDegrees_s2 == stack2
+
+    // numDeletedVertices == stack1 top
+    // numDeletedVertices2 == stack2 top
+
+    #if USE_GLOBAL_MEMORY
+    int * vertexDegrees_s = &global_memory[graph.vertexNum*(2*blockIdx.x)];
+    int * vertexDegrees_s2 = &global_memory[graph.vertexNum*(2*blockIdx.x + 1)];
+    #else
+    extern __shared__ int shared_mem[];
+    int * vertexDegrees_s = shared_mem;
+    int * vertexDegrees_s2 = &shared_mem[graph.vertexNum];
     #endif
 
     for (int i = 0; i < graph.vertexNum; ++i){
@@ -92,7 +117,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
                 for (int vertex = startingVertex + threadIdx.x; vertex < min(graph.vertexNum, startingVertex + VERTICES_PER_BLOCK); vertex+=blockDim.x){
                     if (graph.matching[vertex]==-1){
                         setlvl(graph,vertex,i);
-                        printf("Block %d setting vertex %d as src oddlvl %d evenlvl %d\n", blockIdx.x,vertex,graph.oddlvl[vertex],graph.evenlvl[vertex]);
+                        //printf("Block %d setting vertex %d as src oddlvl %d evenlvl %d\n", blockIdx.x,vertex,graph.oddlvl[vertex],graph.evenlvl[vertex]);
                     }
                 }
             }while(startingVertex<graph.vertexNum);
@@ -119,7 +144,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
                                 unsigned int startOther = graph.srcPtr[graph.dst[edgeIndex]];
                                 unsigned int endOther = graph.srcPtr[graph.dst[edgeIndex] + 1];
                                 unsigned int edgeIndexOther;
-                                printf("BID %d prop edge %d - %d \n", blockIdx.x, vertex, graph.dst[edgeIndex]);
+                                //printf("BID %d prop edge %d - %d \n", blockIdx.x, vertex, graph.dst[edgeIndex]);
                                 for(edgeIndexOther=startOther; edgeIndexOther < endOther-startOther; edgeIndexOther++) { // Delete Neighbors of startingVertex
                                     if(vertex==graph.dst[edgeIndexOther]){
                                         graph.edgeStatus[edgeIndexOther] = Prop;
@@ -136,7 +161,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
                                 unsigned int startOther = graph.srcPtr[graph.dst[edgeIndex]];
                                 unsigned int endOther = graph.srcPtr[graph.dst[edgeIndex] + 1];
                                 unsigned int edgeIndexOther;
-                                printf("BID %d bridge edge %d - %d \n", blockIdx.x, vertex, graph.dst[edgeIndex]);
+                                //printf("BID %d bridge edge %d - %d \n", blockIdx.x, vertex, graph.dst[edgeIndex]);
                                 for(edgeIndexOther=startOther; edgeIndexOther < endOther-startOther; edgeIndexOther++) { // Delete Neighbors of startingVertex
                                     if(vertex==graph.dst[edgeIndexOther]){
                                         graph.edgeStatus[edgeIndexOther] = Bridge;
@@ -180,6 +205,9 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
         }
         g.sync();
         */
+
+        // Arrays: stack1, stack2, color, childsInDDFSTree, ddfsPredecessorsPtr, support
+        // Scalars: stack1Top, stack2Top, globalColorCounter, supportTop, 
         {
             __shared__ unsigned int startingVertex;
             do {
@@ -195,6 +223,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
                             // Call DDFS
                             if(graph.removed[graph.bud[vertex]] || graph.removed[graph.bud[graph.dst[edgeIndex]]])
                                 continue;   
+                            
                         }
                     }
                 }

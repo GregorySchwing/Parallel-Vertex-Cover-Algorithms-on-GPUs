@@ -34,11 +34,13 @@ int main(int argc, char *argv[]) {
     printf("\nUUID: %s\n",config.outputFilePrefix);
 
     CSRGraph graph = createCSRGraphFromFile(config.graphFileName);
-    performChecks(graph, config);
-
+    //performChecks(graph, config);
     chrono::time_point<std::chrono::system_clock> begin, end;
 	std::chrono::duration<double> elapsed_seconds_max, elapsed_seconds_edge, elapsed_seconds_mvc;
+    unsigned int RemoveMaxMinimum = 0;
+    unsigned int RemoveEdgeMinimum = 0;
 
+    /*
     begin = std::chrono::system_clock::now(); 
     unsigned int RemoveMaxMinimum = RemoveMaxApproximateMVC(graph);
     end = std::chrono::system_clock::now(); 
@@ -58,11 +60,13 @@ int main(int argc, char *argv[]) {
     fflush(stdout);
 
     unsigned int minimum = (RemoveMaxMinimum < RemoveEdgeMinimum) ? RemoveMaxMinimum : RemoveEdgeMinimum;
-
+    */
+    unsigned int minimum = graph.vertexNum;
     unsigned int k = config.k; 
     unsigned int kFound = 0;
 
     if(config.version == SEQUENTIAL){
+        /*
         if(config.instance == PVC){
             begin = std::chrono::system_clock::now();
             minimum = SequentialParameterized(graph, minimum, k, &kFound);
@@ -79,6 +83,7 @@ int main(int argc, char *argv[]) {
             elapsed_seconds_mvc.count(), graph.vertexNum, graph.edgeNum, kFound);
 
         printf("\nElapsed time: %fs",elapsed_seconds_mvc.count());
+        */
     } else {
         cudaDeviceSynchronize();
 
@@ -102,9 +107,12 @@ int main(int argc, char *argv[]) {
         cudaDeviceGetAttribute(&maxSharedMemPerMultiProcessor,cudaDevAttrMaxSharedMemoryPerMultiprocessor,0);
         printf("MaxSharedMemPerMultiProcessor : %d\n",maxSharedMemPerMultiProcessor);
 
-        setBlockDimAndUseGlobalMemory(config,graph,maxSharedMemPerMultiProcessor,prop.totalGlobalMem, maxThreadsPerMultiProcessor, maxThreadsPerBlock, 
-            maxThreadsPerMultiProcessor, numOfMultiProcessors, minimum);
-        performChecks(graph, config);
+        //setBlockDimAndUseGlobalMemory(config,graph,maxSharedMemPerMultiProcessor,prop.totalGlobalMem, maxThreadsPerMultiProcessor, maxThreadsPerBlock, 
+        //    maxThreadsPerMultiProcessor, numOfMultiProcessors, minimum);
+
+        setBlockDimAndUseGlobalMemoryDFS_NoStack(config,graph,maxSharedMemPerMultiProcessor,prop.totalGlobalMem, maxThreadsPerMultiProcessor, maxThreadsPerBlock, 
+            maxThreadsPerMultiProcessor, numOfMultiProcessors, graph.vertexNum);
+        //performChecks(graph, config);
 
         printf("\nOur Config :\n");
         int numThreadsPerBlock = config.blockDim;
@@ -113,7 +121,7 @@ int main(int argc, char *argv[]) {
             if (config.version == HYBRID && config.instance==PVC){
                 cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkListParameterized_global_kernel, numThreadsPerBlock, 0);
             } else if(config.version == HYBRID && config.instance==MVC) {
-                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkList_global_kernel, numThreadsPerBlock, 0);
+                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkList_global_DFS_kernel, numThreadsPerBlock, 0);
             } else if(config.version == STACK_ONLY && config.instance==PVC){
                 cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacksParameterized_global_kernel, numThreadsPerBlock, 0);
             } else if(config.version == STACK_ONLY && config.instance==MVC) {
@@ -123,7 +131,7 @@ int main(int argc, char *argv[]) {
             if (config.version == HYBRID && config.instance==PVC){
                 cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkListParameterized_shared_kernel, numThreadsPerBlock, 0);
             } else if(config.version == HYBRID && config.instance==MVC) {
-                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkList_shared_kernel, numThreadsPerBlock, 0);
+                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkList_shared_DFS_kernel, numThreadsPerBlock, 0);
             } else if(config.version == STACK_ONLY && config.instance==PVC){
                 cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacksParameterized_shared_kernel, numThreadsPerBlock, 0);
             } else if(config.version == STACK_ONLY && config.instance==MVC) {
@@ -160,15 +168,15 @@ int main(int argc, char *argv[]) {
 
         // Allocate GPU graph
         CSRGraph graph_d = allocateGraph(graph);
-
+        printf("Allocated graph\n");
         // Allocate GPU stack
         Stacks stacks_d;
-        stacks_d = allocateStacks(graph.vertexNum,numBlocks,minimum);
+        //stacks_d = allocateStacks(graph.vertexNum,numBlocks,minimum);
 
         //Global Entries Memory Allocation
         int * global_memory_d;
         if(config.useGlobalMemory){
-            cudaMalloc((void**)&global_memory_d, sizeof(int)*graph.vertexNum*numBlocks*2);
+            //cudaMalloc((void**)&global_memory_d, sizeof(int)*graph.vertexNum*numBlocks*2);
         }
 
         unsigned int * minimum_d;
@@ -203,7 +211,7 @@ int main(int argc, char *argv[]) {
         if(config.version == HYBRID){
             cudaMalloc((void**)&first_to_dequeue_global_d, sizeof(int));
             cudaMemcpy(first_to_dequeue_global_d, &first_to_dequeue_global, sizeof(int), cudaMemcpyHostToDevice);
-            workList_d =  allocateWorkList(graph, config, numBlocks);    
+            //workList_d =  allocateWorkList(graph, config, numBlocks);    
         } else {
             cudaMalloc((void**)&pathCounter_d, sizeof(unsigned int));
             cudaMemcpy(pathCounter_d, &pathCounter, sizeof(unsigned int), cudaMemcpyHostToDevice);
