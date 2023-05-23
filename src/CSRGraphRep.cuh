@@ -4,6 +4,39 @@
 #include <thrust/sequence.h>
 const int INF = 1e9;
 
+void DSU::reset(int n){
+    thrust::device_ptr<int> size_thrust_ptr=thrust::device_pointer_cast(size);
+    thrust::device_ptr<int> directParent_thrust_ptr=thrust::device_pointer_cast(directParent);
+    thrust::device_ptr<int> link_thrust_ptr=thrust::device_pointer_cast(link);
+    thrust::device_ptr<int> groupRoot_thrust_ptr=thrust::device_pointer_cast(groupRoot);
+
+    thrust::fill(size_thrust_ptr, size_thrust_ptr+n, 1); // or 999999.f if you prefer
+    thrust::fill(directParent_thrust_ptr, directParent_thrust_ptr+n, -1); // or 999999.f if you prefer
+
+    thrust::sequence(link_thrust_ptr,link_thrust_ptr+n, 0, 1);
+    thrust::sequence(groupRoot_thrust_ptr,groupRoot_thrust_ptr+n, 0, 1);
+}
+__device__ int DSU::find(int a){
+    return link[a] = (a == link[a] ? a : find(link[a]));
+}
+__device__ int DSU::operator[](const int& a){
+    return groupRoot[find(a)];
+}
+__device__ void DSU::linkTo(int a, int b){
+    assert(directParent[a] == -1);
+    assert(directParent[b] == -1);
+    directParent[a] = b;
+    a = find(a);
+    b = find(b);
+    int gr = groupRoot[b];
+    assert(a != b);
+    
+    if(size[a] > size[b])
+        std::swap(a,b);
+    link[b] = a;
+    size[a] += size[b];
+    groupRoot[a] = gr;
+}
 
 DSU allocate_DSU(struct CSRGraph graph){
 
@@ -106,15 +139,13 @@ CSRGraph allocateGraph(CSRGraph graph){
     Graph.edgeStatus = edgeStatus_d;
     Graph.largestVertexChecked = largestVertexChecked_d;
     Graph.removed=removed_d;
-    Graph.bud=bud_d;
+    Graph.bud = allocate_DSU(graph);;
 
     cudaMemcpy(dst_d,graph.dst,sizeof(unsigned int)*2*graph.edgeNum,cudaMemcpyHostToDevice);
     cudaMemcpy(srcPtr_d,graph.srcPtr,sizeof(unsigned int)*(graph.vertexNum+1),cudaMemcpyHostToDevice);
     cudaMemcpy(degree_d,graph.degree,sizeof(int)*graph.vertexNum,cudaMemcpyHostToDevice);
     //cudaMemcpy(unmatched_vertices_d,graph.unmatched_vertices,sizeof(unsigned int)*graph.num_unmatched_vertices,cudaMemcpyHostToDevice);
     //cudaMemcpy(matching_d,graph.matching,sizeof(int)*graph.vertexNum,cudaMemcpyHostToDevice);
-
-    Graph.dsu = allocate_DSU(graph);
 
     return Graph;
 }

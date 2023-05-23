@@ -10,7 +10,7 @@
 #include "helperFunctions.cuh"
 #include <cooperative_groups.h>
 using namespace cooperative_groups; 
-#define VERTICES_PER_BLOCK 1
+#define VERTICES_PER_BLOCK 100
 
 
 
@@ -180,7 +180,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
         }
         g.sync();
         */
-{
+        {
             __shared__ unsigned int startingVertex;
             do {
                 if (threadIdx.x==0)

@@ -7,6 +7,12 @@ struct DSU{
     int *directParent;
     int *size;
     int *groupRoot;
+
+    void reset(int n);
+    int find(int a);
+    int operator[](const int& a);
+    void linkTo(int a, int b);
+
 };
 
 struct CSRGraph{
@@ -29,11 +35,10 @@ struct CSRGraph{
     unsigned int *bridgeList_counter;
 
     bool* removed;
-    int* bud;
 
     int* visited;
 
-    struct DSU dsu;
+    struct DSU bud;
 
     void create(unsigned int xn,unsigned int xm); // Initializes the graph rep
     void copy(CSRGraph graph);
