@@ -1,6 +1,14 @@
 #ifndef CSRGraph_H
 #define CSRGraph_H
 #include <stdint.h>
+
+struct DSU{
+    int* link;
+    int *directParent;
+    int *size;
+    int *groupRoot;
+};
+
 struct CSRGraph{
     unsigned int vertexNum; // Number of Vertices
     unsigned int edgeNum; // Number of Edges
@@ -24,6 +32,9 @@ struct CSRGraph{
     int* bud;
 
     int* visited;
+
+    struct DSU dsu;
+
     void create(unsigned int xn,unsigned int xm); // Initializes the graph rep
     void copy(CSRGraph graph);
     void deleteVertex(unsigned int v);

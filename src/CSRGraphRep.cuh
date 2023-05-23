@@ -1,7 +1,32 @@
 #include "CSRGraphRep.h"
 #include <thrust/device_ptr.h>
 #include <thrust/fill.h>
+#include <thrust/sequence.h>
 const int INF = 1e9;
+
+
+DSU allocate_DSU(struct CSRGraph graph){
+
+    DSU dsu;
+    cudaMalloc((void**) &dsu.directParent,sizeof(int)*graph.vertexNum);
+    cudaMalloc((void**) &dsu.groupRoot,sizeof(int)*graph.vertexNum);
+    cudaMalloc((void**) &dsu.link,sizeof(int)*graph.vertexNum);
+    cudaMalloc((void**) &dsu.size,sizeof(int)*graph.vertexNum);
+
+    thrust::device_ptr<int> size_thrust_ptr=thrust::device_pointer_cast(dsu.size);
+    thrust::device_ptr<int> directParent_thrust_ptr=thrust::device_pointer_cast(dsu.directParent);
+    thrust::device_ptr<int> link_thrust_ptr=thrust::device_pointer_cast(dsu.link);
+    thrust::device_ptr<int> groupRoot_thrust_ptr=thrust::device_pointer_cast(dsu.groupRoot);
+
+    thrust::fill(size_thrust_ptr, size_thrust_ptr+graph.vertexNum, 1); // or 999999.f if you prefer
+    thrust::fill(directParent_thrust_ptr, directParent_thrust_ptr+graph.vertexNum, -1); // or 999999.f if you prefer
+
+    thrust::sequence(link_thrust_ptr,link_thrust_ptr+graph.vertexNum, 0, 1);
+    thrust::sequence(groupRoot_thrust_ptr,groupRoot_thrust_ptr+graph.vertexNum, 0, 1);
+
+    return dsu;
+}
+
 
 CSRGraph allocateGraph(CSRGraph graph){
     CSRGraph Graph;
@@ -88,6 +113,8 @@ CSRGraph allocateGraph(CSRGraph graph){
     cudaMemcpy(degree_d,graph.degree,sizeof(int)*graph.vertexNum,cudaMemcpyHostToDevice);
     //cudaMemcpy(unmatched_vertices_d,graph.unmatched_vertices,sizeof(unsigned int)*graph.num_unmatched_vertices,cudaMemcpyHostToDevice);
     //cudaMemcpy(matching_d,graph.matching,sizeof(int)*graph.vertexNum,cudaMemcpyHostToDevice);
+
+    Graph.dsu = allocate_DSU(graph);
 
     return Graph;
 }
