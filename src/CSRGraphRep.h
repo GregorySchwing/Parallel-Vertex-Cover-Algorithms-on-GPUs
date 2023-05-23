@@ -1,6 +1,6 @@
 #ifndef CSRGraph_H
 #define CSRGraph_H
-
+#include <stdint.h>
 struct CSRGraph{
     unsigned int vertexNum; // Number of Vertices
     unsigned int edgeNum; // Number of Edges
@@ -17,6 +17,11 @@ struct CSRGraph{
     bool* bridges;
     char* edgeStatus;
     unsigned int *largestVertexChecked;
+    uint64_t* bridgeList;
+    unsigned int *bridgeList_counter;
+
+    bool* removed;
+    int* bud;
 
     int* visited;
     void create(unsigned int xn,unsigned int xm); // Initializes the graph rep

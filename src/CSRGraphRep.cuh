@@ -18,7 +18,11 @@ CSRGraph allocateGraph(CSRGraph graph){
     bool* pred_d;
     bool* bridges_d;
     char* edgeStatus_d;
+    uint64_t* bridgeList_d;
+    unsigned int *bridgeList_counter_d;
 
+    bool * removed_d;
+    int * bud_d;
     unsigned int *largestVertexChecked_d;
     cudaMalloc((void**) &dst_d,sizeof(unsigned int)*2*graph.edgeNum);
     cudaMalloc((void**) &srcPtr_d,sizeof(unsigned int)*(graph.vertexNum+1));
@@ -35,7 +39,16 @@ CSRGraph allocateGraph(CSRGraph graph){
     cudaMalloc((void**) &evenlvl_d, graph.vertexNum*sizeof(int));
 
     cudaMalloc((void**) &largestVertexChecked_d,sizeof(unsigned int));
+    cudaMalloc((void**) &removed_d, graph.vertexNum*sizeof(bool));
+    cudaMalloc((void**) &bud_d, graph.vertexNum*sizeof(int));
 
+    // Likely too much work.
+    //cudaMalloc((void**) &bridgeList_counter_d,sizeof(unsigned int));
+    //cudaMalloc((void**) &bridgeList_d,2*graph.edgeNum*sizeof(uint64_t));
+    //cudaMemset(bridgeList_counter_d, 0, sizeof(unsigned int));
+    //Graph.bridgeList=bridgeList_d;
+    //Graph.bridgeList_counter=bridgeList_counter_d;
+    
     /*
     cudaMemset(oddlvl_d, INF, graph.vertexNum*sizeof(int));
     cudaMemset(evenlvl_d, INF, graph.vertexNum*sizeof(int));
@@ -60,12 +73,15 @@ CSRGraph allocateGraph(CSRGraph graph){
     Graph.matching = matching_d;
     Graph.unmatched_vertices = unmatched_vertices_d;
 
+    
     Graph.oddlvl = oddlvl_d;
     Graph.evenlvl = evenlvl_d;
     Graph.pred = pred_d;
     Graph.bridges = bridges_d;
     Graph.edgeStatus = edgeStatus_d;
     Graph.largestVertexChecked = largestVertexChecked_d;
+    Graph.removed=removed_d;
+    Graph.bud=bud_d;
 
     cudaMemcpy(dst_d,graph.dst,sizeof(unsigned int)*2*graph.edgeNum,cudaMemcpyHostToDevice);
     cudaMemcpy(srcPtr_d,graph.srcPtr,sizeof(unsigned int)*(graph.vertexNum+1),cudaMemcpyHostToDevice);

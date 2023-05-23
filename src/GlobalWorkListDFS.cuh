@@ -82,77 +82,124 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
         }
     #endif
 
-    int i = 0;
-
-    {
-        __shared__ unsigned int startingVertex;
-        do {
-            if (threadIdx.x==0)
-                startingVertex = atomicAdd(graph.largestVertexChecked, VERTICES_PER_BLOCK);
-            __syncthreads();
-            for (int vertex = startingVertex + threadIdx.x; vertex < min(graph.vertexNum, startingVertex + VERTICES_PER_BLOCK); vertex+=blockDim.x){
-                if (graph.matching[vertex]==-1){
-                    setlvl(graph,vertex,i);
-                    printf("Block %d setting vertex %d as src oddlvl %d evenlvl %d\n", blockIdx.x,vertex,graph.oddlvl[vertex],graph.evenlvl[vertex]);
+    for (int i = 0; i < graph.vertexNum; ++i){
+        {
+            __shared__ unsigned int startingVertex;
+            do {
+                if (threadIdx.x==0)
+                    startingVertex = atomicAdd(graph.largestVertexChecked, VERTICES_PER_BLOCK);
+                __syncthreads();
+                for (int vertex = startingVertex + threadIdx.x; vertex < min(graph.vertexNum, startingVertex + VERTICES_PER_BLOCK); vertex+=blockDim.x){
+                    if (graph.matching[vertex]==-1){
+                        setlvl(graph,vertex,i);
+                        printf("Block %d setting vertex %d as src oddlvl %d evenlvl %d\n", blockIdx.x,vertex,graph.oddlvl[vertex],graph.evenlvl[vertex]);
+                    }
                 }
-            }
-        }while(startingVertex<graph.vertexNum);
+            }while(startingVertex<graph.vertexNum);
+            g.sync();
+        }
         g.sync();
-    }
-    g.sync();
-    if (blockIdx.x==0 && threadIdx.x==0)
-        atomicExch(graph.largestVertexChecked,0);
-    g.sync();
-    {
-        __shared__ unsigned int startingVertex;
-        do {
-            if (threadIdx.x==0)
-                startingVertex = atomicAdd(graph.largestVertexChecked, VERTICES_PER_BLOCK);
-            __syncthreads();
-            for (int vertex = startingVertex + threadIdx.x; vertex < min(graph.vertexNum, startingVertex + VERTICES_PER_BLOCK); vertex+=blockDim.x){
-                unsigned int start = graph.srcPtr[vertex];
-                unsigned int end = graph.srcPtr[vertex + 1];
-                unsigned int edgeIndex;
-                for(edgeIndex=start; edgeIndex < end-start; edgeIndex++) { // Delete Neighbors of startingVertex
-                    if (graph.edgeStatus[edgeIndex] == NotScanned && (graph.oddlvl[vertex] == i) == (graph.matching[vertex] == graph.dst[edgeIndex])) {
-                        if(min(graph.oddlvl[graph.dst[edgeIndex]], graph.evenlvl[graph.dst[edgeIndex]]) >= i+1) {
-                            graph.edgeStatus[edgeIndex] = Prop;
-                            unsigned int startOther = graph.srcPtr[graph.dst[edgeIndex]];
-                            unsigned int endOther = graph.srcPtr[graph.dst[edgeIndex] + 1];
-                            unsigned int edgeIndexOther;
-                            printf("BID %d prop edge %d - %d \n", blockIdx.x, vertex, graph.dst[edgeIndex]);
-                            for(edgeIndexOther=startOther; edgeIndexOther < endOther-startOther; edgeIndexOther++) { // Delete Neighbors of startingVertex
-                                if(vertex==graph.dst[edgeIndexOther]){
-                                    graph.edgeStatus[edgeIndexOther] = Prop;
-                                    break;
+        if (blockIdx.x==0 && threadIdx.x==0)
+            atomicExch(graph.largestVertexChecked,0);
+        g.sync();
+        {
+            __shared__ unsigned int startingVertex;
+            do {
+                if (threadIdx.x==0)
+                    startingVertex = atomicAdd(graph.largestVertexChecked, VERTICES_PER_BLOCK);
+                __syncthreads();
+                for (int vertex = startingVertex + threadIdx.x; vertex < min(graph.vertexNum, startingVertex + VERTICES_PER_BLOCK); vertex+=blockDim.x){
+                    unsigned int start = graph.srcPtr[vertex];
+                    unsigned int end = graph.srcPtr[vertex + 1];
+                    unsigned int edgeIndex;
+                    for(edgeIndex=start; edgeIndex < end-start; edgeIndex++) { // Delete Neighbors of startingVertex
+                        if (graph.edgeStatus[edgeIndex] == NotScanned && (graph.oddlvl[vertex] == i) == (graph.matching[vertex] == graph.dst[edgeIndex])) {
+                            if(min(graph.oddlvl[graph.dst[edgeIndex]], graph.evenlvl[graph.dst[edgeIndex]]) >= i+1) {
+                                graph.edgeStatus[edgeIndex] = Prop;
+                                unsigned int startOther = graph.srcPtr[graph.dst[edgeIndex]];
+                                unsigned int endOther = graph.srcPtr[graph.dst[edgeIndex] + 1];
+                                unsigned int edgeIndexOther;
+                                printf("BID %d prop edge %d - %d \n", blockIdx.x, vertex, graph.dst[edgeIndex]);
+                                for(edgeIndexOther=startOther; edgeIndexOther < endOther-startOther; edgeIndexOther++) { // Delete Neighbors of startingVertex
+                                    if(vertex==graph.dst[edgeIndexOther]){
+                                        graph.edgeStatus[edgeIndexOther] = Prop;
+                                        break;
+                                    }
                                 }
-                            }
-                            if(minlvl(graph,graph.dst[edgeIndex]) > i+1) {
-                                if(i&1) graph.oddlvl[vertex] = i; else graph.evenlvl[vertex] = i;
-                            }
-                            graph.pred[edgeIndexOther]=true;
-                        }
-                        else{
-                            graph.edgeStatus[edgeIndex] = Bridge;
-                            unsigned int startOther = graph.srcPtr[graph.dst[edgeIndex]];
-                            unsigned int endOther = graph.srcPtr[graph.dst[edgeIndex] + 1];
-                            unsigned int edgeIndexOther;
-                            printf("BID %d bridge edge %d - %d \n", blockIdx.x, vertex, graph.dst[edgeIndex]);
-                            for(edgeIndexOther=startOther; edgeIndexOther < endOther-startOther; edgeIndexOther++) { // Delete Neighbors of startingVertex
-                                if(vertex==graph.dst[edgeIndexOther]){
-                                    graph.edgeStatus[edgeIndexOther] = Bridge;
-                                    break;
+                                if(minlvl(graph,graph.dst[edgeIndex]) > i+1) {
+                                    if(i&1) graph.oddlvl[vertex] = i; else graph.evenlvl[vertex] = i;
                                 }
+                                graph.pred[edgeIndexOther]=true;
                             }
-                            if(tenacity(graph,vertex,graph.dst[edgeIndex]) < INF) {
-                                graph.bridges[edgeIndex] = tenacity(graph,vertex,graph.dst[edgeIndex]);
+                            else{
+                                graph.edgeStatus[edgeIndex] = Bridge;
+                                unsigned int startOther = graph.srcPtr[graph.dst[edgeIndex]];
+                                unsigned int endOther = graph.srcPtr[graph.dst[edgeIndex] + 1];
+                                unsigned int edgeIndexOther;
+                                printf("BID %d bridge edge %d - %d \n", blockIdx.x, vertex, graph.dst[edgeIndex]);
+                                for(edgeIndexOther=startOther; edgeIndexOther < endOther-startOther; edgeIndexOther++) { // Delete Neighbors of startingVertex
+                                    if(vertex==graph.dst[edgeIndexOther]){
+                                        graph.edgeStatus[edgeIndexOther] = Bridge;
+                                        break;
+                                    }
+                                }
+                                if(tenacity(graph,vertex,graph.dst[edgeIndex]) < INF) {
+                                    graph.bridges[edgeIndex] = tenacity(graph,vertex,graph.dst[edgeIndex]);
+                                }
                             }
                         }
                     }
                 }
-            }
-        }while(startingVertex<graph.vertexNum);
+            }while(startingVertex<graph.vertexNum);
+        }
         g.sync();
+        if (blockIdx.x==0 && threadIdx.x==0)
+            atomicExch(graph.largestVertexChecked,0);
+        g.sync();
+        // Compress bridges.  Could simply assign edges to blocks, check if contain a bridge.
+        /*
+        {
+            __shared__ unsigned int startingVertex;
+            do {
+                if (threadIdx.x==0)
+                    startingVertex = atomicAdd(graph.largestVertexChecked, VERTICES_PER_BLOCK);
+                __syncthreads();
+                for (int vertex = startingVertex + threadIdx.x; vertex < min(graph.vertexNum, startingVertex + VERTICES_PER_BLOCK); vertex+=blockDim.x){
+                    unsigned int start = graph.srcPtr[vertex];
+                    unsigned int end = graph.srcPtr[vertex + 1];
+                    unsigned int edgeIndex;
+                    for(edgeIndex=start; edgeIndex < end-start; edgeIndex++) { // Delete Neighbors of startingVertex
+                        if (graph.edgeStatus[edgeIndex] == Bridge && graph.bridges[edgeIndex] == 2*i+1) {
+                            unsigned int top = atomicAdd(graph.bridgeList_counter,1);
+                            uint64_t edgePair = (uint64_t) vertex << 32 | graph.dst[edgeIndex];
+                            graph.bridgeList[top] = edgePair;
+                        }
+                    }
+                }
+            }while(startingVertex<graph.vertexNum);
+        }
+        g.sync();
+        */
+{
+            __shared__ unsigned int startingVertex;
+            do {
+                if (threadIdx.x==0)
+                    startingVertex = atomicAdd(graph.largestVertexChecked, VERTICES_PER_BLOCK);
+                __syncthreads();
+                for (int vertex = startingVertex + threadIdx.x; vertex < min(graph.vertexNum, startingVertex + VERTICES_PER_BLOCK); vertex+=blockDim.x){
+                    unsigned int start = graph.srcPtr[vertex];
+                    unsigned int end = graph.srcPtr[vertex + 1];
+                    unsigned int edgeIndex;
+                    for(edgeIndex=start; edgeIndex < end-start; edgeIndex++) { // Delete Neighbors of startingVertex
+                        if (graph.edgeStatus[edgeIndex] == Bridge && graph.bridges[edgeIndex] == 2*i+1) {
+                            // Call DDFS
+                            if(graph.removed[graph.bud[vertex]] || graph.removed[graph.bud[graph.dst[edgeIndex]]])
+                                continue;   
+                        }
+                    }
+                }
+            }while(startingVertex<graph.vertexNum);
+        }
     }
     return;
     /*
