@@ -171,7 +171,7 @@ CSRGraph allocateGraph(CSRGraph graph){
     cudaMemset(Graph.stack1Top, 0, sizeof(unsigned int)*graph.numBlocks);
     cudaMemset(Graph.stack2Top, 0, sizeof(unsigned int)*graph.numBlocks);
     cudaMemset(Graph.supportTop, 0, sizeof(unsigned int)*graph.numBlocks);
-    cudaMemset(Graph.globalColorCounter, 0, sizeof(unsigned int)*graph.numBlocks);
+    cudaMemset(Graph.globalColorCounter, 1, sizeof(unsigned int)*graph.numBlocks);
     cudaMemset(Graph.childsInDDFSTreeTop, 0, sizeof(unsigned int)*graph.numBlocks);
 
     /*
@@ -179,12 +179,14 @@ CSRGraph allocateGraph(CSRGraph graph){
     cudaMemset(evenlvl_d, INF, graph.vertexNum*sizeof(int));
 
     */
-
+    thrust::device_ptr<unsigned int> globalColorCounter_thrust_ptr=thrust::device_pointer_cast(Graph.globalColorCounter);
     thrust::device_ptr<int> oddlvl_thrust_ptr=thrust::device_pointer_cast(oddlvl_d);
     thrust::device_ptr<int> evenlvl_thrust_ptr=thrust::device_pointer_cast(evenlvl_d);
 
     thrust::fill(oddlvl_thrust_ptr, oddlvl_thrust_ptr+graph.vertexNum, INF); // or 999999.f if you prefer
     thrust::fill(evenlvl_thrust_ptr, evenlvl_thrust_ptr+graph.vertexNum, INF); // or 999999.f if you prefer
+    thrust::fill(globalColorCounter_thrust_ptr, globalColorCounter_thrust_ptr+graph.numBlocks, 1); // or 999999.f if you prefer
+
     cudaMemset(bridgeFront, 0, sizeof(unsigned int));
     cudaMemset(matching_d, -1, graph.vertexNum*sizeof(int));
     cudaMemset(edgeStatus_d, 0, 2*graph.edgeNum*sizeof(char));
