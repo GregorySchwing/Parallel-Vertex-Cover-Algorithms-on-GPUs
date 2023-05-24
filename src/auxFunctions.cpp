@@ -397,6 +397,7 @@ void setBlockDimAndUseGlobalMemoryDFS_NoStack(Config &config, CSRGraph graph, in
 	long long integers = 5 * ((long long)sizeof(int));
 	long long memoryRequiredPerBlock = integerArrays + pairArrays + integers;
 
+	printf("memoryRequiredPerBlock %lld\n",memoryRequiredPerBlock);
 
 	printf("maxGlobalMemory %lld\n",maxGlobalMemory);
 	long long consumedGlobalMem = (long long)(1024 * 1024 * 1024 * 2.5) + globalListSize;
