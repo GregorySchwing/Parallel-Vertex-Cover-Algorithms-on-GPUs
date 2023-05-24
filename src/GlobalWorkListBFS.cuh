@@ -14,9 +14,11 @@ __global__ void GlobalWorkList_Set_Sources_kernel(Stacks stacks, unsigned int * 
     int* first_to_dequeue_global, int* NODES_PER_SM) {
 
     unsigned int vertex = threadIdx.x + blockIdx.x*(blockDim.x);
+    if(vertex >= graph.vertexNum) return;
+
     if (graph.matching[vertex]==-1){
         setlvl(graph,vertex,0);
-        printf("Block %d setting vertex %d as src oddlvl %d evenlvl %d\n", blockIdx.x,vertex,graph.oddlvl[vertex],graph.evenlvl[vertex]);
+        //printf("Block %d setting vertex %d as src oddlvl %d evenlvl %d\n", blockIdx.x,vertex,graph.oddlvl[vertex],graph.evenlvl[vertex]);
     }
 }
 
@@ -25,6 +27,7 @@ __global__ void GlobalWorkList_BFS_kernel(Stacks stacks, unsigned int * minimum,
     int* first_to_dequeue_global, int* NODES_PER_SM, unsigned int depth) {
 
     unsigned int vertex = threadIdx.x + blockIdx.x*(blockDim.x);
+    if(vertex >= graph.vertexNum) return;
     unsigned int start = graph.srcPtr[vertex];
     unsigned int end = graph.srcPtr[vertex + 1];
     unsigned int edgeIndex;
