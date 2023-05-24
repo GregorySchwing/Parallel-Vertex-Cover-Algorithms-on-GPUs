@@ -26,19 +26,20 @@ __global__ void GlobalWorkList_Set_Sources_kernel(Stacks stacks, unsigned int * 
 __global__ void GlobalWorkList_BFS_kernel(Stacks stacks, unsigned int * minimum, WorkList workList, CSRGraph graph, Counters* counters, 
     int* first_to_dequeue_global, int* NODES_PER_SM, unsigned int depth) {
 
-    unsigned int vertex = threadIdx.x + blockIdx.x*(blockDim.x);
+    unsigned int vertex = threadIdx.x + blockIdx.x * blockDim.x;
     if(vertex >= graph.vertexNum) return;
     unsigned int start = graph.srcPtr[vertex];
     unsigned int end = graph.srcPtr[vertex + 1];
-    unsigned int edgeIndex;
-    for(edgeIndex=start; edgeIndex < end-start; edgeIndex++) { // Delete Neighbors of startingVertex
+    unsigned int edgeIndex=0;
+    for(; edgeIndex < end-start; edgeIndex++) { // Delete Neighbors of startingVertex
+        //printf("src %d dst %d edgeStatus %d evenlvl %d oddlvl %d matching %d\n",vertex,graph.dst[edgeIndex],graph.edgeStatus[edgeIndex],graph.oddlvl[vertex],graph.evenlvl[vertex],graph.matching[vertex]);
         if (graph.edgeStatus[edgeIndex] == NotScanned && (graph.oddlvl[vertex] == depth) == (graph.matching[vertex] == graph.dst[edgeIndex])) {
             if(minlvl(graph,graph.dst[edgeIndex]) >= depth+1) {
                 graph.edgeStatus[edgeIndex] = Prop;
                 unsigned int startOther = graph.srcPtr[graph.dst[edgeIndex]];
                 unsigned int endOther = graph.srcPtr[graph.dst[edgeIndex] + 1];
                 unsigned int edgeIndexOther;
-                printf("BID %d prop edge %d - %d \n", blockIdx.x, vertex, graph.dst[edgeIndex]);
+                //printf("BID %d prop edge %d - %d \n", blockIdx.x, vertex, graph.dst[edgeIndex]);
                 for(edgeIndexOther=startOther; edgeIndexOther < endOther-startOther; edgeIndexOther++) { // Delete Neighbors of startingVertex
                     if(vertex==graph.dst[edgeIndexOther]){
                         graph.edgeStatus[edgeIndexOther] = Prop;
@@ -54,7 +55,7 @@ __global__ void GlobalWorkList_BFS_kernel(Stacks stacks, unsigned int * minimum,
                 unsigned int startOther = graph.srcPtr[graph.dst[edgeIndex]];
                 unsigned int endOther = graph.srcPtr[graph.dst[edgeIndex] + 1];
                 unsigned int edgeIndexOther;
-                printf("BID %d bridge edge %d - %d \n", blockIdx.x, vertex, graph.dst[edgeIndex]);
+                //printf("BID %d bridge edge %d - %d \n", blockIdx.x, vertex, graph.dst[edgeIndex]);
                 for(edgeIndexOther=startOther; edgeIndexOther < endOther-startOther; edgeIndexOther++) { // Delete Neighbors of startingVertex
                     if(vertex==graph.dst[edgeIndexOther]){
                         graph.edgeStatus[edgeIndexOther] = Bridge;
@@ -76,13 +77,23 @@ __global__ void GlobalWorkList_Extract_Bridges_kernel(Stacks stacks, unsigned in
     if(vertex >= graph.vertexNum) return;
     unsigned int start = graph.srcPtr[vertex];
     unsigned int end = graph.srcPtr[vertex + 1];
-    unsigned int edgeIndex;
-    for(edgeIndex=start; edgeIndex < end-start; edgeIndex++) { // Delete Neighbors of startingVertex
+    unsigned int edgeIndex=0;
+    for(; edgeIndex < end-start; edgeIndex++) { // Delete Neighbors of startingVertex
         if (graph.edgeStatus[edgeIndex] == Bridge && graph.bridgeTenacity[edgeIndex] == 2*depth+1) {
             unsigned int top = atomicAdd(graph.bridgeList_counter,1);
             uint64_t edgePair = (uint64_t) vertex << 32 | graph.dst[edgeIndex];
-            printf("Adding bridge %d %d\n", vertex, graph.dst[edgeIndex]);
+            //printf("Adding bridge %d %d\n", vertex, graph.dst[edgeIndex]);
             graph.bridgeList[top] = edgePair;
         }
+    }
+}
+
+
+__global__ void PrintTops(Stacks stacks, unsigned int * minimum, WorkList workList, CSRGraph graph, Counters* counters, 
+    int* first_to_dequeue_global, int* NODES_PER_SM, unsigned int depth) {
+
+    if (threadIdx.x==0){
+    //printf("BlockID %d\n", blockIdx.x);
+    printf("BlockID %d stack1Top %d stack2Top %d\n", blockIdx.x, graph.stack1Top[blockIdx.x], graph.stack2Top[blockIdx.x]);
     }
 }

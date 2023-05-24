@@ -103,7 +103,13 @@ __device__ int ddfsMove(CSRGraph & graph, int * stack1, int * stack2, unsigned i
 
 //returns {r0, g0} or {bottleneck, bottleneck} packed into uint64_t
 __device__ uint64_t ddfs(CSRGraph & graph, int src, int dst, int * stack1, int * stack2, unsigned int * stack1Top, unsigned int * stack2Top, int * support, unsigned int * supportTop, int * color, unsigned int *globalColorCounter, int * ddfsPredecessorsPtr, int*childsInDDFSTree_keys,uint64_t*childsInDDFSTree_values,unsigned int * childsInDDFSTreeTop) {
-    stack1[stack1Top[0]++]=graph.bud[src], stack2[stack2Top[0]++]=graph.bud[dst];
+    printf("stack1Top %d\n",stack1Top[0]);
+    printf("stack2Top %d\n",stack2Top[0]);
+    return;
+
+    stack1[stack1Top[0]++]=graph.bud[src];
+    stack2[stack2Top[0]++]=graph.bud[dst];
+    return;
     //vector<int> Sr = {graph.bud[src]}, Sg = {graph.bud[dst]};
     //if(Sr[0] == Sg[0])
     //    return {Sr[0],Sg[0]};

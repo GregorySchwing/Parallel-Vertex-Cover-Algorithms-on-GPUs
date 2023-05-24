@@ -2,6 +2,17 @@
 #include <thrust/device_ptr.h>
 #include <thrust/fill.h>
 #include <thrust/sequence.h>
+
+#define checkCudaErrors(call)                                 \
+  do {                                                        \
+    cudaError_t err = call;                                   \
+    if (err != cudaSuccess) {                                 \
+      printf("CUDA error at %s %d: %s\n", __FILE__, __LINE__, \
+             cudaGetErrorString(err));                        \
+      exit(EXIT_FAILURE);                                     \
+    }                                                         \
+  } while (0)
+
 const int INF = 1e9;
 
 void DSU::reset(int n){
@@ -144,7 +155,6 @@ CSRGraph allocateGraph(CSRGraph graph){
     Graph.childsInDDFSTree_keys=childsInDDFSTree_keys_d;
     Graph.childsInDDFSTree_values=childsInDDFSTree_values_d;
     Graph.ddfsPredecessorsPtr=ddfsPredecessorsPtr_d;
-
     cudaMalloc((void**) &stack1Top_d,sizeof(unsigned int)*graph.numBlocks);
     cudaMalloc((void**) &stack2Top_d,sizeof(unsigned int)*graph.numBlocks);
     cudaMalloc((void**) &supportTop_d,sizeof(unsigned int)*graph.numBlocks);
@@ -157,11 +167,11 @@ CSRGraph allocateGraph(CSRGraph graph){
     graph.globalColorCounter=globalColorCounter_d;
     graph.childsInDDFSTreeTop=childsInDDFSTreeTop_d;
 
-    cudaMemset(graph.stack1Top, 0, sizeof(unsigned int));
-    cudaMemset(graph.stack2Top, 0, sizeof(unsigned int));
-    cudaMemset(graph.supportTop, 0, sizeof(unsigned int));
-    cudaMemset(graph.globalColorCounter, 0, sizeof(unsigned int));
-    cudaMemset(graph.childsInDDFSTreeTop, 0, sizeof(unsigned int));
+    cudaMemset(graph.stack1Top, 0, sizeof(unsigned int)*graph.numBlocks);
+    cudaMemset(graph.stack2Top, 0, sizeof(unsigned int)*graph.numBlocks);
+    cudaMemset(graph.supportTop, 0, sizeof(unsigned int)*graph.numBlocks);
+    cudaMemset(graph.globalColorCounter, 0, sizeof(unsigned int)*graph.numBlocks);
+    cudaMemset(graph.childsInDDFSTreeTop, 0, sizeof(unsigned int)*graph.numBlocks);
 
     /*
     cudaMemset(oddlvl_d, INF, graph.vertexNum*sizeof(int));
@@ -177,6 +187,7 @@ CSRGraph allocateGraph(CSRGraph graph){
     cudaMemset(bridgeFront, 0, sizeof(unsigned int));
     cudaMemset(matching_d, -1, graph.vertexNum*sizeof(int));
     cudaMemset(edgeStatus_d, 0, 2*graph.edgeNum*sizeof(char));
+    cudaMemset(removed_d, 0, graph.vertexNum*sizeof(bool));
 
     Graph.vertexNum = graph.vertexNum;
     Graph.edgeNum = graph.edgeNum;

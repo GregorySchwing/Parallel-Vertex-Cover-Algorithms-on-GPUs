@@ -174,6 +174,11 @@ int main(int argc, char *argv[]) {
         // Allocate GPU graph
         CSRGraph graph_d = allocateGraph(graph);
         printf("Allocated graph\n");
+        cudaError_t erra = cudaDeviceSynchronize();
+        if(erra != cudaSuccess) {
+            printf("GPU Error: %s\n", cudaGetErrorString(erra));
+            exit(1);
+        }
         // Allocate GPU stack
         Stacks stacks_d;
         //stacks_d = allocateStacks(graph.vertexNum,numBlocks,minimum);
@@ -264,7 +269,9 @@ int main(int argc, char *argv[]) {
                     GlobalWorkList_Set_Sources_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
                     GlobalWorkList_BFS_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
                     GlobalWorkList_Extract_Bridges_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
-                    cudaLaunchCooperativeKernel((void*)(GlobalWorkList_global_DFS_kernel), numBlocks, numThreadsPerBlock, kernel_args) ;
+                    PrintTops <<<  numBlocks, numThreadsPerBlock >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
+
+                    //cudaLaunchCooperativeKernel((void*)(GlobalWorkList_global_DFS_kernel), numBlocks, numThreadsPerBlock, kernel_args) ;
                     //GlobalWorkList_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, NODES_PER_SM_d);
                 } while (pathFound);
             } else if(config.version == STACK_ONLY && config.instance==PVC){
@@ -282,7 +289,8 @@ int main(int argc, char *argv[]) {
                     GlobalWorkList_Set_Sources_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
                     GlobalWorkList_BFS_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
                     GlobalWorkList_Extract_Bridges_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
-                    cudaLaunchCooperativeKernel((void*)(GlobalWorkList_shared_DFS_kernel), numBlocks, numThreadsPerBlock, kernel_args) ;
+                    PrintTops <<<  numBlocks, numThreadsPerBlock >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
+                    //cudaLaunchCooperativeKernel((void*)(GlobalWorkList_shared_DFS_kernel), numBlocks, numThreadsPerBlock, kernel_args) ;
                     //GlobalWorkList_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
                 } while (pathFound);
             } else if(config.version == STACK_ONLY && config.instance==PVC){
