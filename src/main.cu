@@ -246,6 +246,7 @@ int main(int argc, char *argv[]) {
         args.first_to_dequeue_global = first_to_dequeue_global_d; 
         args.NODES_PER_SM = NODES_PER_SM_d;
         void *kernel_args[] = {&args};
+        printf("Launching kernel\n");
 
         if (config.useGlobalMemory){
             if (config.version == HYBRID && config.instance==PVC){

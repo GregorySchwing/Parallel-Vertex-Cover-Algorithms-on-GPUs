@@ -10,7 +10,7 @@
 #include "helperFunctions.cuh"
 #include <cooperative_groups.h>
 using namespace cooperative_groups; 
-#define VERTICES_PER_BLOCK 100
+#define VERTICES_PER_BLOCK 1000
 
 
 
@@ -106,8 +106,8 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
     int * vertexDegrees_s = shared_mem;
     int * vertexDegrees_s2 = &shared_mem[graph.vertexNum];
     #endif
-
-    for (int i = 0; i < graph.vertexNum; ++i){
+    int i = 0;{
+    //for (int i = 0; i < graph.vertexNum; ++i){
         {
             __shared__ unsigned int startingVertex;
             do {
@@ -117,7 +117,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
                 for (int vertex = startingVertex + threadIdx.x; vertex < min(graph.vertexNum, startingVertex + VERTICES_PER_BLOCK); vertex+=blockDim.x){
                     if (graph.matching[vertex]==-1){
                         setlvl(graph,vertex,i);
-                        //printf("Block %d setting vertex %d as src oddlvl %d evenlvl %d\n", blockIdx.x,vertex,graph.oddlvl[vertex],graph.evenlvl[vertex]);
+                        printf("Block %d setting vertex %d as src oddlvl %d evenlvl %d\n", blockIdx.x,vertex,graph.oddlvl[vertex],graph.evenlvl[vertex]);
                     }
                 }
             }while(startingVertex<graph.vertexNum);
