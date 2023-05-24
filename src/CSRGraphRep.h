@@ -2,6 +2,9 @@
 #define CSRGraph_H
 #include <stdint.h>
 
+typedef pair<int,int> pii;
+
+
 struct DSU{
     int* link;
     int *directParent;
@@ -30,7 +33,7 @@ struct CSRGraph{
     bool* pred;
     bool* bridges;
     char* edgeStatus;
-    unsigned int *largestVertexChecked;
+    unsigned int *bridgeFront;
     uint64_t* bridgeList;
     unsigned int *bridgeList_counter;
 
