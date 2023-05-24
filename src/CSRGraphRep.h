@@ -19,6 +19,7 @@ struct DSU{
 struct CSRGraph{
     unsigned int vertexNum; // Number of Vertices
     unsigned int edgeNum; // Number of Edges
+    unsigned int numBlocks;
     unsigned int* dst;
     unsigned int* srcPtr;
     int* degree;
@@ -34,6 +35,15 @@ struct CSRGraph{
     unsigned int *bridgeFront;
     uint64_t* bridgeList;
     unsigned int *bridgeList_counter;
+
+    // DDFS variables
+    int * stack1;
+    int * stack2;
+    int * support;
+    int * color;
+    int * childsInDDFSTree_keys;
+    uint64_t * childsInDDFSTree_values;
+    int * ddfsPredecessorsPtr;
 
     bool* removed;
 

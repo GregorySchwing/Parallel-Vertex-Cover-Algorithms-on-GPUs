@@ -158,7 +158,7 @@ int main(int argc, char *argv[]) {
         printf("NumOfBlockPerSM : %d\n",numBlocksPerSm);
         printf("NumOfThreadsPerSM : %d\n\n",numThreadsPerSM);
         fflush(stdout);
-
+        graph.numBlocks = numBlocks;
         //Allocate NODES_PER_SM
         int * NODES_PER_SM_d;
         #if USE_COUNTERS

@@ -78,9 +78,18 @@ CSRGraph allocateGraph(CSRGraph graph){
     char* edgeStatus_d;
     uint64_t* bridgeList_d;
     unsigned int *bridgeList_counter_d;
+    unsigned int *bridgeFront;
+
+    // DDFS variables
+    int * stack1_d;
+    int * stack2_d;
+    int * support_d;
+    int * color_d;
+    int * childsInDDFSTree_keys_d;
+    uint64_t * childsInDDFSTree_values_d;
+    int * ddfsPredecessorsPtr_d;
 
     bool * removed_d;
-    unsigned int *bridgeFront;
     cudaMalloc((void**) &dst_d,sizeof(unsigned int)*2*graph.edgeNum);
     cudaMalloc((void**) &srcPtr_d,sizeof(unsigned int)*(graph.vertexNum+1));
     cudaMalloc((void**) &degree_d,sizeof(int)*graph.vertexNum);
@@ -106,6 +115,31 @@ CSRGraph allocateGraph(CSRGraph graph){
     Graph.bridgeList=bridgeList_d;
     Graph.bridgeList_counter=bridgeList_counter_d;
     
+    // childsInDDFSTree_values<uint64_t>[N], 
+	// childsInDDFSTree_keys<int>[N],
+	// stack1<int>[N], 
+    // stack2<int>[N], 
+	// support<int>[N], 
+    // ddfsPredecessorsPtr<int>[N], 
+    // color[N]
+	// Scalars: stack1Top, stack2Top, globalColorCounter, supportTop, childsInDDFSTreeTop
+    cudaMalloc((void**) &stack1_d,sizeof(int)*graph.vertexNum*graph.numBlocks);
+    cudaMalloc((void**) &stack2_d,sizeof(int)*graph.vertexNum*graph.numBlocks);
+    cudaMalloc((void**) &support_d,sizeof(int)*graph.vertexNum*graph.numBlocks);
+    cudaMalloc((void**) &color_d,sizeof(int)*graph.vertexNum*graph.numBlocks);
+    cudaMalloc((void**) &childsInDDFSTree_keys_d,sizeof(int)*graph.vertexNum*graph.numBlocks);
+    cudaMalloc((void**) &childsInDDFSTree_values_d,sizeof(uint64_t)*graph.vertexNum*graph.numBlocks);
+    cudaMalloc((void**) &ddfsPredecessorsPtr_d,sizeof(int)*graph.vertexNum*graph.numBlocks);
+
+    Graph.stack1=stack1_d;
+    Graph.stack2=stack2_d;
+    Graph.support=support_d;
+    Graph.color=color_d;
+    Graph.childsInDDFSTree_keys=childsInDDFSTree_keys_d;
+    Graph.childsInDDFSTree_values=childsInDDFSTree_values_d;
+    Graph.ddfsPredecessorsPtr=ddfsPredecessorsPtr_d;
+
+
     /*
     cudaMemset(oddlvl_d, INF, graph.vertexNum*sizeof(int));
     cudaMemset(evenlvl_d, INF, graph.vertexNum*sizeof(int));
