@@ -39,16 +39,6 @@ struct SharedDFSKernelArgs
 };
 #endif
 
-/*
-#if USE_GLOBAL_MEMORY
-__global__ void GlobalWorkList_global_DFS_kernel(Stacks stacks, unsigned int * minimum, WorkList workList, CSRGraph graph, Counters* counters, 
-    int* first_to_dequeue_global, int* global_memory, int* NODES_PER_SM) {
-#else
-__global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * minimum, WorkList workList, CSRGraph graph, Counters* counters, 
-    int* first_to_dequeue_global, int* NODES_PER_SM) {
-#endif
-*/
-
 #if USE_GLOBAL_MEMORY
 __global__ void GlobalWorkList_global_DFS_kernel(GlobalDFSKernelArgs args) {
     Stacks stacks = args.stacks;
@@ -106,14 +96,17 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
     int * vertexDegrees_s = shared_mem;
     int * vertexDegrees_s2 = &shared_mem[graph.vertexNum];
     #endif
-     __shared__ int bridgeFront;
+     int bridgeFront;
+     __shared__ int src;
+     __shared__ int dst;
+
     // Arrays: stack1, stack2, color, childsInDDFSTree, ddfsPredecessorsPtr, support
     // Scalars: stack1Top, stack2Top, globalColorCounter, supportTop, 
     if (threadIdx.x==0){
         bridgeFront = atomicAdd(graph.bridgeFront, 1);
-        uint64_t edgePair = graph.bridgeList[bridgeFront];
+        src = (uint32_t)graph.bridgeList[bridgeFront];
+        dst = (graph.bridgeList[bridgeFront] >> 32);
     }
     __syncthreads();
-    if(graph.removed[graph.bud[vertex]] || graph.removed[graph.bud[graph.dst[edgeIndex]]])
-        continue;   
+    if(graph.removed[graph.bud[src]] || graph.removed[graph.bud[dst]]) return;   
 }

@@ -1,9 +1,7 @@
 #ifndef CSRGraph_H
 #define CSRGraph_H
+// For uint64_t
 #include <stdint.h>
-
-typedef pair<int,int> pii;
-
 
 struct DSU{
     int* link;

@@ -39,6 +39,36 @@ __device__ int tenacity(CSRGraph & graph, int u, int v){
     return graph.evenlvl[u] + graph.evenlvl[v] + 1;
 }
 
+
+//returns {r0, g0} or {bottleneck, bottleneck} packed into uint64_t
+__device__ uint64_t ddfs(CSRGraph & graph, int src, int dst) {
+    /*
+    vector<int> Sr = {graph.bud[src]}, Sg = {graph.bud[dst]};
+    if(Sr[0] == Sg[0])
+        return {Sr[0],Sg[0]};
+    out_support = {Sr[0], Sg[0]};
+    int newRed = color[Sr[0]] = ++globalColorCounter, newGreen = color[Sg[0]] = ++globalColorCounter;
+    assert(newRed == (newGreen^1));
+
+    for(;;) {
+        //if found two disjoint paths
+        if(minlvl(Sr.back()) == 0 && minlvl(Sg.back()) == 0)
+            return {Sr.back(),Sg.back()};
+    
+        int b;
+        if(minlvl(Sr.back()) >= minlvl(Sg.back()))
+            b = ddfsMove(Sr,newRed,Sg, newGreen, out_support);
+        else
+            b = ddfsMove(Sg,newGreen,Sr, newRed, out_support);
+        if(b != -1)
+            return {b,b};
+    }
+    */
+   return 1;
+}
+
+
+
 __device__ void deleteNeighborsOfMaxDegreeVertex(CSRGraph graph,int* vertexDegrees_s, unsigned int* numDeletedVertices, int* vertexDegrees_s2, 
     unsigned int* numDeletedVertices2, int maxDegree, unsigned int maxVertex){
 
