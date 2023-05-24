@@ -41,29 +41,45 @@ __device__ int tenacity(CSRGraph & graph, int u, int v){
 
 
 //returns {r0, g0} or {bottleneck, bottleneck} packed into uint64_t
-__device__ uint64_t ddfs(CSRGraph & graph, int src, int dst) {
-    /*
-    vector<int> Sr = {graph.bud[src]}, Sg = {graph.bud[dst]};
-    if(Sr[0] == Sg[0])
-        return {Sr[0],Sg[0]};
-    out_support = {Sr[0], Sg[0]};
-    int newRed = color[Sr[0]] = ++globalColorCounter, newGreen = color[Sg[0]] = ++globalColorCounter;
+__device__ uint64_t ddfs(CSRGraph & graph, int src, int dst, int * support, unsigned int * supportTop, int * stack1, int * stack2, unsigned int * stack1Top, unsigned int * stack2Top, int * color, unsigned int *globalColorCounter) {
+    stack1[stack1Top[0]]=graph.bud[src], stack2[stack2Top[0]]=graph.bud[dst];
+    stack1Top[0]++,stack2Top[0]++;
+    //vector<int> Sr = {graph.bud[src]}, Sg = {graph.bud[dst]};
+    //if(Sr[0] == Sg[0])
+    //    return {Sr[0],Sg[0]};
+    if (stack1[0]==stack2[0]){
+        return (uint64_t) stack1[0] << 32 | stack2[0];
+    }
+    //out_support = {Sr[0], Sg[0]};
+    support[supportTop[0]]=stack1[0],supportTop[0]++;
+    support[supportTop[0]]=stack2[0],supportTop[0]++;
+
+    //int newRed = color[Sr[0]] = ++globalColorCounter, newGreen = color[Sg[0]] = ++globalColorCounter;
+    //assert(newRed == (newGreen^1));
+    int newRed = color[stack1[0]] = ++globalColorCounter[0], newGreen = color[stack2[0]] = ++globalColorCounter[0];
     assert(newRed == (newGreen^1));
+    
 
     for(;;) {
         //if found two disjoint paths
-        if(minlvl(Sr.back()) == 0 && minlvl(Sg.back()) == 0)
-            return {Sr.back(),Sg.back()};
-    
+        //if(minlvl(Sr.back()) == 0 && minlvl(Sg.back()) == 0)
+        if(minlvl(graph,stack1[stack1Top[0]]) == 0 && minlvl(graph,stack2[stack2Top[0]]) == 0)
+            //return {Sr.back(),Sg.back()};
+            return (uint64_t) stack1[stack1Top[0]] << 32 | stack2[stack2Top[0]];
+
         int b;
-        if(minlvl(Sr.back()) >= minlvl(Sg.back()))
-            b = ddfsMove(Sr,newRed,Sg, newGreen, out_support);
+        //if(minlvl(Sr.back()) >= minlvl(Sg.back()))
+        if(minlvl(graph,stack1[stack1Top[0]]) >= minlvl(graph,stack2[stack2Top[0]]))
+            //b = ddfsMove(Sr,newRed,Sg, newGreen, out_support);
+            b = 0;
         else
-            b = ddfsMove(Sg,newGreen,Sr, newRed, out_support);
+            //b = ddfsMove(Sg,newGreen,Sr, newRed, out_support);
+            b = 0;
         if(b != -1)
-            return {b,b};
+            //return {b,b};
+            return (uint64_t) b << 32 | b;
+
     }
-    */
    return 1;
 }
 

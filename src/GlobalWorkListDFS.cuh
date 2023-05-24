@@ -89,12 +89,39 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
     // numDeletedVertices2 == stack2 top
 
     #if USE_GLOBAL_MEMORY
-    int * vertexDegrees_s = &global_memory[graph.vertexNum*(2*blockIdx.x)];
-    int * vertexDegrees_s2 = &global_memory[graph.vertexNum*(2*blockIdx.x + 1)];
+    int * stack1 = &graph.stack1[graph.vertexNum*(blockIdx.x)];
+    int * stack2 = &graph.stack2[graph.vertexNum*(blockIdx.x)];
+    int * color = &graph.color[graph.vertexNum*(blockIdx.x)];
+    int * childsInDDFSTree_keys = &graph.childsInDDFSTree_keys[graph.vertexNum*(blockIdx.x)];
+    int * ddfsPredecessorsPtr = &graph.ddfsPredecessorsPtr[graph.vertexNum*(blockIdx.x)];
+    int * support = &graph.support[graph.vertexNum*(blockIdx.x)];
+    uint64_t * childsInDDFSTree_values = &graph.childsInDDFSTree_values[graph.vertexNum*(blockIdx.x)];
+
+    unsigned int * stack1Top = &graph.stack1Top[(blockIdx.x)];
+    unsigned int * stack2Top = &graph.stack2Top[(blockIdx.x)];
+    unsigned int * supportTop = &graph.supportTop[(blockIdx.x)];
+    unsigned int * globalColorCounter = &graph.globalColorCounter[(blockIdx.x)];
+    unsigned int * childsInDDFSTreeTop = &graph.childsInDDFSTreeTop[(blockIdx.x)];
+
     #else
     extern __shared__ int shared_mem[];
     int * vertexDegrees_s = shared_mem;
     int * vertexDegrees_s2 = &shared_mem[graph.vertexNum];
+
+    int * stack1 = &graph.stack1[graph.vertexNum*0];
+    int * stack2 = &graph.stack2[graph.vertexNum*1];
+    int * color = &graph.color[graph.vertexNum*2];
+    int * childsInDDFSTree_keys = &graph.childsInDDFSTree_keys[graph.vertexNum*3];
+    int * ddfsPredecessorsPtr = &graph.ddfsPredecessorsPtr[graph.vertexNum*4];
+    int * support = &graph.support[graph.vertexNum*5];
+    uint64_t * childsInDDFSTree_values = &graph.childsInDDFSTree_values[graph.vertexNum*6];
+
+    unsigned int * stack1Top = &graph.stack1Top[(graph.vertexNum*8)];
+    unsigned int * stack2Top = &graph.stack2Top[(graph.vertexNum*8)+1];
+    unsigned int * supportTop = &graph.supportTop[(graph.vertexNum*8)+2];
+    unsigned int * globalColorCounter = &graph.globalColorCounter[(graph.vertexNum*8)+3];
+    unsigned int * childsInDDFSTreeTop = &graph.childsInDDFSTreeTop[(graph.vertexNum*8)+4];
+
     #endif
      int bridgeFront;
      __shared__ int src;
@@ -109,4 +136,5 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
     }
     __syncthreads();
     if(graph.removed[graph.bud[src]] || graph.removed[graph.bud[dst]]) return;   
+    ddfs(graph,src,dst,support,supportTop,stack1,stack2,stack1Top,stack2Top,color,globalColorCounter);
 }

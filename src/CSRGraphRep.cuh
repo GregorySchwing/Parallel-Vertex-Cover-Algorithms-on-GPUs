@@ -89,6 +89,12 @@ CSRGraph allocateGraph(CSRGraph graph){
     uint64_t * childsInDDFSTree_values_d;
     int * ddfsPredecessorsPtr_d;
 
+    unsigned int * stack1Top_d;
+    unsigned int * stack2Top_d; 
+    unsigned int * supportTop_d; 
+    unsigned int * globalColorCounter_d; 
+    unsigned int * childsInDDFSTreeTop_d;
+
     bool * removed_d;
     cudaMalloc((void**) &dst_d,sizeof(unsigned int)*2*graph.edgeNum);
     cudaMalloc((void**) &srcPtr_d,sizeof(unsigned int)*(graph.vertexNum+1));
@@ -139,6 +145,23 @@ CSRGraph allocateGraph(CSRGraph graph){
     Graph.childsInDDFSTree_values=childsInDDFSTree_values_d;
     Graph.ddfsPredecessorsPtr=ddfsPredecessorsPtr_d;
 
+    cudaMalloc((void**) &stack1Top_d,sizeof(unsigned int)*graph.numBlocks);
+    cudaMalloc((void**) &stack2Top_d,sizeof(unsigned int)*graph.numBlocks);
+    cudaMalloc((void**) &supportTop_d,sizeof(unsigned int)*graph.numBlocks);
+    cudaMalloc((void**) &globalColorCounter_d,sizeof(unsigned int)*graph.numBlocks);
+    cudaMalloc((void**) &childsInDDFSTreeTop_d,sizeof(unsigned int)*graph.numBlocks);
+
+    graph.stack1Top=stack1Top_d;
+    graph.stack2Top=stack2Top_d;
+    graph.supportTop=supportTop_d;
+    graph.globalColorCounter=globalColorCounter_d;
+    graph.childsInDDFSTreeTop=childsInDDFSTreeTop_d;
+
+    cudaMemset(graph.stack1Top, 0, sizeof(unsigned int));
+    cudaMemset(graph.stack2Top, 0, sizeof(unsigned int));
+    cudaMemset(graph.supportTop, 0, sizeof(unsigned int));
+    cudaMemset(graph.globalColorCounter, 0, sizeof(unsigned int));
+    cudaMemset(graph.childsInDDFSTreeTop, 0, sizeof(unsigned int));
 
     /*
     cudaMemset(oddlvl_d, INF, graph.vertexNum*sizeof(int));

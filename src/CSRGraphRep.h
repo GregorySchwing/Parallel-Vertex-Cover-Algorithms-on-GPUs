@@ -45,6 +45,12 @@ struct CSRGraph{
     uint64_t * childsInDDFSTree_values;
     int * ddfsPredecessorsPtr;
 
+    unsigned int * stack1Top;
+    unsigned int * stack2Top; 
+    unsigned int * supportTop; 
+    unsigned int * globalColorCounter; 
+    unsigned int * childsInDDFSTreeTop;
+
     bool* removed;
 
     int* visited;
