@@ -69,3 +69,20 @@ __global__ void GlobalWorkList_BFS_kernel(Stacks stacks, unsigned int * minimum,
         }
     }
 }
+
+__global__ void GlobalWorkList_Extract_Bridges_kernel(Stacks stacks, unsigned int * minimum, WorkList workList, CSRGraph graph, Counters* counters, 
+    int* first_to_dequeue_global, int* NODES_PER_SM, unsigned int depth) {
+
+    unsigned int vertex = threadIdx.x + blockIdx.x*(blockDim.x);
+    if(vertex >= graph.vertexNum) return;
+    unsigned int start = graph.srcPtr[vertex];
+    unsigned int end = graph.srcPtr[vertex + 1];
+    unsigned int edgeIndex;
+    for(edgeIndex=start; edgeIndex < end-start; edgeIndex++) { // Delete Neighbors of startingVertex
+        if (graph.edgeStatus[edgeIndex] == Bridge && graph.bridges[edgeIndex] == 2*depth+1) {
+            unsigned int top = atomicAdd(graph.bridgeList_counter,1);
+            uint64_t edgePair = (uint64_t) vertex << 32 | graph.dst[edgeIndex];
+            graph.bridgeList[top] = edgePair;
+        }
+    }
+}
