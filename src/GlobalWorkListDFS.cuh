@@ -131,10 +131,15 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
     // Scalars: stack1Top, stack2Top, globalColorCounter, supportTop, 
     if (threadIdx.x==0){
         bridgeFront = atomicAdd(graph.bridgeFront, 1);
+        if (bridgeFront >= graph.bridgeList_counter[0]) return;
         src = (uint32_t)graph.bridgeList[bridgeFront];
         dst = (graph.bridgeList[bridgeFront] >> 32);
-    }
-    __syncthreads();
+    //}
+    //__syncthreads();
+    printf("Bridge ID %d src %d dst %d\n", bridgeFront, src, dst);
+    return;
     if(graph.removed[graph.bud[src]] || graph.removed[graph.bud[dst]]) return;   
-    ddfs(graph,src,dst,support,supportTop,stack1,stack2,stack1Top,stack2Top,color,globalColorCounter);
+    ddfs(graph,src,dst,stack1,stack2,stack1Top,stack2Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,childsInDDFSTree_keys,childsInDDFSTree_values,childsInDDFSTreeTop);
+    printf("bridgeID %d bridge %d %d support %d %d %d %d %d %d\n", bridgeFront, src, dst, support[0], support[1], supportTop[0]>2 ? support[2]:-1,supportTop[0]>3 ? support[3]:-1,supportTop[0]>4 ? support[4]:-1,supportTop[0]>5 ? support[5]:-1);
+    }
 }

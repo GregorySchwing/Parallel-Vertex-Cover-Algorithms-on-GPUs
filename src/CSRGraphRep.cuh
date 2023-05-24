@@ -74,7 +74,7 @@ CSRGraph allocateGraph(CSRGraph graph){
     int * oddlvl_d;
     int * evenlvl_d;
     bool* pred_d;
-    bool* bridges_d;
+    int* bridgeTenacity_d;
     char* edgeStatus_d;
     uint64_t* bridgeList_d;
     unsigned int *bridgeList_counter_d;
@@ -104,7 +104,7 @@ CSRGraph allocateGraph(CSRGraph graph){
     cudaMalloc((void**) &num_unmatched_vertices_d,sizeof(unsigned int));
 
     cudaMalloc((void**) &pred_d, 2*graph.edgeNum*sizeof(bool));
-    cudaMalloc((void**) &bridges_d, 2*graph.edgeNum*sizeof(bool));
+    cudaMalloc((void**) &bridgeTenacity_d, 2*graph.edgeNum*sizeof(int));
     cudaMalloc((void**) &edgeStatus_d, 2*graph.edgeNum*sizeof(char));
 
     cudaMalloc((void**) &oddlvl_d, graph.vertexNum*sizeof(int));
@@ -176,6 +176,7 @@ CSRGraph allocateGraph(CSRGraph graph){
     thrust::fill(evenlvl_thrust_ptr, evenlvl_thrust_ptr+graph.vertexNum, INF); // or 999999.f if you prefer
     cudaMemset(bridgeFront, 0, sizeof(unsigned int));
     cudaMemset(matching_d, -1, graph.vertexNum*sizeof(int));
+    cudaMemset(edgeStatus_d, 0, 2*graph.edgeNum*sizeof(char));
 
     Graph.vertexNum = graph.vertexNum;
     Graph.edgeNum = graph.edgeNum;
@@ -191,7 +192,7 @@ CSRGraph allocateGraph(CSRGraph graph){
     Graph.oddlvl = oddlvl_d;
     Graph.evenlvl = evenlvl_d;
     Graph.pred = pred_d;
-    Graph.bridges = bridges_d;
+    Graph.bridgeTenacity = bridgeTenacity_d;
     Graph.edgeStatus = edgeStatus_d;
     Graph.bridgeFront = bridgeFront;
     Graph.removed=removed_d;

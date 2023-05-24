@@ -40,10 +40,70 @@ __device__ int tenacity(CSRGraph & graph, int u, int v){
 }
 
 
+/*
+tries to move color1 down, updating colors, stacks and childs in ddfs tree
+also adds each visited vertex to support of this bridge
+*/
+
+__device__ int ddfsMove(CSRGraph & graph, int * stack1, int * stack2, unsigned int * stack1Top, unsigned int * stack2Top, int * support, unsigned int * supportTop, int * color, unsigned int *globalColorCounter, int * ddfsPredecessorsPtr, int*childsInDDFSTree_keys,uint64_t*childsInDDFSTree_values,unsigned int * childsInDDFSTreeTop, const int color1, const int color2) {
+//int ddfsMove(vector<int>& stack1, const int color1, vector<int>& stack2, const int color2, vector<int>& support) {
+    
+    //int u = stack1.back();
+    int u = stack1[stack1Top[0]];
+    unsigned int start = graph.srcPtr[u];
+    unsigned int end = graph.srcPtr[u + 1];
+    unsigned int edgeIndex;
+    for(edgeIndex=start+ddfsPredecessorsPtr[u]; edgeIndex < end-start; edgeIndex++) { // Delete Neighbors of startingVertex
+        if (graph.pred[edgeIndex]) {
+            ddfsPredecessorsPtr[u]=edgeIndex+1;
+            int a = graph.dst[edgeIndex];
+            int v = graph.bud[a];
+            assert(graph.removed[a] == graph.removed[v]);
+            if(graph.removed[a])
+                continue;
+            if(color[v] == 0) {
+                //stack1.push_back(v);
+                stack1[stack1Top[0]++]=v;
+                //support.push_back(v);
+                support[supportTop[0]++]=v;
+
+                //childsInDDFSTree[u].push_back({a,v});
+                childsInDDFSTree_keys[childsInDDFSTreeTop[0]]=u;
+                childsInDDFSTree_values[childsInDDFSTreeTop[0]]=(uint64_t) a << 32 | v;
+                childsInDDFSTreeTop[0]++;
+                color[v] = color1;
+                return -1;
+            }
+            else if(v == stack2[stack2Top[0]]){
+                childsInDDFSTree_keys[childsInDDFSTreeTop[0]]=u;
+                childsInDDFSTree_values[childsInDDFSTreeTop[0]]=(uint64_t) a << 32 | v;
+                childsInDDFSTreeTop[0]++;
+            }
+        }
+        --stack1Top[0];
+
+        if(stack1Top[0] == 0) {
+            if(stack2Top[0] == 1) { //found bottleneck
+                color[stack2[stack2Top[0]]] = 0;
+                return stack2[stack2Top[0]];
+            }
+            //change colors
+            assert(color[stack2[stack2Top[0]]] == color2);
+            stack1[stack1Top[0]++]=stack2[stack2Top[0]];
+            color[stack1[stack1Top[0]]] = color1;
+            --stack2Top[0];
+        }
+    }
+
+    return -1;
+}
+
+
+
+
 //returns {r0, g0} or {bottleneck, bottleneck} packed into uint64_t
-__device__ uint64_t ddfs(CSRGraph & graph, int src, int dst, int * support, unsigned int * supportTop, int * stack1, int * stack2, unsigned int * stack1Top, unsigned int * stack2Top, int * color, unsigned int *globalColorCounter) {
-    stack1[stack1Top[0]]=graph.bud[src], stack2[stack2Top[0]]=graph.bud[dst];
-    stack1Top[0]++,stack2Top[0]++;
+__device__ uint64_t ddfs(CSRGraph & graph, int src, int dst, int * stack1, int * stack2, unsigned int * stack1Top, unsigned int * stack2Top, int * support, unsigned int * supportTop, int * color, unsigned int *globalColorCounter, int * ddfsPredecessorsPtr, int*childsInDDFSTree_keys,uint64_t*childsInDDFSTree_values,unsigned int * childsInDDFSTreeTop) {
+    stack1[stack1Top[0]++]=graph.bud[src], stack2[stack2Top[0]++]=graph.bud[dst];
     //vector<int> Sr = {graph.bud[src]}, Sg = {graph.bud[dst]};
     //if(Sr[0] == Sg[0])
     //    return {Sr[0],Sg[0]};
@@ -51,8 +111,8 @@ __device__ uint64_t ddfs(CSRGraph & graph, int src, int dst, int * support, unsi
         return (uint64_t) stack1[0] << 32 | stack2[0];
     }
     //out_support = {Sr[0], Sg[0]};
-    support[supportTop[0]]=stack1[0],supportTop[0]++;
-    support[supportTop[0]]=stack2[0],supportTop[0]++;
+    support[supportTop[0]++]=stack1[0];
+    support[supportTop[0]++]=stack2[0];
 
     //int newRed = color[Sr[0]] = ++globalColorCounter, newGreen = color[Sg[0]] = ++globalColorCounter;
     //assert(newRed == (newGreen^1));
@@ -71,16 +131,15 @@ __device__ uint64_t ddfs(CSRGraph & graph, int src, int dst, int * support, unsi
         //if(minlvl(Sr.back()) >= minlvl(Sg.back()))
         if(minlvl(graph,stack1[stack1Top[0]]) >= minlvl(graph,stack2[stack2Top[0]]))
             //b = ddfsMove(Sr,newRed,Sg, newGreen, out_support);
-            b = 0;
+            b = ddfsMove(graph,stack1,stack2,stack1Top,stack2Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,childsInDDFSTree_keys,childsInDDFSTree_values,childsInDDFSTreeTop, newGreen, newRed);
         else
             //b = ddfsMove(Sg,newGreen,Sr, newRed, out_support);
-            b = 0;
+            b = ddfsMove(graph,stack2,stack1,stack1Top,stack2Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,childsInDDFSTree_keys,childsInDDFSTree_values,childsInDDFSTreeTop, newRed, newGreen);
         if(b != -1)
             //return {b,b};
             return (uint64_t) b << 32 | b;
 
     }
-   return 1;
 }
 
 

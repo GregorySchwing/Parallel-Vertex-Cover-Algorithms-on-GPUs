@@ -30,7 +30,7 @@ struct CSRGraph{
     int * oddlvl;
     int * evenlvl;
     bool* pred;
-    bool* bridges;
+    int* bridgeTenacity;
     char* edgeStatus;
     unsigned int *bridgeFront;
     uint64_t* bridgeList;

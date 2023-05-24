@@ -33,21 +33,20 @@ __global__ void GlobalWorkList_BFS_kernel(Stacks stacks, unsigned int * minimum,
     unsigned int edgeIndex;
     for(edgeIndex=start; edgeIndex < end-start; edgeIndex++) { // Delete Neighbors of startingVertex
         if (graph.edgeStatus[edgeIndex] == NotScanned && (graph.oddlvl[vertex] == depth) == (graph.matching[vertex] == graph.dst[edgeIndex])) {
-            if(min(graph.oddlvl[graph.dst[edgeIndex]], graph.evenlvl[graph.dst[edgeIndex]]) >= depth+1) {
+            if(minlvl(graph,graph.dst[edgeIndex]) >= depth+1) {
                 graph.edgeStatus[edgeIndex] = Prop;
                 unsigned int startOther = graph.srcPtr[graph.dst[edgeIndex]];
                 unsigned int endOther = graph.srcPtr[graph.dst[edgeIndex] + 1];
                 unsigned int edgeIndexOther;
-                //printf("BID %d prop edge %d - %d \n", blockIdx.x, vertex, graph.dst[edgeIndex]);
+                printf("BID %d prop edge %d - %d \n", blockIdx.x, vertex, graph.dst[edgeIndex]);
                 for(edgeIndexOther=startOther; edgeIndexOther < endOther-startOther; edgeIndexOther++) { // Delete Neighbors of startingVertex
                     if(vertex==graph.dst[edgeIndexOther]){
                         graph.edgeStatus[edgeIndexOther] = Prop;
                         break;
                     }
                 }
-                if(minlvl(graph,graph.dst[edgeIndex]) > depth+1) {
-                    if(depth&1) graph.oddlvl[vertex] = depth; else graph.evenlvl[vertex] = depth;
-                }
+                if(minlvl(graph,graph.dst[edgeIndex]) > depth+1)
+                    setlvl(graph, graph.dst[edgeIndex], depth+1);
                 graph.pred[edgeIndexOther]=true;
             }
             else{
@@ -55,7 +54,7 @@ __global__ void GlobalWorkList_BFS_kernel(Stacks stacks, unsigned int * minimum,
                 unsigned int startOther = graph.srcPtr[graph.dst[edgeIndex]];
                 unsigned int endOther = graph.srcPtr[graph.dst[edgeIndex] + 1];
                 unsigned int edgeIndexOther;
-                //printf("BID %d bridge edge %d - %d \n", blockIdx.x, vertex, graph.dst[edgeIndex]);
+                printf("BID %d bridge edge %d - %d \n", blockIdx.x, vertex, graph.dst[edgeIndex]);
                 for(edgeIndexOther=startOther; edgeIndexOther < endOther-startOther; edgeIndexOther++) { // Delete Neighbors of startingVertex
                     if(vertex==graph.dst[edgeIndexOther]){
                         graph.edgeStatus[edgeIndexOther] = Bridge;
@@ -63,7 +62,7 @@ __global__ void GlobalWorkList_BFS_kernel(Stacks stacks, unsigned int * minimum,
                     }
                 }
                 if(tenacity(graph,vertex,graph.dst[edgeIndex]) < INF) {
-                    graph.bridges[edgeIndex] = tenacity(graph,vertex,graph.dst[edgeIndex]);
+                    graph.bridgeTenacity[edgeIndex] = tenacity(graph,vertex,graph.dst[edgeIndex]);
                 }
             }
         }
@@ -79,9 +78,10 @@ __global__ void GlobalWorkList_Extract_Bridges_kernel(Stacks stacks, unsigned in
     unsigned int end = graph.srcPtr[vertex + 1];
     unsigned int edgeIndex;
     for(edgeIndex=start; edgeIndex < end-start; edgeIndex++) { // Delete Neighbors of startingVertex
-        if (graph.edgeStatus[edgeIndex] == Bridge && graph.bridges[edgeIndex] == 2*depth+1) {
+        if (graph.edgeStatus[edgeIndex] == Bridge && graph.bridgeTenacity[edgeIndex] == 2*depth+1) {
             unsigned int top = atomicAdd(graph.bridgeList_counter,1);
             uint64_t edgePair = (uint64_t) vertex << 32 | graph.dst[edgeIndex];
+            printf("Adding bridge %d %d\n", vertex, graph.dst[edgeIndex]);
             graph.bridgeList[top] = edgePair;
         }
     }
