@@ -155,23 +155,24 @@ CSRGraph allocateGraph(CSRGraph graph){
     Graph.childsInDDFSTree_keys=childsInDDFSTree_keys_d;
     Graph.childsInDDFSTree_values=childsInDDFSTree_values_d;
     Graph.ddfsPredecessorsPtr=ddfsPredecessorsPtr_d;
+    printf("NUM BLOCKS %d\n",graph.numBlocks);
     checkCudaErrors(cudaMalloc((void**) &stack1Top_d,sizeof(unsigned int)*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &stack2Top_d,sizeof(unsigned int)*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &supportTop_d,sizeof(unsigned int)*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &globalColorCounter_d,sizeof(unsigned int)*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &childsInDDFSTreeTop_d,sizeof(unsigned int)*graph.numBlocks));
 
-    graph.stack1Top=stack1Top_d;
-    graph.stack2Top=stack2Top_d;
-    graph.supportTop=supportTop_d;
-    graph.globalColorCounter=globalColorCounter_d;
-    graph.childsInDDFSTreeTop=childsInDDFSTreeTop_d;
+    Graph.stack1Top=stack1Top_d;
+    Graph.stack2Top=stack2Top_d;
+    Graph.supportTop=supportTop_d;
+    Graph.globalColorCounter=globalColorCounter_d;
+    Graph.childsInDDFSTreeTop=childsInDDFSTreeTop_d;
 
-    cudaMemset(graph.stack1Top, 0, sizeof(unsigned int)*graph.numBlocks);
-    cudaMemset(graph.stack2Top, 0, sizeof(unsigned int)*graph.numBlocks);
-    cudaMemset(graph.supportTop, 0, sizeof(unsigned int)*graph.numBlocks);
-    cudaMemset(graph.globalColorCounter, 0, sizeof(unsigned int)*graph.numBlocks);
-    cudaMemset(graph.childsInDDFSTreeTop, 0, sizeof(unsigned int)*graph.numBlocks);
+    cudaMemset(Graph.stack1Top, 0, sizeof(unsigned int)*graph.numBlocks);
+    cudaMemset(Graph.stack2Top, 0, sizeof(unsigned int)*graph.numBlocks);
+    cudaMemset(Graph.supportTop, 0, sizeof(unsigned int)*graph.numBlocks);
+    cudaMemset(Graph.globalColorCounter, 0, sizeof(unsigned int)*graph.numBlocks);
+    cudaMemset(Graph.childsInDDFSTreeTop, 0, sizeof(unsigned int)*graph.numBlocks);
 
     /*
     cudaMemset(oddlvl_d, INF, graph.vertexNum*sizeof(int));

@@ -93,7 +93,6 @@ __global__ void PrintTops(Stacks stacks, unsigned int * minimum, WorkList workLi
     int* first_to_dequeue_global, int* NODES_PER_SM, unsigned int depth) {
 
     if (threadIdx.x==0){
-    //printf("BlockID %d\n", blockIdx.x);
     printf("BlockID %d stack1Top %d stack2Top %d\n", blockIdx.x, graph.stack1Top[blockIdx.x], graph.stack2Top[blockIdx.x]);
     }
 }
