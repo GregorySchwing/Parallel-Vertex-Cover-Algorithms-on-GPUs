@@ -9,6 +9,7 @@
 #include "BWDWorkList.cuh"
 #include "helperFunctions.cuh"
 #include <cooperative_groups.h>
+#include "sort.cuh"
 using namespace cooperative_groups; 
 #define VERTICES_PER_BLOCK 1000
 
@@ -137,6 +138,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
      int bridgeFront;
      __shared__ int src;
      __shared__ int dst;
+     __shared__ uint64_t ddfsResult;
 
     // Arrays: stack1, stack2, color, childsInDDFSTree, ddfsPredecessorsPtr, support, myBridge
     // Scalars: stack1Top, stack2Top, globalColorCounter, supportTop, 
@@ -149,9 +151,15 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
         //__syncthreads();
         printf("Bridge ID %d src %d dst %d\n", bridgeFront, src, dst);
         if(graph.removed[graph.bud[src]] || graph.removed[graph.bud[dst]]) return;   
-        auto ddfsResult = ddfs(graph,src,dst,stack1,stack2,stack1Top,stack2Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,childsInDDFSTree_keys,childsInDDFSTree_values,childsInDDFSTreeTop);
+        ddfsResult = ddfs(graph,src,dst,stack1,stack2,stack1Top,stack2Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,childsInDDFSTree_keys,childsInDDFSTree_values,childsInDDFSTreeTop);
         printf("bridgeID %d bridge %d %d support %d %d %d %d %d %d\n", bridgeFront, src, dst, support[0], support[1], supportTop[0]>2 ? support[2]:-1,supportTop[0]>3 ? support[3]:-1,supportTop[0]>4 ? support[4]:-1,supportTop[0]>5 ? support[5]:-1);
-        
+    }
+    __syncthreads();
+    // Specialize BlockRadixSort for a 1D block of 128 threads owning 4 integer items each
+    cta_sort<1024>(graph.vertexNum, childsInDDFSTree_keys);
+    //typedef cub::BlockRadixSort<int, 1024, (int)((graph.vertexNum+1024-1)/1024)> BlockRadixSort;
+    __syncthreads();
+    if (threadIdx.x==0){
         //pair<pii,pii> curBridge = {b,{bud[b.st], bud[b.nd]}};
         __int128_t curBridge =  (__int128_t) src                << 96 |
                                 (__int128_t) dst                << 64 |
