@@ -436,12 +436,11 @@ void setBlockDimAndUseGlobalMemoryDFS_NoStack(Config &config, CSRGraph graph, in
 	bool useSharedMem = false;
 	// It's possible/likely that the amount of required memory <<< N.
 	// Arrays:  
-	// childsInDDFSTree_values<int>[N], 
-	// childsInDDFSTree_values==budAtDDFSEncounter
+	// childsInDDFSTree==budAtDDFSEncounter
 	// budAtDDFSEncounter<int>[N],
 	// stack1<int>[N], stack2<int>[N], 
 	// support<int>[N], ddfsPredecessorsPtr<int>[N], color[N]
-	// Scalars: stack1Top, stack2Top, globalColorCounter, supportTop, childsInDDFSTreeTop
+	// Scalars: stack1Top, stack2Top, globalColorCounter, supportTop
 
 	for (long long blockDim = minBlockDim; blockDim <= maxBlockDim; blockDim *= 2)
 	{

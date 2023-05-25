@@ -95,7 +95,6 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
     int * budAtDDFSEncounter = &graph.budAtDDFSEncounter[graph.vertexNum*(blockIdx.x)];
     int * ddfsPredecessorsPtr = &graph.ddfsPredecessorsPtr[graph.vertexNum*(blockIdx.x)];
     int * support = &graph.support[graph.vertexNum*(blockIdx.x)];
-    uint64_t * childsInDDFSTree_values = &graph.childsInDDFSTree_values[graph.vertexNum*(blockIdx.x)];
     int * removedVerticesQueue = &graph.removedVerticesQueue[graph.vertexNum*(blockIdx.x)];
     int * removedPredecessorsSize = &graph.removedVerticesQueue[graph.vertexNum*(blockIdx.x)];
 
@@ -103,7 +102,6 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
     unsigned int * stack2Top = &graph.stack2Top[(blockIdx.x)];
     unsigned int * supportTop = &graph.supportTop[(blockIdx.x)];
     unsigned int * globalColorCounter = &graph.globalColorCounter[(blockIdx.x)];
-    unsigned int * childsInDDFSTreeTop = &graph.childsInDDFSTreeTop[(blockIdx.x)];
     unsigned int * removedVerticesQueueBack = &graph.removedVerticesQueueBack[(blockIdx.x)];    
     unsigned int * removedVerticesQueueFront = &graph.removedVerticesQueueFront[(blockIdx.x)];    
 
@@ -122,16 +120,14 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
     int * support = &graph.support[graph.vertexNum*5];
     int * removedVerticesQueue = &graph.removedVerticesQueue[graph.vertexNum*6];
     int * removedPredecessorsSize = &graph.removedVerticesQueue[graph.vertexNum*7];
-    uint64_t * childsInDDFSTree_values = &graph.childsInDDFSTree_values[graph.vertexNum*8];
 
     unsigned int * stack1Top = &graph.stack1Top[(graph.vertexNum*10)];
     unsigned int * stack2Top = &graph.stack2Top[(graph.vertexNum*10)+1];
     unsigned int * supportTop = &graph.supportTop[(graph.vertexNum*10)+2];
     unsigned int * globalColorCounter = &graph.globalColorCounter[(graph.vertexNum*10)+3];
-    unsigned int * childsInDDFSTreeTop = &graph.childsInDDFSTreeTop[(graph.vertexNum*10)+4];
-    unsigned int * removedVerticesQueueBack = &graph.removedVerticesQueueBack[(graph.vertexNum*10)+5];
-    unsigned int * removedVerticesQueueFront = &graph.removedVerticesQueueFront[(graph.vertexNum*10)+6];
-    bool * foundPath = &graph.foundPath[(graph.vertexNum*10)+7];
+    unsigned int * removedVerticesQueueBack = &graph.removedVerticesQueueBack[(graph.vertexNum*10)+4];
+    unsigned int * removedVerticesQueueFront = &graph.removedVerticesQueueFront[(graph.vertexNum*10)+5];
+    bool * foundPath = &graph.foundPath[(graph.vertexNum*10)+6];
 
     #endif
      int bridgeFront;
@@ -146,19 +142,12 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
         if (bridgeFront >= graph.bridgeList_counter[0]) return;
         src = (uint32_t)graph.bridgeList[bridgeFront];
         dst = (graph.bridgeList[bridgeFront] >> 32);
-    //}
-        //__syncthreads();
+
         printf("Bridge ID %d src %d dst %d\n", bridgeFront, src, dst);
         if(graph.removed[graph.bud[src]] || graph.removed[graph.bud[dst]]) return;   
-        ddfsResult = ddfs(graph,src,dst,stack1,stack2,stack1Top,stack2Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,budAtDDFSEncounter,childsInDDFSTree_values,childsInDDFSTreeTop);
+        ddfsResult = ddfs(graph,src,dst,stack1,stack2,stack1Top,stack2Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,budAtDDFSEncounter);
         printf("bridgeID %d bridge %d %d support %d %d %d %d %d %d\n", bridgeFront, src, dst, support[0], support[1], supportTop[0]>2 ? support[2]:-1,supportTop[0]>3 ? support[3]:-1,supportTop[0]>4 ? support[4]:-1,supportTop[0]>5 ? support[5]:-1);
-    }
-    __syncthreads();
-    // Specialize BlockRadixSort for a 1D block of 128 threads owning 4 integer items each
-    //cta_sort<1024>(graph.vertexNum, budAtDDFSEncounter);
-    //typedef cub::BlockRadixSort<int, 1024, (int)((graph.vertexNum+1024-1)/1024)> BlockRadixSort;
-    __syncthreads();
-    if (threadIdx.x==0){
+
         //pair<pii,pii> curBridge = {b,{bud[b.st], bud[b.nd]}};
         __int128_t curBridge =  (__int128_t) src                << 96 |
                                 (__int128_t) dst                << 64 |

@@ -42,7 +42,6 @@ struct CSRGraph{
     int * support;
     int * color;
     int * budAtDDFSEncounter;
-    uint64_t * childsInDDFSTree_values;
     int * ddfsPredecessorsPtr;
     __int128_t * myBridge;
     bool* foundPath;
@@ -53,7 +52,6 @@ struct CSRGraph{
     unsigned int * stack2Top; 
     unsigned int * supportTop; 
     unsigned int * globalColorCounter; 
-    unsigned int * childsInDDFSTreeTop;
     unsigned int * removedVerticesQueueBack;
     unsigned int * removedVerticesQueueFront;
 
