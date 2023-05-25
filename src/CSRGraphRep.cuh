@@ -88,7 +88,7 @@ void CSRGraph::reset(){
     cudaMemset(pred, false, 2*edgeNum*sizeof(bool));
     cudaMemset(ddfsPredecessorsPtr, 0, sizeof(int)*vertexNum*numBlocks);
     cudaMemset(color, 0, sizeof(int)*vertexNum*numBlocks);
-    cudaMemset(edgeStatus, 0, 2*edgeNum*sizeof(char));
+    cudaMemset(edgeStatus, (char)0, 2*edgeNum*sizeof(*edgeStatus));
     cudaMemset(removed, 0, vertexNum*sizeof(bool));
     cudaMemset(removedPredecessorsSize, 0, numBlocks*vertexNum*sizeof(int));
     cudaMemset(bridgeTenacity, 0, 2*edgeNum*sizeof(int));

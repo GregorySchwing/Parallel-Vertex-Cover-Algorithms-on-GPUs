@@ -19,7 +19,7 @@ __global__ void GlobalWorkList_Set_Sources_kernel(Stacks stacks, unsigned int * 
 
     if (graph.matching[vertex]==-1){
         setLvl(graph,vertex,0);
-        //printf("Block %d setting vertex %d as src oddlvl %d evenlvl %d\n", blockIdx.x,vertex,graph.oddlvl[vertex],graph.evenlvl[vertex]);
+        printf("Block %d setting vertex %d as src oddlvl %d evenlvl %d\n", blockIdx.x,vertex,graph.oddlvl[vertex],graph.evenlvl[vertex]);
     }
 }
 
@@ -33,14 +33,14 @@ __global__ void GlobalWorkList_BFS_kernel(Stacks stacks, unsigned int * minimum,
     unsigned int end = graph.srcPtr[vertex + 1];
     unsigned int edgeIndex=start;
     for(; edgeIndex < end; edgeIndex++) { // Delete Neighbors of startingVertex
-        //printf("src %d dst %d edgeStatus %d evenlvl %d oddlvl %d matching %d\n",vertex,graph.dst[edgeIndex],graph.edgeStatus[edgeIndex],graph.oddlvl[vertex],graph.evenlvl[vertex],graph.matching[vertex]);
+        printf("src %d dst %d edgeStatus %d evenlvl %d oddlvl %d matching %d\n",vertex,graph.dst[edgeIndex],graph.edgeStatus[edgeIndex],graph.oddlvl[vertex],graph.evenlvl[vertex],graph.matching[vertex]);
         if (graph.edgeStatus[edgeIndex] == NotScanned && (graph.oddlvl[vertex] == depth) == (graph.matching[vertex] == graph.dst[edgeIndex])) {
             if(minlvl(graph,graph.dst[edgeIndex]) >= depth+1) {
                 graph.edgeStatus[edgeIndex] = Prop;
                 unsigned int startOther = graph.srcPtr[graph.dst[edgeIndex]];
                 unsigned int endOther = graph.srcPtr[graph.dst[edgeIndex] + 1];
                 unsigned int edgeIndexOther;
-                //printf("BID %d prop edge %d - %d \n", blockIdx.x, vertex, graph.dst[edgeIndex]);
+                printf("BID %d prop edge %d - %d \n", blockIdx.x, vertex, graph.dst[edgeIndex]);
                 for(edgeIndexOther=startOther; edgeIndexOther < endOther; edgeIndexOther++) { // Delete Neighbors of startingVertex
                     if(vertex==graph.dst[edgeIndexOther]){
                         graph.edgeStatus[edgeIndexOther] = Prop;
@@ -56,7 +56,7 @@ __global__ void GlobalWorkList_BFS_kernel(Stacks stacks, unsigned int * minimum,
                 unsigned int start = graph.srcPtr[graph.dst[edgeIndex]];
                 unsigned int end = graph.srcPtr[graph.dst[edgeIndex] + 1];
                 unsigned int edgeIndex=start;
-                //printf("BID %d bridge edge %d - %d \n", blockIdx.x, vertex, graph.dst[edgeIndex]);
+                printf("BID %d bridge edge %d - %d tenacity %d \n", blockIdx.x, vertex, graph.dst[edgeIndex],tenacity(graph,vertex,graph.dst[edgeIndex]));
                 for(; edgeIndex < end; edgeIndex++) { // Delete Neighbors of startingVertex
                     if(vertex==graph.dst[edgeIndex]){
                         graph.edgeStatus[edgeIndex] = Bridge;

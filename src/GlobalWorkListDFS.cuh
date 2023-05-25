@@ -142,6 +142,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
 
     // Arrays: stack1, stack2, color, childsInDDFSTree, ddfsPredecessorsPtr, support, myBridge
     // Scalars: stack1Top, stack2Top, globalColorCounter, supportTop, 
+    graph.bridgeFront[0]=0;
     if (threadIdx.x==0){
         do {
             bridgeFront = atomicAdd(graph.bridgeFront, 1);
