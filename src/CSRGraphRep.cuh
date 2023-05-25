@@ -72,6 +72,35 @@ DSU allocate_DSU(struct CSRGraph graph){
 }
 
 
+void CSRGraph::reset(){
+
+    // Thrust
+    thrust::device_ptr<unsigned int> globalColorCounter_thrust_ptr=thrust::device_pointer_cast(globalColorCounter);
+    thrust::device_ptr<int> oddlvl_thrust_ptr=thrust::device_pointer_cast(oddlvl);
+    thrust::device_ptr<int> evenlvl_thrust_ptr=thrust::device_pointer_cast(evenlvl);
+    thrust::device_ptr<int> budAtDDFSEncounter_thrust_ptr=thrust::device_pointer_cast(budAtDDFSEncounter);
+
+    thrust::fill(oddlvl_thrust_ptr, oddlvl_thrust_ptr+vertexNum, INF); // or 999999.f if you prefer
+    thrust::fill(evenlvl_thrust_ptr, evenlvl_thrust_ptr+vertexNum, INF); // or 999999.f if you prefer
+    thrust::fill(globalColorCounter_thrust_ptr, globalColorCounter_thrust_ptr+numBlocks, 1); // or 999999.f if you prefer
+    thrust::fill(budAtDDFSEncounter_thrust_ptr, budAtDDFSEncounter_thrust_ptr+2*edgeNum, -1); // or 999999.f if you prefer
+    
+    cudaMemset(pred, false, 2*edgeNum*sizeof(bool));
+    cudaMemset(ddfsPredecessorsPtr, 0, sizeof(int)*vertexNum*numBlocks);
+    cudaMemset(color, 0, sizeof(int)*vertexNum*numBlocks);
+    cudaMemset(edgeStatus, 0, 2*edgeNum*sizeof(char));
+    cudaMemset(removed, 0, vertexNum*sizeof(bool));
+    cudaMemset(removedPredecessorsSize, 0, numBlocks*vertexNum*sizeof(int));
+    cudaMemset(bridgeTenacity, 0, 2*edgeNum*sizeof(int));
+
+    cudaMemset(bridgeFront, 0, sizeof(unsigned int));
+    cudaMemset(removedVerticesQueueBack, 0, sizeof(unsigned int));
+    cudaMemset(removedVerticesQueueFront, 0, sizeof(unsigned int));
+    cudaMemset(foundPath, false, numBlocks*sizeof(bool));
+    cudaMemset(removedPredecessorsSize, 0, numBlocks*vertexNum*sizeof(int));
+
+}
+
 CSRGraph allocateGraph(CSRGraph graph){
     CSRGraph Graph;
 
@@ -146,7 +175,7 @@ CSRGraph allocateGraph(CSRGraph graph){
     checkCudaErrors(cudaMalloc((void**) &foundPath_d,sizeof(bool)*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &removedVerticesQueue_d,sizeof(int)*graph.vertexNum*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &removedPredecessorsSize_d,sizeof(int)*graph.vertexNum*graph.numBlocks));
-
+    Graph.numBlocks = graph.numBlocks;
     Graph.stack1=stack1_d;
     Graph.stack2=stack2_d;
     Graph.support=support_d;
@@ -156,7 +185,7 @@ CSRGraph allocateGraph(CSRGraph graph){
     Graph.foundPath=foundPath_d;
     Graph.removedVerticesQueue = removedVerticesQueue_d;
     Graph.removedPredecessorsSize=removedPredecessorsSize_d;
-    printf("NUM BLOCKS %d\n",graph.numBlocks);
+    printf("NUM BLOCKS %d\n",Graph.numBlocks);
     checkCudaErrors(cudaMalloc((void**) &stack1Top_d,sizeof(unsigned int)*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &stack2Top_d,sizeof(unsigned int)*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &supportTop_d,sizeof(unsigned int)*graph.numBlocks));
@@ -182,7 +211,7 @@ CSRGraph allocateGraph(CSRGraph graph){
     cudaMemset(evenlvl_d, INF, graph.vertexNum*sizeof(int));
 
     */
-    thrust::device_ptr<unsigned int> globalColorCounter_thrust_ptr=thrust::device_pointer_cast(Graph.globalColorCounter);
+    thrust::device_ptr<unsigned int> globalColorCounter_thrust_ptr=thrust::device_pointer_cast(globalColorCounter_d);
     thrust::device_ptr<int> oddlvl_thrust_ptr=thrust::device_pointer_cast(oddlvl_d);
     thrust::device_ptr<int> evenlvl_thrust_ptr=thrust::device_pointer_cast(evenlvl_d);
     thrust::device_ptr<int> budAtDDFSEncounter_thrust_ptr=thrust::device_pointer_cast(budAtDDFSEncounter_d);

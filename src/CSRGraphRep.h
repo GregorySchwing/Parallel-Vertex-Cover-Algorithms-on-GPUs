@@ -65,6 +65,7 @@ struct CSRGraph{
     unsigned int findMaxDegree();
     void printGraph();
     void del();
+    void reset();
 };
 
 

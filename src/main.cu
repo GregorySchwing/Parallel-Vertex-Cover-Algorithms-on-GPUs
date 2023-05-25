@@ -266,15 +266,24 @@ int main(int argc, char *argv[]) {
                 GlobalWorkListParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, k_d, kFound_d, NODES_PER_SM_d);
             } else if(config.version == HYBRID && config.instance==MVC) {
                 bool pathFound = false;
-                for (unsigned int depth = 0; depth < graph.vertexNum && !pathFound; ++depth){ 
-                    pathFound = false;
-                    GlobalWorkList_Set_Sources_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
-                    GlobalWorkList_BFS_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
-                    GlobalWorkList_Extract_Bridges_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, dfsWL_d,  graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
-                    cudaLaunchCooperativeKernel((void*)(GlobalWorkList_global_DFS_kernel), numBlocks, numThreadsPerBlock, kernel_args) ;
-                    cudaMemcpy(&pathFound, &graph.foundPath, sizeof(bool), cudaMemcpyDeviceToHost);
-                    //GlobalWorkList_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, NODES_PER_SM_d);
-                }
+                bool pathFoundOnAnyIteration = false;
+                int iter = 0;
+                do {
+                    printf("Iter %d\n",iter++);
+                    for (unsigned int depth = 0; depth < graph.vertexNum && !pathFound; ++depth){ 
+                        pathFound = false;
+                        GlobalWorkList_Set_Sources_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
+                        GlobalWorkList_BFS_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
+                        GlobalWorkList_Extract_Bridges_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, dfsWL_d,  graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
+                        cudaLaunchCooperativeKernel((void*)(GlobalWorkList_global_DFS_kernel), numBlocks, numThreadsPerBlock, kernel_args) ;
+                        cudaMemcpy(&pathFound, &graph.foundPath, sizeof(bool), cudaMemcpyDeviceToHost);
+                        //GlobalWorkList_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, global_memory_d, NODES_PER_SM_d);
+                        pathFoundOnAnyIteration |= pathFound;
+                    }
+                    graph_d.reset();
+                    dfsWL_d.reset();
+                    //exit(1);
+                } while(pathFoundOnAnyIteration);
             } else if(config.version == STACK_ONLY && config.instance==PVC){
                 LocalStacksParameterized_global_kernel <<< numBlocks , numThreadsPerBlock >>> (stacks_d, graph_d, global_memory_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
             } else if(config.version == STACK_ONLY && config.instance==MVC) {
@@ -285,15 +294,25 @@ int main(int argc, char *argv[]) {
                 GlobalWorkListParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, k_d, kFound_d, NODES_PER_SM_d);
             } else if(config.version == HYBRID && config.instance==MVC) {
                 bool pathFound = false;
-                for (unsigned int depth = 0; depth < graph.vertexNum && !pathFound; ++depth){ 
-                    pathFound = false;
-                    GlobalWorkList_Set_Sources_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
-                    GlobalWorkList_BFS_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
-                    GlobalWorkList_Extract_Bridges_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, dfsWL_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
-                    cudaLaunchCooperativeKernel((void*)(GlobalWorkList_shared_DFS_kernel), numBlocks, numThreadsPerBlock, kernel_args) ;
-                    cudaMemcpy(&pathFound, &graph.foundPath, sizeof(bool), cudaMemcpyDeviceToHost);
-                    //GlobalWorkList_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
-                }
+                bool pathFoundOnAnyIteration = false;
+                int iter = 0;
+                do {
+                    printf("Iter %d\n",iter++);
+                    for (unsigned int depth = 0; depth < graph.vertexNum && !pathFound; ++depth){ 
+                        pathFound = false;
+                        GlobalWorkList_Set_Sources_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
+                        GlobalWorkList_BFS_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
+                        GlobalWorkList_Extract_Bridges_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, dfsWL_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
+                        cudaLaunchCooperativeKernel((void*)(GlobalWorkList_shared_DFS_kernel), numBlocks, numThreadsPerBlock, kernel_args) ;
+                        cudaMemcpy(&pathFound, &graph.foundPath, sizeof(bool), cudaMemcpyDeviceToHost);
+                        //GlobalWorkList_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
+                        pathFoundOnAnyIteration |= pathFound;
+                    }
+                    graph_d.reset();
+                    dfsWL_d.reset();
+                    //exit(1);
+
+                } while(pathFoundOnAnyIteration);
             } else if(config.version == STACK_ONLY && config.instance==PVC){
                 LocalStacksParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, graph_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
             } else if(config.version == STACK_ONLY && config.instance==MVC) {
