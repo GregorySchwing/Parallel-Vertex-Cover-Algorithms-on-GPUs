@@ -2,7 +2,7 @@ USE_COUNTERS=0
 
 DEFS= -DUSE_COUNTERS=$(USE_COUNTERS)
 
-NVCC_FLAGS= --expt-relaxed-constexpr -g -maxrregcount=31 -O3 -w -gencode arch=compute_70,code=sm_70 -std=c++11 
+NVCC_FLAGS= -g -maxrregcount=31 -O3 -w -gencode arch=compute_70,code=sm_70 -std=c++11 
 
 output: auxFunctions.o CSRGraphRep.o main.o Sequential.o helperFunctions.o SequentialParameterized.o
 	nvcc $(NVCC_FLAGS) auxFunctions.o CSRGraphRep.o helperFunctions.o Sequential.o SequentialParameterized.o main.o -o output

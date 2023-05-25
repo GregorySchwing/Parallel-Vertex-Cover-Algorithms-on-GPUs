@@ -87,8 +87,6 @@ CSRGraph allocateGraph(CSRGraph graph){
     bool* pred_d;
     int* bridgeTenacity_d;
     char* edgeStatus_d;
-    uint64_t* bridgeList_d;
-    unsigned int *bridgeList_counter_d;
     unsigned int *bridgeFront_d;
 
 
@@ -129,14 +127,9 @@ CSRGraph allocateGraph(CSRGraph graph){
     checkCudaErrors(cudaMalloc((void**) &bridgeFront_d,sizeof(unsigned int)));
     checkCudaErrors(cudaMalloc((void**) &removed_d, graph.vertexNum*sizeof(bool)));
 
-    // Likely too much work.
-    checkCudaErrors(cudaMalloc((void**) &bridgeList_counter_d,sizeof(unsigned int)));
-    checkCudaErrors(cudaMalloc((void**) &bridgeList_d,2*graph.edgeNum*sizeof(uint64_t)));
 
-    cudaMemset(bridgeList_counter_d, 0, sizeof(unsigned int));
     cudaMemset(bridgeFront_d, 0, sizeof(unsigned int));
-    Graph.bridgeList=bridgeList_d;
-    Graph.bridgeList_counter=bridgeList_counter_d;
+
     
 	// budAtDDFSEncounter<int>[N],
 	// stack1<int>[N], 
@@ -162,7 +155,6 @@ CSRGraph allocateGraph(CSRGraph graph){
     Graph.color=color_d;
     Graph.budAtDDFSEncounter=budAtDDFSEncounter_d;
     Graph.ddfsPredecessorsPtr=ddfsPredecessorsPtr_d;
-    Graph.myBridge=myBridge_d;
     Graph.foundPath=foundPath_d;
     Graph.removedVerticesQueue = removedVerticesQueue_d;
     Graph.removedPredecessorsSize=removedPredecessorsSize_d;

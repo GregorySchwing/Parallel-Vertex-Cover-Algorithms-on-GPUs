@@ -6,6 +6,7 @@
 #include "config.h"
 #include "stack.cuh"
 #include "Counters.cuh"
+#include "DFSWorkList.cuh"
 #include "BWDWorkList.cuh"
 #include "helperFunctions.cuh"
 
@@ -70,7 +71,7 @@ __global__ void GlobalWorkList_BFS_kernel(Stacks stacks, unsigned int * minimum,
     }
 }
 
-__global__ void GlobalWorkList_Extract_Bridges_kernel(Stacks stacks, unsigned int * minimum, WorkList workList, CSRGraph graph, Counters* counters, 
+__global__ void GlobalWorkList_Extract_Bridges_kernel(Stacks stacks, unsigned int * minimum, WorkList workList, DFSWorkList dfsWL, CSRGraph graph, Counters* counters, 
     int* first_to_dequeue_global, int* NODES_PER_SM, unsigned int depth) {
 
     unsigned int vertex = threadIdx.x + blockIdx.x*(blockDim.x);
@@ -80,10 +81,10 @@ __global__ void GlobalWorkList_Extract_Bridges_kernel(Stacks stacks, unsigned in
     unsigned int edgeIndex;
     for(edgeIndex = start; edgeIndex < end; edgeIndex++) { // Delete Neighbors of startingVertex
         if (graph.edgeStatus[edgeIndex] == Bridge && graph.bridgeTenacity[edgeIndex] == 2*depth+1) {
-            unsigned int top = atomicAdd(graph.bridgeList_counter,1);
-            uint64_t edgePair = (uint64_t) vertex << 32 | graph.dst[edgeIndex];
+            unsigned int top = atomicAdd(dfsWL.bridgeList_counter,1);
+            //uint64_t edgePair = (uint64_t) vertex << 32 | graph.dst[edgeIndex];
             //printf("Adding bridge %d %d\n", vertex, graph.dst[edgeIndex]);
-            graph.bridgeList[top] = edgePair;
+            dfsWL.bridgeList[top] = cuda::std::pair<int,int>(vertex, graph.dst[edgeIndex]);
         }
     }
 }

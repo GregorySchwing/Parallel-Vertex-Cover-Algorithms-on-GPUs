@@ -33,8 +33,6 @@ struct CSRGraph{
     int* bridgeTenacity;
     char* edgeStatus;
     unsigned int *bridgeFront;
-    uint64_t* bridgeList;
-    unsigned int *bridgeList_counter;
 
     // DDFS variables
     int * stack1;

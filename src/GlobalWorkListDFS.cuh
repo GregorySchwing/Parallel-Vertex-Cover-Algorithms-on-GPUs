@@ -6,6 +6,7 @@
 #include "config.h"
 #include "stack.cuh"
 #include "Counters.cuh"
+#include "DFSWorkList.cuh"
 #include "BWDWorkList.cuh"
 #include "helperFunctions.cuh"
 #include <cooperative_groups.h>
@@ -21,6 +22,7 @@ struct GlobalDFSKernelArgs
     Stacks stacks; 
     unsigned int * minimum; 
     WorkList workList; 
+    DFSWorkList dfsWL;
     CSRGraph graph; 
     Counters* counters; 
     int* first_to_dequeue_global; 
@@ -33,6 +35,7 @@ struct SharedDFSKernelArgs
     Stacks stacks; 
     unsigned int * minimum; 
     WorkList workList; 
+    DFSWorkList dfsWL;
     CSRGraph graph; 
     Counters* counters; 
     int* first_to_dequeue_global; 
@@ -46,6 +49,7 @@ __global__ void GlobalWorkList_global_DFS_kernel(GlobalDFSKernelArgs args) {
     unsigned int * minimum = args.minimum;
     WorkList workList = args.workList;
     CSRGraph graph = args.graph;
+    DFSWorkList dfsWL = args.dfsWL;
     Counters* counters = args.counters;
     int* first_to_dequeue_global = args.first_to_dequeue_global;
     int* global_memory = args.global_memory;
@@ -56,6 +60,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
     unsigned int * minimum = args.minimum;
     WorkList workList = args.workList;
     CSRGraph graph = args.graph;
+    DFSWorkList dfsWL = args.dfsWL;
     Counters* counters = args.counters;
     int* first_to_dequeue_global = args.first_to_dequeue_global;
     int* NODES_PER_SM = args.NODES_PER_SM;
@@ -139,21 +144,22 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
     // Scalars: stack1Top, stack2Top, globalColorCounter, supportTop, 
     if (threadIdx.x==0){
         bridgeFront = atomicAdd(graph.bridgeFront, 1);
-        if (bridgeFront >= graph.bridgeList_counter[0]) return;
-        src = (uint32_t)graph.bridgeList[bridgeFront];
-        dst = (graph.bridgeList[bridgeFront] >> 32);
+        if (bridgeFront >= dfsWL.bridgeList_counter[0]) return;
+        src = dfsWL.bridgeList[bridgeFront].st;
+        dst = dfsWL.bridgeList[bridgeFront].nd;
 
         printf("Bridge ID %d src %d dst %d\n", bridgeFront, src, dst);
         if(graph.removed[graph.bud[src]] || graph.removed[graph.bud[dst]]) return;   
         cuda::std::pair<int,int> ddfsResult = ddfs(graph,src,dst,stack1,stack2,stack1Top,stack2Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,budAtDDFSEncounter);
         printf("bridgeID %d bridge %d %d support %d %d %d %d %d %d\n", bridgeFront, src, dst, support[0], support[1], supportTop[0]>2 ? support[2]:-1,supportTop[0]>3 ? support[3]:-1,supportTop[0]>4 ? support[4]:-1,supportTop[0]>5 ? support[5]:-1);
         printf("ddfsResult %d %d\n",ddfsResult.first,ddfsResult.second);
-        /*
+        cuda::std::pair<cuda::std::pair<int,int>,cuda::std::pair<int,int>> curBridge =  cuda::std::pair<cuda::std::pair<int,int>,cuda::std::pair<int,int>>(cuda::std::pair<int,int>(src,dst), cuda::std::pair<int,int>(graph.bud[src],graph.bud[dst]));
+
         for (int i = 0; i < supportTop[0]; ++i){
             auto v = support[i];
-            if (v == (uint32_t)ddfsResult) continue; //skip bud
-            graph.myBridge[v] = curBridge;
-            graph.bud.linkTo(v,(uint32_t)ddfsResult);
+            if (v == ddfsResult.nd) continue; //skip bud
+            dfsWL.myBridge[v] = curBridge;
+            graph.bud.linkTo(v,ddfsResult.nd);
 
             //this part of code is only needed when bottleneck found, but it doesn't mess up anything when called on two paths 
             setLvl(graph,v,2*i+1-minlvl(graph,v));
@@ -169,6 +175,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
                 }
             }
         }
+        /*
         if(ddfsResult >> 32 != (uint32_t)ddfsResult) {
             printf("Augmenting path\n");
             augumentPath(graph,color, removedVerticesQueue, removedVerticesQueueBack, budAtDDFSEncounter, ddfsResult >> 32,(uint32_t)ddfsResult,true);
