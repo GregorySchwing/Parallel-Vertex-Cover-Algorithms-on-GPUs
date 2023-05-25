@@ -31,8 +31,8 @@ __global__ void GlobalWorkList_BFS_kernel(Stacks stacks, unsigned int * minimum,
     if(vertex >= graph.vertexNum) return;
     unsigned int start = graph.srcPtr[vertex];
     unsigned int end = graph.srcPtr[vertex + 1];
-    unsigned int edgeIndex=0;
-    for(; edgeIndex < end-start; edgeIndex++) { // Delete Neighbors of startingVertex
+    unsigned int edgeIndex=start;
+    for(; edgeIndex < end; edgeIndex++) { // Delete Neighbors of startingVertex
         //printf("src %d dst %d edgeStatus %d evenlvl %d oddlvl %d matching %d\n",vertex,graph.dst[edgeIndex],graph.edgeStatus[edgeIndex],graph.oddlvl[vertex],graph.evenlvl[vertex],graph.matching[vertex]);
         if (graph.edgeStatus[edgeIndex] == NotScanned && (graph.oddlvl[vertex] == depth) == (graph.matching[vertex] == graph.dst[edgeIndex])) {
             if(minlvl(graph,graph.dst[edgeIndex]) >= depth+1) {
@@ -55,9 +55,9 @@ __global__ void GlobalWorkList_BFS_kernel(Stacks stacks, unsigned int * minimum,
                 graph.edgeStatus[edgeIndex] = Bridge;
                 unsigned int start = graph.srcPtr[graph.dst[edgeIndex]];
                 unsigned int end = graph.srcPtr[graph.dst[edgeIndex] + 1];
-                unsigned int edgeIndex;
+                unsigned int edgeIndex=start;
                 //printf("BID %d bridge edge %d - %d \n", blockIdx.x, vertex, graph.dst[edgeIndex]);
-                for(edgeIndex=start; edgeIndex < end; edgeIndex++) { // Delete Neighbors of startingVertex
+                for(; edgeIndex < end; edgeIndex++) { // Delete Neighbors of startingVertex
                     if(vertex==graph.dst[edgeIndex]){
                         graph.edgeStatus[edgeIndex] = Bridge;
                         break;
@@ -78,8 +78,8 @@ __global__ void GlobalWorkList_Extract_Bridges_kernel(Stacks stacks, unsigned in
     if(vertex >= graph.vertexNum) return;
     unsigned int start = graph.srcPtr[vertex];
     unsigned int end = graph.srcPtr[vertex + 1];
-    unsigned int edgeIndex;
-    for(edgeIndex = start; edgeIndex < end; edgeIndex++) { // Delete Neighbors of startingVertex
+    unsigned int edgeIndex = start;
+    for(; edgeIndex < end; edgeIndex++) { // Delete Neighbors of startingVertex
         if (graph.edgeStatus[edgeIndex] == Bridge && graph.bridgeTenacity[edgeIndex] == 2*depth+1) {
             unsigned int top = atomicAdd(dfsWL.bridgeList_counter,1);
             //uint64_t edgePair = (uint64_t) vertex << 32 | graph.dst[edgeIndex];
