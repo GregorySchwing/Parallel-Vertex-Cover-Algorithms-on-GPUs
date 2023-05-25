@@ -69,6 +69,7 @@ int main(int argc, char *argv[]) {
     unsigned int minimum = graph.vertexNum;
     unsigned int k = config.k; 
     unsigned int kFound = 0;
+    int result = 0;
 
     if(config.version == SEQUENTIAL){
         /*
@@ -257,7 +258,6 @@ int main(int argc, char *argv[]) {
         args.NODES_PER_SM = NODES_PER_SM_d;
         void *kernel_args[] = {&args};
         printf("Launching kernel\n");
-
         int dimGridBFS = (graph.vertexNum + THREADS_PER_BLOCK)/THREADS_PER_BLOCK;
         if (config.useGlobalMemory){
             if (config.version == HYBRID && config.instance==PVC){
@@ -318,7 +318,9 @@ int main(int argc, char *argv[]) {
 
         printResults(config, RemoveMaxMinimum, RemoveEdgeMinimum, elapsed_seconds_max.count(), elapsed_seconds_edge.count(), minimum, milliseconds, numBlocks, 
             numBlocksPerSm, numThreadsPerSM, graph.vertexNum-1, graph.edgeNum, kFound);
-
+        thrust::device_ptr<int> m_vec=thrust::device_pointer_cast(graph_d.matching);
+        using namespace thrust::placeholders;
+        result = thrust::count_if(m_vec, m_vec+graph.vertexNum, _1 > -1);
         #if USE_COUNTERS
         printCountersInFile(config,counters_d,numBlocks);
         printNodesPerSM(config,NODES_PER_SM_d,numOfMultiProcessors);
@@ -355,7 +357,7 @@ int main(int argc, char *argv[]) {
             printf("\nMinimum is greater than K: %u\n\n",k);
         }
     } else {
-        printf("\nSize of minimum vertex cover: %u\n\n", minimum);
+        printf("\nSize of matching: %u\n\n", result/2);
     }
 
     return 0;

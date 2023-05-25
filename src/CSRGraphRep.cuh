@@ -195,12 +195,16 @@ CSRGraph allocateGraph(CSRGraph graph){
     thrust::device_ptr<unsigned int> globalColorCounter_thrust_ptr=thrust::device_pointer_cast(Graph.globalColorCounter);
     thrust::device_ptr<int> oddlvl_thrust_ptr=thrust::device_pointer_cast(oddlvl_d);
     thrust::device_ptr<int> evenlvl_thrust_ptr=thrust::device_pointer_cast(evenlvl_d);
+    thrust::device_ptr<int> budAtDDFSEncounter_thrust_ptr=thrust::device_pointer_cast(budAtDDFSEncounter_d);
+    thrust::device_ptr<int> matching_thrust_ptr=thrust::device_pointer_cast(matching_d);
 
     thrust::fill(oddlvl_thrust_ptr, oddlvl_thrust_ptr+graph.vertexNum, INF); // or 999999.f if you prefer
     thrust::fill(evenlvl_thrust_ptr, evenlvl_thrust_ptr+graph.vertexNum, INF); // or 999999.f if you prefer
     thrust::fill(globalColorCounter_thrust_ptr, globalColorCounter_thrust_ptr+graph.numBlocks, 1); // or 999999.f if you prefer
+    thrust::fill(budAtDDFSEncounter_thrust_ptr, budAtDDFSEncounter_thrust_ptr+2*graph.edgeNum, -1); // or 999999.f if you prefer
+    thrust::fill(matching_thrust_ptr, matching_thrust_ptr+graph.vertexNum, -1); // or 999999.f if you prefer
+    
 
-    cudaMemset(matching_d, -1, graph.vertexNum*sizeof(int));
     cudaMemset(edgeStatus_d, 0, 2*graph.edgeNum*sizeof(char));
     cudaMemset(removed_d, 0, graph.vertexNum*sizeof(bool));
     cudaMemset(removedPredecessorsSize_d, 0, graph.numBlocks*graph.vertexNum*sizeof(int));
