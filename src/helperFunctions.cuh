@@ -2,6 +2,7 @@
 #define HELPFUNC_H
 #include <cuda/std/utility>
 #include "config.h"
+#include "DFSWorkList.cuh"
 enum EdgeType {NotScanned, Prop, Bridge};
 
 template <typename T> __device__ void inline swap(T& a, T& b)
@@ -54,9 +55,9 @@ __device__ void flip(CSRGraph & graph, int * removedVerticesQueue, unsigned int 
     graph.matching[u] = v;
     graph.matching[v] = u;
 }
-__device__ bool openingDfs(CSRGraph & graph, int * color, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int * budAtDDFSEncounter, int cur, int bcur, int b);
-__device__ void augumentPath(CSRGraph & graph, int * color, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int * budAtDDFSEncounter, int u, int v, bool initial=false);
-__device__ void augumentPath(CSRGraph & graph, int * color, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int * budAtDDFSEncounter, int u, int v, bool initial){
+__device__ bool openingDfs(CSRGraph & graph, DFSWorkList & dfsWL, int * color, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int * budAtDDFSEncounter, int cur, int bcur, int b);
+__device__ void augumentPath(CSRGraph & graph, DFSWorkList & dfsWL, int * color, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int * budAtDDFSEncounter, int u, int v, bool initial=false);
+__device__ void augumentPath(CSRGraph & graph, DFSWorkList & dfsWL, int * color, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int * budAtDDFSEncounter, int u, int v, bool initial){
     if(u == v) return;
     if(!initial && minlvl(graph,u) == graph.evenlvl[u]) { //simply follow predecessors
         // TMP
@@ -91,32 +92,32 @@ __device__ void augumentPath(CSRGraph & graph, int * color, int * removedVertice
         u = newU;
         assert(!graph.removed[u]);
         flip(graph,removedVerticesQueue,removedVerticesQueueBack,x,u);
-        augumentPath(graph,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter, u,v);
+        augumentPath(graph,dfsWL,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter, u,v);
     }
     else { //through bridge
-        int u3 = graph.myBridge[u] >> 96; 
-        int v3 = graph.myBridge[u] >> 64; 
-        int u2 = graph.myBridge[u] >> 32; 
-        int v2 = (int32_t)graph.myBridge[u];
+        int u3 = dfsWL.myBridge[u].st.st; 
+        int v3 = dfsWL.myBridge[u].st.nd; 
+        int u2 = dfsWL.myBridge[u].nd.st; 
+        int v2 = dfsWL.myBridge[u].nd.nd; 
         if((color[u2]^1) == color[u] || color[v2] == color[u]) {
             swap(u2, v2);
             swap(u3,v3);
         }
 
         flip(graph,removedVerticesQueue,removedVerticesQueueBack,u3,v3);
-        bool openingDfsSucceed1 = openingDfs(graph,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter, u3,u2,u);
+        bool openingDfsSucceed1 = openingDfs(graph,dfsWL,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter, u3,u2,u);
         assert(openingDfsSucceed1);
 
         int v4 = graph.bud.directParent[u];
-        bool openingDfsSucceed2 = openingDfs(graph,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter,v3,v2,v4);
+        bool openingDfsSucceed2 = openingDfs(graph,dfsWL,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter,v3,v2,v4);
         assert(openingDfsSucceed2);
-        augumentPath(graph,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter,v4,v);
+        augumentPath(graph,dfsWL,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter,v4,v);
     }
 }
 
-__device__ bool openingDfs(CSRGraph & graph, int * color, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int * budAtDDFSEncounter, int cur, int bcur, int b){
+__device__ bool openingDfs(CSRGraph & graph, DFSWorkList & dfsWL, int * color, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int * budAtDDFSEncounter, int cur, int bcur, int b){
     if(bcur == b) {
-        augumentPath(graph,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter,cur,bcur);
+        augumentPath(graph,dfsWL,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter,cur,bcur);
         return true;
     }
     unsigned int start = graph.srcPtr[bcur];
@@ -126,8 +127,8 @@ __device__ bool openingDfs(CSRGraph & graph, int * color, int * removedVerticesQ
     for(edgeIndex=start; edgeIndex < end; edgeIndex++) {
         if (graph.pred[edgeIndex] && budAtDDFSEncounter[edgeIndex] > -1){
             if ((budAtDDFSEncounter[edgeIndex] == b || color[budAtDDFSEncounter[edgeIndex]] == color[bcur]) &&
-                openingDfs(graph,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter,graph.dst[edgeIndex],budAtDDFSEncounter[edgeIndex],b)){
-                augumentPath(graph,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter, cur,bcur);
+                openingDfs(graph,dfsWL,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter,graph.dst[edgeIndex],budAtDDFSEncounter[edgeIndex],b)){
+                augumentPath(graph,dfsWL,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter, cur,bcur);
                 flip(graph,removedVerticesQueue,removedVerticesQueueBack,bcur,graph.dst[edgeIndex]);
                 return true;
             }

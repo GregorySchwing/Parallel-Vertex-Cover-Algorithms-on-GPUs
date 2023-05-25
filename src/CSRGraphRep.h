@@ -42,7 +42,6 @@ struct CSRGraph{
     int * budAtDDFSEncounter;
 
     int * ddfsPredecessorsPtr;
-    __int128_t * myBridge;
     bool* foundPath;
     int * removedVerticesQueue;
     int * removedPredecessorsSize;
