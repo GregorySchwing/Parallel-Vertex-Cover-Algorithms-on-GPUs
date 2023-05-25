@@ -11,6 +11,7 @@
 #include <cooperative_groups.h>
 using namespace cooperative_groups; 
 #define VERTICES_PER_BLOCK 1000
+#include <cuda/std/utility>
 
 
 
@@ -133,7 +134,6 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
      int bridgeFront;
      __shared__ int src;
      __shared__ int dst;
-     __shared__ uint64_t ddfsResult;
 
     // Arrays: stack1, stack2, color, childsInDDFSTree, ddfsPredecessorsPtr, support, myBridge
     // Scalars: stack1Top, stack2Top, globalColorCounter, supportTop, 
@@ -145,30 +145,10 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
 
         printf("Bridge ID %d src %d dst %d\n", bridgeFront, src, dst);
         if(graph.removed[graph.bud[src]] || graph.removed[graph.bud[dst]]) return;   
-        ddfsResult = ddfs(graph,src,dst,stack1,stack2,stack1Top,stack2Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,budAtDDFSEncounter);
+        cuda::std::pair<int,int> ddfsResult = ddfs(graph,src,dst,stack1,stack2,stack1Top,stack2Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,budAtDDFSEncounter);
         printf("bridgeID %d bridge %d %d support %d %d %d %d %d %d\n", bridgeFront, src, dst, support[0], support[1], supportTop[0]>2 ? support[2]:-1,supportTop[0]>3 ? support[3]:-1,supportTop[0]>4 ? support[4]:-1,supportTop[0]>5 ? support[5]:-1);
-
-        //pair<pii,pii> curBridge = {b,{bud[b.st], bud[b.nd]}};
-        __int128_t curBridge =  (__int128_t) src                << 96 |
-                                (__int128_t) dst                << 64 |
-                                (__int128_t) graph.bud[src]     << 32 |
-                                             graph.bud[dst];
-
+        printf("ddfsResult %d %d\n",ddfsResult.first,ddfsResult.second);
         /*
-
-        for(auto v:support) {
-            if(v == ddfsResult.second) continue; //skip bud
-            myBridge[v] = curBridge;
-            bud.linkTo(v,ddfsResult.second);
-
-            //this part of code is only needed when bottleneck found, but it doesn't mess up anything when called on two paths 
-            setLvl(v,2*i+1-minlvl(v));
-            for(auto f : graph[v])
-                if(evenlvl[v] > oddlvl[v] && f.type == Bridge && tenacity({v,f.to}) < INF && mate[v] != f.to)
-                    bridges[tenacity({v,f.to})].push_back({v,f.to});
-        }
-        */
-
         for (int i = 0; i < supportTop[0]; ++i){
             auto v = support[i];
             if (v == (uint32_t)ddfsResult) continue; //skip bud
@@ -189,8 +169,8 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
                 }
             }
         }
-
         if(ddfsResult >> 32 != (uint32_t)ddfsResult) {
+            printf("Augmenting path\n");
             augumentPath(graph,color, removedVerticesQueue, removedVerticesQueueBack, budAtDDFSEncounter, ddfsResult >> 32,(uint32_t)ddfsResult,true);
             graph.foundPath[0] = true;
 
@@ -220,18 +200,6 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
                         }
                     }
                 }
-            }
-        }
-        /*
-        if(ddfsResult.first != ddfsResult.second) {
-            augumentPath(ddfsResult.first,ddfsResult.second,true);
-            foundPath = true;
-            while(!removedVerticesQueue.empty()) {
-                int v = removedVerticesQueue.front();
-                removedVerticesQueue.pop();
-                for(auto e : graph[v])
-                    if(e.type == Prop && minlvl(e.to) > minlvl(v) && !removed[e.to] && ++removedPredecessorsSize[e.to] == predecessors[e.to].size())
-                        removeAndPushToQueue(e.to);
             }
         }
         */

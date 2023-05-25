@@ -1,6 +1,6 @@
 #ifndef HELPFUNC_H
 #define HELPFUNC_H
-
+#include <cuda/std/utility>
 #include "config.h"
 enum EdgeType {NotScanned, Prop, Bridge};
 
@@ -155,7 +155,7 @@ __device__ int ddfsMove(CSRGraph & graph, int * stack1, int * stack2, unsigned i
 //int ddfsMove(vector<int>& stack1, const int color1, vector<int>& stack2, const int color2, vector<int>& support) {
     
     //int u = stack1.back();
-    int u = stack1[stack1Top[0]];
+    int u = stack1[stack1Top[0]-1];
     unsigned int start = graph.srcPtr[u];
     unsigned int end = graph.srcPtr[u + 1];
     unsigned int edgeIndex;
@@ -206,14 +206,18 @@ __device__ int ddfsMove(CSRGraph & graph, int * stack1, int * stack2, unsigned i
 
 
 //returns {r0, g0} or {bottleneck, bottleneck} packed into uint64_t
-__device__ uint64_t ddfs(CSRGraph & graph, int src, int dst, int * stack1, int * stack2, unsigned int * stack1Top, unsigned int * stack2Top, int * support, unsigned int * supportTop, int * color, unsigned int *globalColorCounter, int * ddfsPredecessorsPtr, int*budAtDDFSEncounter) {
+__device__ cuda::std::pair<int,int> ddfs(CSRGraph & graph, int src, int dst, int * stack1, int * stack2, unsigned int * stack1Top, unsigned int * stack2Top, int * support, unsigned int * supportTop, int * color, unsigned int *globalColorCounter, int * ddfsPredecessorsPtr, int*budAtDDFSEncounter) {
     stack1[stack1Top[0]++]=graph.bud[src];
     stack2[stack2Top[0]++]=graph.bud[dst];
+
     //vector<int> Sr = {graph.bud[src]}, Sg = {graph.bud[dst]};
     //if(Sr[0] == Sg[0])
     //    return {Sr[0],Sg[0]};
     if (stack1[0]==stack2[0]){
-        return (uint64_t) stack1[0] << 32 | stack2[0];
+        printf("stack1[0]==stack2[0]\n");
+        //return (uint64_t) stack1[0] << 32 | stack2[0];
+        return cuda::std::pair<int,int>(stack1[0],stack2[0]);
+
     }
     //out_support = {Sr[0], Sg[0]};
     support[supportTop[0]++]=stack1[0];
@@ -228,22 +232,29 @@ __device__ uint64_t ddfs(CSRGraph & graph, int src, int dst, int * stack1, int *
     for(;;) {
         //if found two disjoint paths
         //if(minlvl(Sr.back()) == 0 && minlvl(Sg.back()) == 0)
-        if(minlvl(graph,stack1[stack1Top[0]]) == 0 && minlvl(graph,stack2[stack2Top[0]]) == 0)
+        if(minlvl(graph,stack1[stack1Top[0]-1]) == 0 && minlvl(graph,stack2[stack2Top[0]-1]) == 0){
             //return {Sr.back(),Sg.back()};
-            return (uint64_t) stack1[stack1Top[0]] << 32 | stack2[stack2Top[0]];
-
+            printf("stack1[%d]=%d\n",stack1Top[0]-1,stack1[stack1Top[0]-1]);
+            printf("stack2[%d]=%d\n",stack2Top[0]-1,stack2[stack2Top[0]-1]);
+            printf("minlvl(graph,stack1[stack1Top[0]]) == 0 && minlvl(graph,stack2[stack2Top[0]]) == 0\n");
+            //return ((uint64_t) stack1[stack1Top[0]-1]) << 32 | stack2[stack2Top[0]-1];
+            return cuda::std::pair<int,int>(stack1[stack1Top[0]-1],stack2[stack2Top[0]-1]);
+        }
         int b;
         //if(minlvl(Sr.back()) >= minlvl(Sg.back()))
-        if(minlvl(graph,stack1[stack1Top[0]]) >= minlvl(graph,stack2[stack2Top[0]]))
+        if(minlvl(graph,stack1[stack1Top[0]-1]) >= minlvl(graph,stack2[stack2Top[0]-1]))
             //b = ddfsMove(Sr,newRed,Sg, newGreen, out_support);
             b = ddfsMove(graph,stack1,stack2,stack1Top,stack2Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,budAtDDFSEncounter, newGreen, newRed);
         else
             //b = ddfsMove(Sg,newGreen,Sr, newRed, out_support);
             b = ddfsMove(graph,stack2,stack1,stack1Top,stack2Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,budAtDDFSEncounter, newRed, newGreen);
-        if(b != -1)
+        if(b != -1){
             //return {b,b};
-            return (uint64_t) b << 32 | b;
+            printf("B!=-1\n");
+            //return (uint64_t) b << 32 | b;
+            return cuda::std::pair<int,int>(b,b);
 
+        }
     }
 }
 
