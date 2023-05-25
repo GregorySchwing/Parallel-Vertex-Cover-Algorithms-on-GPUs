@@ -92,7 +92,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
     int * stack1 = &graph.stack1[graph.vertexNum*(blockIdx.x)];
     int * stack2 = &graph.stack2[graph.vertexNum*(blockIdx.x)];
     int * color = &graph.color[graph.vertexNum*(blockIdx.x)];
-    int * budAtDDFSEncounter = &graph.budAtDDFSEncounter[graph.vertexNum*(blockIdx.x)];
+    int * budAtDDFSEncounter = &graph.budAtDDFSEncounter[2*graph.edgeNum*(blockIdx.x)];
     int * ddfsPredecessorsPtr = &graph.ddfsPredecessorsPtr[graph.vertexNum*(blockIdx.x)];
     int * support = &graph.support[graph.vertexNum*(blockIdx.x)];
     int * removedVerticesQueue = &graph.removedVerticesQueue[graph.vertexNum*(blockIdx.x)];
@@ -115,19 +115,19 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
     int * stack1 = &graph.stack1[graph.vertexNum*0];
     int * stack2 = &graph.stack2[graph.vertexNum*1];
     int * color = &graph.color[graph.vertexNum*2];
-    int * budAtDDFSEncounter = &graph.budAtDDFSEncounter[graph.vertexNum*3];
-    int * ddfsPredecessorsPtr = &graph.ddfsPredecessorsPtr[graph.vertexNum*4];
-    int * support = &graph.support[graph.vertexNum*5];
-    int * removedVerticesQueue = &graph.removedVerticesQueue[graph.vertexNum*6];
-    int * removedPredecessorsSize = &graph.removedVerticesQueue[graph.vertexNum*7];
+    int * ddfsPredecessorsPtr = &graph.ddfsPredecessorsPtr[graph.vertexNum*3];
+    int * support = &graph.support[graph.vertexNum*4];
+    int * removedVerticesQueue = &graph.removedVerticesQueue[graph.vertexNum*5];
+    int * removedPredecessorsSize = &graph.removedVerticesQueue[graph.vertexNum*6];
+    int * budAtDDFSEncounter = &graph.budAtDDFSEncounter[graph.vertexNum*7];
 
-    unsigned int * stack1Top = &graph.stack1Top[(graph.vertexNum*10)];
-    unsigned int * stack2Top = &graph.stack2Top[(graph.vertexNum*10)+1];
-    unsigned int * supportTop = &graph.supportTop[(graph.vertexNum*10)+2];
-    unsigned int * globalColorCounter = &graph.globalColorCounter[(graph.vertexNum*10)+3];
-    unsigned int * removedVerticesQueueBack = &graph.removedVerticesQueueBack[(graph.vertexNum*10)+4];
-    unsigned int * removedVerticesQueueFront = &graph.removedVerticesQueueFront[(graph.vertexNum*10)+5];
-    bool * foundPath = &graph.foundPath[(graph.vertexNum*10)+6];
+    unsigned int * stack1Top = &graph.stack1Top[(graph.vertexNum*7)+(2*graph.edgeNum)];
+    unsigned int * stack2Top = &graph.stack2Top[(graph.vertexNum*7)+(2*graph.edgeNum)+1];
+    unsigned int * supportTop = &graph.supportTop[(graph.vertexNum*7)+(2*graph.edgeNum)+2];
+    unsigned int * globalColorCounter = &graph.globalColorCounter[(graph.vertexNum*7)+(2*graph.edgeNum)+3];
+    unsigned int * removedVerticesQueueBack = &graph.removedVerticesQueueBack[(graph.vertexNum*7)+(2*graph.edgeNum)+4];
+    unsigned int * removedVerticesQueueFront = &graph.removedVerticesQueueFront[(graph.vertexNum*7)+(2*graph.edgeNum)+5];
+    bool * foundPath = &graph.foundPath[(graph.vertexNum*7)+(2*graph.edgeNum)+6];
 
     #endif
      int bridgeFront;

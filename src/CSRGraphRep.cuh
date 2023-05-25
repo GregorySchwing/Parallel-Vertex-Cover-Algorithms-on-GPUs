@@ -149,7 +149,7 @@ CSRGraph allocateGraph(CSRGraph graph){
     checkCudaErrors(cudaMalloc((void**) &stack2_d,sizeof(int)*graph.vertexNum*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &support_d,sizeof(int)*graph.vertexNum*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &color_d,sizeof(int)*graph.vertexNum*graph.numBlocks));
-    checkCudaErrors(cudaMalloc((void**) &budAtDDFSEncounter_d,sizeof(int)*graph.vertexNum*graph.numBlocks));
+    checkCudaErrors(cudaMalloc((void**) &budAtDDFSEncounter_d,sizeof(int)*2*graph.edgeNum*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &ddfsPredecessorsPtr_d,sizeof(int)*graph.vertexNum*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &myBridge_d,graph.vertexNum*sizeof(__int128_t)*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &foundPath_d,sizeof(bool)*graph.numBlocks));

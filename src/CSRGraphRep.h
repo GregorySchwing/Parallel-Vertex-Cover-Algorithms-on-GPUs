@@ -42,6 +42,7 @@ struct CSRGraph{
     int * support;
     int * color;
     int * budAtDDFSEncounter;
+
     int * ddfsPredecessorsPtr;
     __int128_t * myBridge;
     bool* foundPath;
