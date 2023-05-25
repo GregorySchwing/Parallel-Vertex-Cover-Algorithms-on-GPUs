@@ -89,7 +89,10 @@ CSRGraph allocateGraph(CSRGraph graph){
     char* edgeStatus_d;
     uint64_t* bridgeList_d;
     unsigned int *bridgeList_counter_d;
-    unsigned int *bridgeFront;
+    unsigned int *bridgeFront_d;
+    __int128_t * myBridge_d;
+    bool* foundPath_d;
+
 
     // DDFS variables
     int * stack1_d;
@@ -121,14 +124,15 @@ CSRGraph allocateGraph(CSRGraph graph){
     checkCudaErrors(cudaMalloc((void**) &oddlvl_d, graph.vertexNum*sizeof(int)));
     checkCudaErrors(cudaMalloc((void**) &evenlvl_d, graph.vertexNum*sizeof(int)));
 
-    checkCudaErrors(cudaMalloc((void**) &bridgeFront,sizeof(unsigned int)));
+    checkCudaErrors(cudaMalloc((void**) &bridgeFront_d,sizeof(unsigned int)));
     checkCudaErrors(cudaMalloc((void**) &removed_d, graph.vertexNum*sizeof(bool)));
 
     // Likely too much work.
     checkCudaErrors(cudaMalloc((void**) &bridgeList_counter_d,sizeof(unsigned int)));
     checkCudaErrors(cudaMalloc((void**) &bridgeList_d,2*graph.edgeNum*sizeof(uint64_t)));
+
     cudaMemset(bridgeList_counter_d, 0, sizeof(unsigned int));
-    cudaMemset(bridgeFront, 0, sizeof(unsigned int));
+    cudaMemset(bridgeFront_d, 0, sizeof(unsigned int));
     Graph.bridgeList=bridgeList_d;
     Graph.bridgeList_counter=bridgeList_counter_d;
     
@@ -147,6 +151,8 @@ CSRGraph allocateGraph(CSRGraph graph){
     checkCudaErrors(cudaMalloc((void**) &childsInDDFSTree_keys_d,sizeof(int)*graph.vertexNum*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &childsInDDFSTree_values_d,sizeof(uint64_t)*graph.vertexNum*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &ddfsPredecessorsPtr_d,sizeof(int)*graph.vertexNum*graph.numBlocks));
+    checkCudaErrors(cudaMalloc((void**) &myBridge_d,graph.vertexNum*sizeof(__int128_t)*graph.numBlocks));
+    checkCudaErrors(cudaMalloc((void**) &foundPath_d,sizeof(bool)*graph.numBlocks));
 
     Graph.stack1=stack1_d;
     Graph.stack2=stack2_d;
@@ -155,6 +161,8 @@ CSRGraph allocateGraph(CSRGraph graph){
     Graph.childsInDDFSTree_keys=childsInDDFSTree_keys_d;
     Graph.childsInDDFSTree_values=childsInDDFSTree_values_d;
     Graph.ddfsPredecessorsPtr=ddfsPredecessorsPtr_d;
+    Graph.myBridge=myBridge_d;
+    Graph.foundPath=foundPath_d;
     printf("NUM BLOCKS %d\n",graph.numBlocks);
     checkCudaErrors(cudaMalloc((void**) &stack1Top_d,sizeof(unsigned int)*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &stack2Top_d,sizeof(unsigned int)*graph.numBlocks));
@@ -187,7 +195,6 @@ CSRGraph allocateGraph(CSRGraph graph){
     thrust::fill(evenlvl_thrust_ptr, evenlvl_thrust_ptr+graph.vertexNum, INF); // or 999999.f if you prefer
     thrust::fill(globalColorCounter_thrust_ptr, globalColorCounter_thrust_ptr+graph.numBlocks, 1); // or 999999.f if you prefer
 
-    cudaMemset(bridgeFront, 0, sizeof(unsigned int));
     cudaMemset(matching_d, -1, graph.vertexNum*sizeof(int));
     cudaMemset(edgeStatus_d, 0, 2*graph.edgeNum*sizeof(char));
     cudaMemset(removed_d, 0, graph.vertexNum*sizeof(bool));
@@ -208,7 +215,7 @@ CSRGraph allocateGraph(CSRGraph graph){
     Graph.pred = pred_d;
     Graph.bridgeTenacity = bridgeTenacity_d;
     Graph.edgeStatus = edgeStatus_d;
-    Graph.bridgeFront = bridgeFront;
+    Graph.bridgeFront = bridgeFront_d;
     Graph.removed=removed_d;
     Graph.bud = allocate_DSU(graph);
 

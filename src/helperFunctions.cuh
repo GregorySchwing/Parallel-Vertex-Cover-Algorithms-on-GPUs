@@ -25,7 +25,7 @@ __device__ bool binarySearch(unsigned int * arr, unsigned int l, unsigned int r,
     return false;
 }
 
-__device__ void setlvl(CSRGraph & graph, int u, int lev){
+__device__ void setLvl(CSRGraph & graph, int u, int lev){
     if(lev&1) graph.oddlvl[u] = lev; else graph.evenlvl[u] = lev;
 }
 

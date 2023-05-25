@@ -116,7 +116,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
                 __syncthreads();
                 for (int vertex = startingVertex + threadIdx.x; vertex < min(graph.vertexNum, startingVertex + VERTICES_PER_BLOCK); vertex+=blockDim.x){
                     if (graph.matching[vertex]==-1){
-                        setlvl(graph,vertex,i);
+                        setLvl(graph,vertex,i);
                         printf("Block %d setting vertex %d as src oddlvl %d evenlvl %d\n", blockIdx.x,vertex,graph.oddlvl[vertex],graph.evenlvl[vertex]);
                     }
                 }
