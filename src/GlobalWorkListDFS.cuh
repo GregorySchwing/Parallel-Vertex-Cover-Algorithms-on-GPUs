@@ -195,10 +195,10 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
         }
 
         if(ddfsResult >> 32 != (uint32_t)ddfsResult) {
-            augumentPath(ddfsResult >> 32,(uint32_t)ddfsResult,true);
+            augumentPath(graph,color, removedVerticesQueue, removedVerticesQueueBack, ddfsResult >> 32,(uint32_t)ddfsResult,true);
             graph.foundPath[0] = true;
 
-            while(!(removedVerticesQueueBack[0]-removedVerticesQueueFront[0])) {
+            while(removedVerticesQueueBack[0]-removedVerticesQueueFront[0]) {
                 
                 int v = removedVerticesQueue[removedVerticesQueueFront[0]++];
                 unsigned int start = graph.srcPtr[v];

@@ -4,6 +4,12 @@
 #include "config.h"
 enum EdgeType {NotScanned, Prop, Bridge};
 
+template <typename T> __device__ void inline swap(T& a, T& b)
+{
+    T c(a); a=b; b=c;
+}
+
+
 __device__ long long int square(int num){
     return num*num;
 }
@@ -39,12 +45,74 @@ __device__ int tenacity(CSRGraph & graph, int u, int v){
     return graph.evenlvl[u] + graph.evenlvl[v] + 1;
 }
 
-
-__device__ void augumentPath(int a, int b, bool initial=false);
-__device__ void augumentPath(int a, int b, bool initial){
-
-}
 __device__ void removeAndPushToQueue(CSRGraph & graph, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int u) {graph.removed[u] = true; removedVerticesQueue[removedVerticesQueueBack[0]++]=u;}
+
+__device__ void flip(CSRGraph & graph, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int u, int v) {
+    if(graph.removed[u] || graph.removed[v] || graph.matching[u] == v) return;//flipping only unmatched edges
+    removeAndPushToQueue(graph,removedVerticesQueue,removedVerticesQueueBack,u);
+    removeAndPushToQueue(graph,removedVerticesQueue,removedVerticesQueueBack,v);
+    graph.matching[u] = v;
+    graph.matching[v] = u;
+}
+__device__ bool openingDfs(CSRGraph & graph, int * color, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int cur, int bcur, int b);
+__device__ void augumentPath(CSRGraph & graph, int * color, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int u, int v, bool initial=false);
+__device__ void augumentPath(CSRGraph & graph, int * color, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int u, int v, bool initial){
+    if(u == v) return;
+    if(!initial && minlvl(graph,u) == graph.evenlvl[u]) { //simply follow predecessors
+        // TMP
+        int x = 0;
+        /*
+        assert(predecessors[u].size() == 1); //u should be evenlevel (last minlevel edge is matched, so there is only one predecessor)
+        int x = predecessors[u][0]; //no need to flip edge since we know it's matched
+
+        int idx = 0;
+        while(graph.bud[predecessors[x][idx]] != graph.bud[x]) {
+            idx++; 
+            assert(idx < (int)predecessors[x].size());
+        }
+        u = predecessors[x][idx];
+        */
+        assert(!graph.removed[u]);
+        flip(graph,removedVerticesQueue,removedVerticesQueueBack,x,u);
+        augumentPath(graph,color,removedVerticesQueue,removedVerticesQueueBack,u,v);
+    }
+    else { //through bridge
+        int u3 = graph.myBridge[u] >> 96; 
+        int v3 = graph.myBridge[u] >> 64; 
+        int u2 = graph.myBridge[u] >> 32; 
+        int v2 = (int32_t)graph.myBridge[u];
+        if((color[u2]^1) == color[u] || color[v2] == color[u]) {
+            swap(u2, v2);
+            swap(u3,v3);
+        }
+
+        flip(graph,removedVerticesQueue,removedVerticesQueueBack,u3,v3);
+        bool openingDfsSucceed1 = openingDfs(graph,color,removedVerticesQueue,removedVerticesQueueBack,u3,u2,u);
+        assert(openingDfsSucceed1);
+
+        int v4 = graph.bud.directParent[u];
+        bool openingDfsSucceed2 = openingDfs(graph,color,removedVerticesQueue,removedVerticesQueueBack,v3,v2,v4);
+        assert(openingDfsSucceed2);
+        augumentPath(graph,color,removedVerticesQueue,removedVerticesQueueBack,v4,v);
+    }
+}
+
+__device__ bool openingDfs(CSRGraph & graph, int * color, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int cur, int bcur, int b){
+    if(bcur == b) {
+        augumentPath(graph,color,removedVerticesQueue,removedVerticesQueueBack,cur,bcur);
+        return true;
+    }
+    /*
+    for(auto a: childsInDDFSTree[bcur]) { 
+        if((a.nd == b || color[a.nd] == color[bcur]) && openingDfs(a.st,a.nd,b)) {
+            augumentPath(graph,color,removedVerticesQueue,removedVerticesQueueBack,cur,bcur);
+            flip(graph,removedVerticesQueue,removedVerticesQueueBack,bcur,a >> 32);
+            return true;
+        }
+    }
+    */
+    return false;
+}
 
 
 /*
