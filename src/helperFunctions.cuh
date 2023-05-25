@@ -60,18 +60,35 @@ __device__ void augumentPath(CSRGraph & graph, int * color, int * removedVertice
     if(u == v) return;
     if(!initial && minlvl(graph,u) == graph.evenlvl[u]) { //simply follow predecessors
         // TMP
-        int x = 0;
-        /*
-        assert(predecessors[u].size() == 1); //u should be evenlevel (last minlevel edge is matched, so there is only one predecessor)
-        int x = predecessors[u][0]; //no need to flip edge since we know it's matched
-
-        int idx = 0;
-        while(graph.bud[predecessors[x][idx]] != graph.bud[x]) {
-            idx++; 
-            assert(idx < (int)predecessors[x].size());
+        unsigned int start = graph.srcPtr[u];
+        unsigned int end = graph.srcPtr[u + 1];
+        unsigned int edgeIndex;
+        int predSize = 0;
+        for(edgeIndex=start; edgeIndex < end; edgeIndex++) {
+            if (graph.pred[edgeIndex])
+                predSize++;
         }
-        u = predecessors[x][idx];
-        */
+        assert(predSize == 1); //u should be evenlevel (last minlevel edge is matched, so there is only one predecessor)
+        // First predecessor of u
+        int x = -1; //no need to flip edge since we know it's matched
+        for(edgeIndex=start; edgeIndex < end; edgeIndex++) {
+            if (graph.pred[edgeIndex]){
+                x = graph.dst[edgeIndex];
+                break;
+            }
+        }
+        assert(x > -1);
+        start = graph.srcPtr[x];
+        end = graph.srcPtr[x + 1];
+        int newU = -1
+        for(edgeIndex=start; edgeIndex < end; edgeIndex++) {
+            if (graph.pred[edgeIndex] && graph.bud[graph.dst[edgeIndex]] == graph.bud[x]){
+                newU = graph.dst[edgeIndex];
+                break;
+            }
+        }
+        assert(newU > -1);
+        u = newU;
         assert(!graph.removed[u]);
         flip(graph,removedVerticesQueue,removedVerticesQueueBack,x,u);
         augumentPath(graph,color,removedVerticesQueue,removedVerticesQueueBack,u,v);
