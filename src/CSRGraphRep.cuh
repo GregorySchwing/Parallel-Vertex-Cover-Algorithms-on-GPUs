@@ -97,7 +97,7 @@ CSRGraph allocateGraph(CSRGraph graph){
     int * stack2_d;
     int * support_d;
     int * color_d;
-    int * childsInDDFSTree_keys_d;
+    int * budAtDDFSEncounter_d;
     uint64_t * childsInDDFSTree_values_d;
     int * ddfsPredecessorsPtr_d;
     __int128_t * myBridge_d;
@@ -141,7 +141,7 @@ CSRGraph allocateGraph(CSRGraph graph){
     Graph.bridgeList_counter=bridgeList_counter_d;
     
     // childsInDDFSTree_values<uint64_t>[N], 
-	// childsInDDFSTree_keys<int>[N],
+	// budAtDDFSEncounter<int>[N],
 	// stack1<int>[N], 
     // stack2<int>[N], 
 	// support<int>[N], 
@@ -152,7 +152,7 @@ CSRGraph allocateGraph(CSRGraph graph){
     checkCudaErrors(cudaMalloc((void**) &stack2_d,sizeof(int)*graph.vertexNum*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &support_d,sizeof(int)*graph.vertexNum*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &color_d,sizeof(int)*graph.vertexNum*graph.numBlocks));
-    checkCudaErrors(cudaMalloc((void**) &childsInDDFSTree_keys_d,sizeof(int)*graph.vertexNum*graph.numBlocks));
+    checkCudaErrors(cudaMalloc((void**) &budAtDDFSEncounter_d,sizeof(int)*graph.vertexNum*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &childsInDDFSTree_values_d,sizeof(uint64_t)*graph.vertexNum*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &ddfsPredecessorsPtr_d,sizeof(int)*graph.vertexNum*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &myBridge_d,graph.vertexNum*sizeof(__int128_t)*graph.numBlocks));
@@ -164,7 +164,7 @@ CSRGraph allocateGraph(CSRGraph graph){
     Graph.stack2=stack2_d;
     Graph.support=support_d;
     Graph.color=color_d;
-    Graph.childsInDDFSTree_keys=childsInDDFSTree_keys_d;
+    Graph.budAtDDFSEncounter=budAtDDFSEncounter_d;
     Graph.childsInDDFSTree_values=childsInDDFSTree_values_d;
     Graph.ddfsPredecessorsPtr=ddfsPredecessorsPtr_d;
     Graph.myBridge=myBridge_d;

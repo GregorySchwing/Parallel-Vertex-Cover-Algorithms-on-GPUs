@@ -41,7 +41,7 @@ struct CSRGraph{
     int * stack2;
     int * support;
     int * color;
-    int * childsInDDFSTree_keys;
+    int * budAtDDFSEncounter;
     uint64_t * childsInDDFSTree_values;
     int * ddfsPredecessorsPtr;
     __int128_t * myBridge;

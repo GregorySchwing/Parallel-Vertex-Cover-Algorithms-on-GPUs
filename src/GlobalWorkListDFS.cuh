@@ -9,7 +9,6 @@
 #include "BWDWorkList.cuh"
 #include "helperFunctions.cuh"
 #include <cooperative_groups.h>
-#include "sort.cuh"
 using namespace cooperative_groups; 
 #define VERTICES_PER_BLOCK 1000
 
@@ -93,7 +92,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
     int * stack1 = &graph.stack1[graph.vertexNum*(blockIdx.x)];
     int * stack2 = &graph.stack2[graph.vertexNum*(blockIdx.x)];
     int * color = &graph.color[graph.vertexNum*(blockIdx.x)];
-    int * childsInDDFSTree_keys = &graph.childsInDDFSTree_keys[graph.vertexNum*(blockIdx.x)];
+    int * budAtDDFSEncounter = &graph.budAtDDFSEncounter[graph.vertexNum*(blockIdx.x)];
     int * ddfsPredecessorsPtr = &graph.ddfsPredecessorsPtr[graph.vertexNum*(blockIdx.x)];
     int * support = &graph.support[graph.vertexNum*(blockIdx.x)];
     uint64_t * childsInDDFSTree_values = &graph.childsInDDFSTree_values[graph.vertexNum*(blockIdx.x)];
@@ -118,7 +117,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
     int * stack1 = &graph.stack1[graph.vertexNum*0];
     int * stack2 = &graph.stack2[graph.vertexNum*1];
     int * color = &graph.color[graph.vertexNum*2];
-    int * childsInDDFSTree_keys = &graph.childsInDDFSTree_keys[graph.vertexNum*3];
+    int * budAtDDFSEncounter = &graph.budAtDDFSEncounter[graph.vertexNum*3];
     int * ddfsPredecessorsPtr = &graph.ddfsPredecessorsPtr[graph.vertexNum*4];
     int * support = &graph.support[graph.vertexNum*5];
     int * removedVerticesQueue = &graph.removedVerticesQueue[graph.vertexNum*6];
@@ -151,12 +150,12 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
         //__syncthreads();
         printf("Bridge ID %d src %d dst %d\n", bridgeFront, src, dst);
         if(graph.removed[graph.bud[src]] || graph.removed[graph.bud[dst]]) return;   
-        ddfsResult = ddfs(graph,src,dst,stack1,stack2,stack1Top,stack2Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,childsInDDFSTree_keys,childsInDDFSTree_values,childsInDDFSTreeTop);
+        ddfsResult = ddfs(graph,src,dst,stack1,stack2,stack1Top,stack2Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,budAtDDFSEncounter,childsInDDFSTree_values,childsInDDFSTreeTop);
         printf("bridgeID %d bridge %d %d support %d %d %d %d %d %d\n", bridgeFront, src, dst, support[0], support[1], supportTop[0]>2 ? support[2]:-1,supportTop[0]>3 ? support[3]:-1,supportTop[0]>4 ? support[4]:-1,supportTop[0]>5 ? support[5]:-1);
     }
     __syncthreads();
     // Specialize BlockRadixSort for a 1D block of 128 threads owning 4 integer items each
-    cta_sort<1024>(graph.vertexNum, childsInDDFSTree_keys);
+    //cta_sort<1024>(graph.vertexNum, budAtDDFSEncounter);
     //typedef cub::BlockRadixSort<int, 1024, (int)((graph.vertexNum+1024-1)/1024)> BlockRadixSort;
     __syncthreads();
     if (threadIdx.x==0){

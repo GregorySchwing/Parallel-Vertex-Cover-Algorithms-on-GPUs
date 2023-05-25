@@ -120,7 +120,7 @@ tries to move color1 down, updating colors, stacks and childs in ddfs tree
 also adds each visited vertex to support of this bridge
 */
 
-__device__ int ddfsMove(CSRGraph & graph, int * stack1, int * stack2, unsigned int * stack1Top, unsigned int * stack2Top, int * support, unsigned int * supportTop, int * color, unsigned int *globalColorCounter, int * ddfsPredecessorsPtr, int*childsInDDFSTree_keys,uint64_t*childsInDDFSTree_values,unsigned int * childsInDDFSTreeTop, const int color1, const int color2) {
+__device__ int ddfsMove(CSRGraph & graph, int * stack1, int * stack2, unsigned int * stack1Top, unsigned int * stack2Top, int * support, unsigned int * supportTop, int * color, unsigned int *globalColorCounter, int * ddfsPredecessorsPtr, int*budAtDDFSEncounter,uint64_t*childsInDDFSTree_values,unsigned int * childsInDDFSTreeTop, const int color1, const int color2) {
 //int ddfsMove(vector<int>& stack1, const int color1, vector<int>& stack2, const int color2, vector<int>& support) {
     
     //int u = stack1.back();
@@ -143,14 +143,14 @@ __device__ int ddfsMove(CSRGraph & graph, int * stack1, int * stack2, unsigned i
                 support[supportTop[0]++]=v;
 
                 //childsInDDFSTree[u].push_back({a,v});
-                childsInDDFSTree_keys[childsInDDFSTreeTop[0]]=u;
+                budAtDDFSEncounter[u]=v;
                 childsInDDFSTree_values[childsInDDFSTreeTop[0]]=(uint64_t) a << 32 | v;
                 childsInDDFSTreeTop[0]++;
                 color[v] = color1;
                 return -1;
             }
             else if(v == stack2[stack2Top[0]]){
-                childsInDDFSTree_keys[childsInDDFSTreeTop[0]]=u;
+                budAtDDFSEncounter[u]=v;
                 childsInDDFSTree_values[childsInDDFSTreeTop[0]]=(uint64_t) a << 32 | v;
                 childsInDDFSTreeTop[0]++;
             }
@@ -177,7 +177,7 @@ __device__ int ddfsMove(CSRGraph & graph, int * stack1, int * stack2, unsigned i
 
 
 //returns {r0, g0} or {bottleneck, bottleneck} packed into uint64_t
-__device__ uint64_t ddfs(CSRGraph & graph, int src, int dst, int * stack1, int * stack2, unsigned int * stack1Top, unsigned int * stack2Top, int * support, unsigned int * supportTop, int * color, unsigned int *globalColorCounter, int * ddfsPredecessorsPtr, int*childsInDDFSTree_keys,uint64_t*childsInDDFSTree_values,unsigned int * childsInDDFSTreeTop) {
+__device__ uint64_t ddfs(CSRGraph & graph, int src, int dst, int * stack1, int * stack2, unsigned int * stack1Top, unsigned int * stack2Top, int * support, unsigned int * supportTop, int * color, unsigned int *globalColorCounter, int * ddfsPredecessorsPtr, int*budAtDDFSEncounter,uint64_t*childsInDDFSTree_values,unsigned int * childsInDDFSTreeTop) {
     stack1[stack1Top[0]++]=graph.bud[src];
     stack2[stack2Top[0]++]=graph.bud[dst];
     //vector<int> Sr = {graph.bud[src]}, Sg = {graph.bud[dst]};
@@ -207,10 +207,10 @@ __device__ uint64_t ddfs(CSRGraph & graph, int src, int dst, int * stack1, int *
         //if(minlvl(Sr.back()) >= minlvl(Sg.back()))
         if(minlvl(graph,stack1[stack1Top[0]]) >= minlvl(graph,stack2[stack2Top[0]]))
             //b = ddfsMove(Sr,newRed,Sg, newGreen, out_support);
-            b = ddfsMove(graph,stack1,stack2,stack1Top,stack2Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,childsInDDFSTree_keys,childsInDDFSTree_values,childsInDDFSTreeTop, newGreen, newRed);
+            b = ddfsMove(graph,stack1,stack2,stack1Top,stack2Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,budAtDDFSEncounter,childsInDDFSTree_values,childsInDDFSTreeTop, newGreen, newRed);
         else
             //b = ddfsMove(Sg,newGreen,Sr, newRed, out_support);
-            b = ddfsMove(graph,stack2,stack1,stack1Top,stack2Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,childsInDDFSTree_keys,childsInDDFSTree_values,childsInDDFSTreeTop, newRed, newGreen);
+            b = ddfsMove(graph,stack2,stack1,stack1Top,stack2Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,budAtDDFSEncounter,childsInDDFSTree_values,childsInDDFSTreeTop, newRed, newGreen);
         if(b != -1)
             //return {b,b};
             return (uint64_t) b << 32 | b;
