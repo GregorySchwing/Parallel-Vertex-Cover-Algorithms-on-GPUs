@@ -33,7 +33,11 @@ __device__ bool binarySearch(unsigned int * arr, unsigned int l, unsigned int r,
 }
 
 __device__ void setLvl(CSRGraph & graph, int u, int lev){
-    if(lev&1) graph.oddlvl[u] = lev; else graph.evenlvl[u] = lev;
+    if(lev%2) graph.oddlvl[u] = lev; else graph.evenlvl[u] = lev;
+}
+
+__device__ int getLvl(CSRGraph & graph, int u, int lev){
+    if(lev%2) return graph.oddlvl[u]; else return graph.evenlvl[u];
 }
 
 __device__ int minlvl(CSRGraph & graph, int u){

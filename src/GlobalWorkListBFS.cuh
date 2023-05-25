@@ -28,12 +28,12 @@ __global__ void GlobalWorkList_BFS_kernel(Stacks stacks, unsigned int * minimum,
     int* first_to_dequeue_global, int* NODES_PER_SM, unsigned int depth) {
 
     unsigned int vertex = threadIdx.x + blockIdx.x * blockDim.x;
-    if(vertex >= graph.vertexNum) return;
+    if(vertex >= graph.vertexNum || depth != getLvl(graph, vertex, depth)) return;
     unsigned int start = graph.srcPtr[vertex];
     unsigned int end = graph.srcPtr[vertex + 1];
     unsigned int edgeIndex=start;
     for(; edgeIndex < end; edgeIndex++) { // Delete Neighbors of startingVertex
-        printf("src %d dst %d edgeStatus %d evenlvl %d oddlvl %d matching %d\n",vertex,graph.dst[edgeIndex],graph.edgeStatus[edgeIndex],graph.oddlvl[vertex],graph.evenlvl[vertex],graph.matching[vertex]);
+        printf("src %d dst %d start %d end %d edgeIndex %d edgeStatus %d evenlvl %d oddlvl %d matching %d\n",vertex,graph.dst[edgeIndex],start,end,edgeIndex,graph.edgeStatus[edgeIndex],graph.oddlvl[vertex],graph.evenlvl[vertex],graph.matching[vertex]);
         if (graph.edgeStatus[edgeIndex] == NotScanned && (graph.oddlvl[vertex] == depth) == (graph.matching[vertex] == graph.dst[edgeIndex])) {
             if(minlvl(graph,graph.dst[edgeIndex]) >= depth+1) {
                 graph.edgeStatus[edgeIndex] = Prop;
@@ -53,13 +53,13 @@ __global__ void GlobalWorkList_BFS_kernel(Stacks stacks, unsigned int * minimum,
             }
             else{
                 graph.edgeStatus[edgeIndex] = Bridge;
-                unsigned int start = graph.srcPtr[graph.dst[edgeIndex]];
-                unsigned int end = graph.srcPtr[graph.dst[edgeIndex] + 1];
-                unsigned int edgeIndex=start;
-                printf("BID %d bridge edge %d - %d tenacity %d \n", blockIdx.x, vertex, graph.dst[edgeIndex],tenacity(graph,vertex,graph.dst[edgeIndex]));
-                for(; edgeIndex < end; edgeIndex++) { // Delete Neighbors of startingVertex
-                    if(vertex==graph.dst[edgeIndex]){
-                        graph.edgeStatus[edgeIndex] = Bridge;
+                printf("BID %d bridge edge %d - %d tenacity %d \n", blockIdx.x, vertex,graph.dst[edgeIndex],tenacity(graph,vertex,graph.dst[edgeIndex]));
+                unsigned int startOther = graph.srcPtr[graph.dst[edgeIndex]];
+                unsigned int endOther = graph.srcPtr[graph.dst[edgeIndex] + 1];
+                unsigned int edgeIndexOther;
+                for(edgeIndexOther=startOther; edgeIndexOther < endOther; edgeIndexOther++) { // Delete Neighbors of startingVertex
+                    if(vertex==graph.dst[edgeIndexOther]){
+                        graph.edgeStatus[edgeIndexOther] = Bridge;
                         break;
                     }
                 }
