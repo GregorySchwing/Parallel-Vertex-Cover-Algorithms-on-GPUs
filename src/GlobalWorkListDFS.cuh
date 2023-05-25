@@ -96,12 +96,17 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
     int * ddfsPredecessorsPtr = &graph.ddfsPredecessorsPtr[graph.vertexNum*(blockIdx.x)];
     int * support = &graph.support[graph.vertexNum*(blockIdx.x)];
     uint64_t * childsInDDFSTree_values = &graph.childsInDDFSTree_values[graph.vertexNum*(blockIdx.x)];
+    int * removedVerticesQueue = &graph.removedVerticesQueue[graph.vertexNum*(blockIdx.x)];
+    int * removedPredecessorsSize = &graph.removedVerticesQueue[graph.vertexNum*(blockIdx.x)];
 
     unsigned int * stack1Top = &graph.stack1Top[(blockIdx.x)];
     unsigned int * stack2Top = &graph.stack2Top[(blockIdx.x)];
     unsigned int * supportTop = &graph.supportTop[(blockIdx.x)];
     unsigned int * globalColorCounter = &graph.globalColorCounter[(blockIdx.x)];
     unsigned int * childsInDDFSTreeTop = &graph.childsInDDFSTreeTop[(blockIdx.x)];
+    unsigned int * removedVerticesQueueBack = &graph.removedVerticesQueueBack[(blockIdx.x)];    
+    unsigned int * removedVerticesQueueFront = &graph.removedVerticesQueueFront[(blockIdx.x)];    
+
     bool * foundPath = &graph.foundPath[(blockIdx.x)];
 
     #else
@@ -115,14 +120,18 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
     int * childsInDDFSTree_keys = &graph.childsInDDFSTree_keys[graph.vertexNum*3];
     int * ddfsPredecessorsPtr = &graph.ddfsPredecessorsPtr[graph.vertexNum*4];
     int * support = &graph.support[graph.vertexNum*5];
-    uint64_t * childsInDDFSTree_values = &graph.childsInDDFSTree_values[graph.vertexNum*6];
+    int * removedVerticesQueue = &graph.removedVerticesQueue[graph.vertexNum*6];
+    int * removedPredecessorsSize = &graph.removedVerticesQueue[graph.vertexNum*7];
+    uint64_t * childsInDDFSTree_values = &graph.childsInDDFSTree_values[graph.vertexNum*8];
 
-    unsigned int * stack1Top = &graph.stack1Top[(graph.vertexNum*8)];
-    unsigned int * stack2Top = &graph.stack2Top[(graph.vertexNum*8)+1];
-    unsigned int * supportTop = &graph.supportTop[(graph.vertexNum*8)+2];
-    unsigned int * globalColorCounter = &graph.globalColorCounter[(graph.vertexNum*8)+3];
-    unsigned int * childsInDDFSTreeTop = &graph.childsInDDFSTreeTop[(graph.vertexNum*8)+4];
-    bool * foundPath = &graph.foundPath[(graph.vertexNum*8)+5];
+    unsigned int * stack1Top = &graph.stack1Top[(graph.vertexNum*10)];
+    unsigned int * stack2Top = &graph.stack2Top[(graph.vertexNum*10)+1];
+    unsigned int * supportTop = &graph.supportTop[(graph.vertexNum*10)+2];
+    unsigned int * globalColorCounter = &graph.globalColorCounter[(graph.vertexNum*10)+3];
+    unsigned int * childsInDDFSTreeTop = &graph.childsInDDFSTreeTop[(graph.vertexNum*10)+4];
+    unsigned int * removedVerticesQueueBack = &graph.removedVerticesQueueBack[(graph.vertexNum*10)+5];
+    unsigned int * removedVerticesQueueFront = &graph.removedVerticesQueueFront[(graph.vertexNum*10)+6];
+    bool * foundPath = &graph.foundPath[(graph.vertexNum*10)+7];
 
     #endif
      int bridgeFront;
@@ -186,17 +195,36 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
         }
 
         if(ddfsResult >> 32 != (uint32_t)ddfsResult) {
-            //augumentPath(ddfsResult.first,ddfsResult.second,true);
+            augumentPath(ddfsResult >> 32,(uint32_t)ddfsResult,true);
             graph.foundPath[0] = true;
-            /*
-            while(!removedVerticesQueue.empty()) {
-                int v = removedVerticesQueue.front();
-                removedVerticesQueue.pop();
-                for(auto e : graph[v])
-                    if(e.type == Prop && minlvl(e.to) > minlvl(v) && !removed[e.to] && ++removedPredecessorsSize[e.to] == predecessors[e.to].size())
-                        removeAndPushToQueue(e.to);
+
+            while(!(removedVerticesQueueBack[0]-removedVerticesQueueFront[0])) {
+                
+                int v = removedVerticesQueue[removedVerticesQueueFront[0]++];
+                unsigned int start = graph.srcPtr[v];
+                unsigned int end = graph.srcPtr[v + 1];
+                unsigned int edgeIndex;
+                for(edgeIndex=start; edgeIndex < end; edgeIndex++) {
+                    if(graph.edgeStatus[edgeIndex] == Prop && 
+                        minlvl(graph,graph.dst[edgeIndex]) > minlvl(graph,v) && 
+                        tenacity(graph,v,graph.dst[edgeIndex]) < INF &&
+                        !(graph.removed[graph.dst[edgeIndex]])){
+                        
+                        // Check last condition only if all 4 preceding are true
+                        int predecessorsSize = 0;
+                        unsigned int startOther = graph.srcPtr[graph.dst[edgeIndex]];
+                        unsigned int endOther = graph.srcPtr[graph.dst[edgeIndex] + 1];
+                        unsigned int edgeIndexOther;
+                        for(edgeIndexOther=startOther; edgeIndexOther < endOther; edgeIndexOther++) {
+                            if (graph.pred[edgeIndexOther])
+                                predecessorsSize++;
+                        }
+                        if(++removedPredecessorsSize[graph.dst[edgeIndex]] == predecessorsSize) {
+                            removeAndPushToQueue(graph,removedVerticesQueue,removedVerticesQueueBack,graph.dst[edgeIndex]);
+                        }
+                    }
+                }
             }
-            */
         }
         /*
         if(ddfsResult.first != ddfsResult.second) {

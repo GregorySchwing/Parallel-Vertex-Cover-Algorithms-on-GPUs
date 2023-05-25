@@ -46,13 +46,16 @@ struct CSRGraph{
     int * ddfsPredecessorsPtr;
     __int128_t * myBridge;
     bool* foundPath;
-
+    int * removedVerticesQueue;
+    int * removedPredecessorsSize;
 
     unsigned int * stack1Top;
     unsigned int * stack2Top; 
     unsigned int * supportTop; 
     unsigned int * globalColorCounter; 
     unsigned int * childsInDDFSTreeTop;
+    unsigned int * removedVerticesQueueBack;
+    unsigned int * removedVerticesQueueFront;
 
     bool* removed;
 

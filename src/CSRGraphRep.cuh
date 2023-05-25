@@ -90,8 +90,6 @@ CSRGraph allocateGraph(CSRGraph graph){
     uint64_t* bridgeList_d;
     unsigned int *bridgeList_counter_d;
     unsigned int *bridgeFront_d;
-    __int128_t * myBridge_d;
-    bool* foundPath_d;
 
 
     // DDFS variables
@@ -102,12 +100,18 @@ CSRGraph allocateGraph(CSRGraph graph){
     int * childsInDDFSTree_keys_d;
     uint64_t * childsInDDFSTree_values_d;
     int * ddfsPredecessorsPtr_d;
+    __int128_t * myBridge_d;
+    bool* foundPath_d;
+    int * removedVerticesQueue_d;
+    int * removedPredecessorsSize_d;
 
     unsigned int * stack1Top_d;
     unsigned int * stack2Top_d; 
     unsigned int * supportTop_d; 
     unsigned int * globalColorCounter_d; 
     unsigned int * childsInDDFSTreeTop_d;
+    unsigned int * removedVerticesQueueBack_d;
+    unsigned int * removedVerticesQueueFront_d;
 
     bool * removed_d;
     checkCudaErrors(cudaMalloc((void**) &dst_d,sizeof(unsigned int)*2*graph.edgeNum));
@@ -153,6 +157,8 @@ CSRGraph allocateGraph(CSRGraph graph){
     checkCudaErrors(cudaMalloc((void**) &ddfsPredecessorsPtr_d,sizeof(int)*graph.vertexNum*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &myBridge_d,graph.vertexNum*sizeof(__int128_t)*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &foundPath_d,sizeof(bool)*graph.numBlocks));
+    checkCudaErrors(cudaMalloc((void**) &removedVerticesQueue_d,sizeof(int)*graph.vertexNum*graph.numBlocks));
+    checkCudaErrors(cudaMalloc((void**) &removedPredecessorsSize_d,sizeof(int)*graph.vertexNum*graph.numBlocks));
 
     Graph.stack1=stack1_d;
     Graph.stack2=stack2_d;
@@ -163,24 +169,31 @@ CSRGraph allocateGraph(CSRGraph graph){
     Graph.ddfsPredecessorsPtr=ddfsPredecessorsPtr_d;
     Graph.myBridge=myBridge_d;
     Graph.foundPath=foundPath_d;
+    Graph.removedVerticesQueue = removedVerticesQueue_d;
+    Graph.removedPredecessorsSize=removedPredecessorsSize_d;
     printf("NUM BLOCKS %d\n",graph.numBlocks);
     checkCudaErrors(cudaMalloc((void**) &stack1Top_d,sizeof(unsigned int)*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &stack2Top_d,sizeof(unsigned int)*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &supportTop_d,sizeof(unsigned int)*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &globalColorCounter_d,sizeof(unsigned int)*graph.numBlocks));
     checkCudaErrors(cudaMalloc((void**) &childsInDDFSTreeTop_d,sizeof(unsigned int)*graph.numBlocks));
+    checkCudaErrors(cudaMalloc((void**) &removedVerticesQueueBack_d,sizeof(unsigned int)*graph.numBlocks));
+    checkCudaErrors(cudaMalloc((void**) &removedVerticesQueueFront_d,sizeof(unsigned int)*graph.numBlocks));
 
     Graph.stack1Top=stack1Top_d;
     Graph.stack2Top=stack2Top_d;
     Graph.supportTop=supportTop_d;
     Graph.globalColorCounter=globalColorCounter_d;
     Graph.childsInDDFSTreeTop=childsInDDFSTreeTop_d;
+    Graph.removedVerticesQueueBack=removedVerticesQueueBack_d;
+    Graph.removedVerticesQueueFront=removedVerticesQueueFront_d;
 
     cudaMemset(Graph.stack1Top, 0, sizeof(unsigned int)*graph.numBlocks);
     cudaMemset(Graph.stack2Top, 0, sizeof(unsigned int)*graph.numBlocks);
     cudaMemset(Graph.supportTop, 0, sizeof(unsigned int)*graph.numBlocks);
-    cudaMemset(Graph.globalColorCounter, 1, sizeof(unsigned int)*graph.numBlocks);
     cudaMemset(Graph.childsInDDFSTreeTop, 0, sizeof(unsigned int)*graph.numBlocks);
+    cudaMemset(Graph.removedVerticesQueueBack, 0, sizeof(unsigned int)*graph.numBlocks);
+    cudaMemset(Graph.removedVerticesQueueFront, 0, sizeof(unsigned int)*graph.numBlocks);
 
     /*
     cudaMemset(oddlvl_d, INF, graph.vertexNum*sizeof(int));
@@ -198,6 +211,8 @@ CSRGraph allocateGraph(CSRGraph graph){
     cudaMemset(matching_d, -1, graph.vertexNum*sizeof(int));
     cudaMemset(edgeStatus_d, 0, 2*graph.edgeNum*sizeof(char));
     cudaMemset(removed_d, 0, graph.vertexNum*sizeof(bool));
+    cudaMemset(removedPredecessorsSize_d, 0, graph.numBlocks*graph.vertexNum*sizeof(int));
+
 
     Graph.vertexNum = graph.vertexNum;
     Graph.edgeNum = graph.edgeNum;

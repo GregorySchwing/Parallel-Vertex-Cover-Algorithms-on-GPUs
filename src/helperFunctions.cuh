@@ -40,6 +40,13 @@ __device__ int tenacity(CSRGraph & graph, int u, int v){
 }
 
 
+__device__ void augumentPath(int a, int b, bool initial=false);
+__device__ void augumentPath(int a, int b, bool initial){
+
+}
+__device__ void removeAndPushToQueue(CSRGraph & graph, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int u) {graph.removed[u] = true; removedVerticesQueue[removedVerticesQueueBack[0]++]=u;}
+
+
 /*
 tries to move color1 down, updating colors, stacks and childs in ddfs tree
 also adds each visited vertex to support of this bridge
