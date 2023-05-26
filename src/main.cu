@@ -278,8 +278,11 @@ int main(int argc, char *argv[]) {
                     unsigned int depth = 0;
                     GlobalWorkList_Set_Sources_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
                     for (; depth < graph.vertexNum && !pathFound; ++depth){ 
-                        GlobalWorkList_BFS_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
-                        GlobalWorkList_Extract_Bridges_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, dfsWL_d,  graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
+                        GlobalWorkList_BFS_kernel_st <<< 1, 1 >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
+                        //GlobalWorkList_BFS_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
+                        //GlobalWorkList_Extract_Bridges_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, dfsWL_d,  graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
+                        GlobalWorkList_Extract_Bridges_kernel_st <<< 1, 1 >>> (stacks_d, minimum_d, workList_d, dfsWL_d,  graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
+
                         cudaLaunchCooperativeKernel((void*)(GlobalWorkList_global_DFS_kernel), numBlocks, numThreadsPerBlock, kernel_args) ;
                         cudaDeviceSynchronize();
                         cudaMemcpy(&pathFound, &graph_d.foundPath[0], sizeof(bool), cudaMemcpyDeviceToHost);
@@ -311,8 +314,11 @@ int main(int argc, char *argv[]) {
                     unsigned int depth = 0;
                     GlobalWorkList_Set_Sources_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
                     for (; depth < graph.vertexNum && !pathFound; ++depth){ 
-                        GlobalWorkList_BFS_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
-                        GlobalWorkList_Extract_Bridges_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, dfsWL_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
+                        printf("Depth %d\n", depth);
+                       GlobalWorkList_BFS_kernel_st <<< 1, 1 >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
+                        //GlobalWorkList_BFS_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
+                        //GlobalWorkList_Extract_Bridges_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, dfsWL_d,  graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
+                        GlobalWorkList_Extract_Bridges_kernel_st <<< 1, 1 >>> (stacks_d, minimum_d, workList_d, dfsWL_d,  graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
                         cudaLaunchCooperativeKernel((void*)(GlobalWorkList_shared_DFS_kernel), numBlocks, numThreadsPerBlock, kernel_args) ;
                         cudaDeviceSynchronize();
                         cudaMemcpy(&pathFound, &graph_d.foundPath[0], sizeof(bool), cudaMemcpyDeviceToHost);

@@ -179,29 +179,31 @@ __device__ int ddfsMove(CSRGraph & graph, int * stack1, int * stack2, unsigned i
                 support[supportTop[0]++]=v;
 
                 //childsInDDFSTree[u].push_back({a,v});
-                budAtDDFSEncounter[u]=v;
+                //budAtDDFSEncounter[u]=v;
+                budAtDDFSEncounter[edgeIndex]=v;
                 //childsInDDFSTree_values[childsInDDFSTreeTop[0]]=(uint64_t) a << 32 | v;
                 color[v] = color1;
                 return -1;
             }
             else if(v == stack2[stack2Top[0]]){
-                budAtDDFSEncounter[u]=v;
+                //budAtDDFSEncounter[u]=v;
+                budAtDDFSEncounter[edgeIndex]=v;
                 //childsInDDFSTree_values[childsInDDFSTreeTop[0]]=(uint64_t) a << 32 | v;
             }
         }
-        --stack1Top[0];
+    }
+    --stack1Top[0];
 
-        if(stack1Top[0] == 0) {
-            if(stack2Top[0] == 1) { //found bottleneck
-                color[stack2[stack2Top[0]]] = 0;
-                return stack2[stack2Top[0]];
-            }
-            //change colors
-            assert(color[stack2[stack2Top[0]]] == color2);
-            stack1[stack1Top[0]++]=stack2[stack2Top[0]];
-            color[stack1[stack1Top[0]]] = color1;
-            --stack2Top[0];
+    if(stack1Top[0] == 0) {
+        if(stack2Top[0] == 1) { //found bottleneck
+            color[stack2[stack2Top[0]]] = 0;
+            return stack2[stack2Top[0]];
         }
+        //change colors
+        assert(color[stack2[stack2Top[0]]] == color2);
+        stack1[stack1Top[0]++]=stack2[stack2Top[0]];
+        color[stack1[stack1Top[0]]] = color1;
+        --stack2Top[0];
     }
 
     return -1;
@@ -214,12 +216,11 @@ __device__ int ddfsMove(CSRGraph & graph, int * stack1, int * stack2, unsigned i
 __device__ cuda::std::pair<int,int> ddfs(CSRGraph & graph, int src, int dst, int * stack1, int * stack2, unsigned int * stack1Top, unsigned int * stack2Top, int * support, unsigned int * supportTop, int * color, unsigned int *globalColorCounter, int * ddfsPredecessorsPtr, int*budAtDDFSEncounter) {
     stack1[stack1Top[0]++]=graph.bud[src];
     stack2[stack2Top[0]++]=graph.bud[dst];
-
     //vector<int> Sr = {graph.bud[src]}, Sg = {graph.bud[dst]};
     //if(Sr[0] == Sg[0])
     //    return {Sr[0],Sg[0]};
     if (stack1[0]==stack2[0]){
-        printf("stack1[0]==stack2[0]\n");
+        printf("stack1[0]=%d == stack2[0]=%d\n",stack1[0],stack2[0]);
         //return (uint64_t) stack1[0] << 32 | stack2[0];
         return cuda::std::pair<int,int>(stack1[0],stack2[0]);
 
@@ -235,6 +236,7 @@ __device__ cuda::std::pair<int,int> ddfs(CSRGraph & graph, int src, int dst, int
     
 
     for(;;) {
+        printf("IN FOR\n");
         //if found two disjoint paths
         //if(minlvl(Sr.back()) == 0 && minlvl(Sg.back()) == 0)
         if(minlvl(graph,stack1[stack1Top[0]-1]) == 0 && minlvl(graph,stack2[stack2Top[0]-1]) == 0){
@@ -247,12 +249,16 @@ __device__ cuda::std::pair<int,int> ddfs(CSRGraph & graph, int src, int dst, int
         }
         int b;
         //if(minlvl(Sr.back()) >= minlvl(Sg.back()))
-        if(minlvl(graph,stack1[stack1Top[0]-1]) >= minlvl(graph,stack2[stack2Top[0]-1]))
+        printf("stack1[%d-1]=%d ml %d stack2[%d-1]=%d ml %d \n",stack1Top[0],stack1[stack1Top[0]-1],minlvl(graph,stack1[stack1Top[0]-1]),stack2Top[0],stack2[stack2Top[0]-1],minlvl(graph,stack2[stack2Top[0]-1]));
+        if(minlvl(graph,stack1[stack1Top[0]-1]) >= minlvl(graph,stack2[stack2Top[0]-1])){
+            printf("ENTERED IF\n");
             //b = ddfsMove(Sr,newRed,Sg, newGreen, out_support);
             b = ddfsMove(graph,stack1,stack2,stack1Top,stack2Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,budAtDDFSEncounter, newGreen, newRed);
-        else
+        } else{
+            printf("ENTERED ELSE\n");
             //b = ddfsMove(Sg,newGreen,Sr, newRed, out_support);
-            b = ddfsMove(graph,stack2,stack1,stack1Top,stack2Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,budAtDDFSEncounter, newRed, newGreen);
+            b = ddfsMove(graph,stack2,stack1,stack2Top,stack1Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,budAtDDFSEncounter, newRed, newGreen);
+        }
         if(b != -1){
             //return {b,b};
             printf("B!=-1\n");

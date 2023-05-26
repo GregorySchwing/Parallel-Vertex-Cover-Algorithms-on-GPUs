@@ -155,7 +155,11 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
             dst = dfsWL.bridgeList[bridgeFront].nd;
 
             printf("Bridge ID %d src %d dst %d\n", bridgeFront, src, dst);
-            if(graph.removed[graph.bud[src]] || graph.removed[graph.bud[dst]]) continue;   
+            if(graph.removed[graph.bud[src]] || graph.removed[graph.bud[dst]]){
+                printf("Bridge ID %d src %d dst continuing since removed%d\n", bridgeFront, src, dst);
+
+                 continue;   
+            }
             cuda::std::pair<int,int> ddfsResult = ddfs(graph,src,dst,stack1,stack2,stack1Top,stack2Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,budAtDDFSEncounter);
             printf("bridgeID %d bridge %d %d support %d %d %d %d %d %d\n", bridgeFront, src, dst, support[0], support[1], supportTop[0]>2 ? support[2]:-1,supportTop[0]>3 ? support[3]:-1,supportTop[0]>4 ? support[4]:-1,supportTop[0]>5 ? support[5]:-1);
             printf("ddfsResult %d %d\n",ddfsResult.first,ddfsResult.second);
@@ -165,6 +169,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
                 auto v = support[i];
                 if (v == ddfsResult.nd) continue; //skip bud
                 dfsWL.myBridge[v] = curBridge;
+                printf("Linking %d to %d\n",v,ddfsResult.nd);
                 graph.bud.linkTo(v,ddfsResult.nd);
 
                 //this part of code is only needed when bottleneck found, but it doesn't mess up anything when called on two paths 

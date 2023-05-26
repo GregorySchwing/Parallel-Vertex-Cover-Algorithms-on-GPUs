@@ -1,0 +1,442 @@
+
+Graph file: ../blossreq.txt
+UUID: 1
+0 2 0
+1 0 2
+2 1 2
+3 2 3
+4 2 5
+5 2 7
+6 1 9
+7 4 10
+8 3 14
+9 2 17
+10 2 19
+11 2 21
+12 3 23
+13 2 26
+14 1 28
+15 1 29
+16 2 30
+17 2 32
+18 2 34
+
+Device name: Quadro RTX 5000 with Max-Q Design
+
+NumOfMultiProcessors : 48
+MaxThreadsPerMultiProcessor : 1024
+MaxThreadsPerBlock : 1024
+MaxSharedMemPerMultiProcessor : 65536
+memoryRequiredPerBlock 628
+maxGlobalMemory 16908746752
+consumedGlobalMem 2684354848
+availableGlobalMem 14224391904
+maxNumBlocksGlobalMem 768
+minNumBlocksGlobalMem 48
+minBlockDimGlobalMem 64
+
+Optimal BlockDim : 64
+
+Use Shared Mem : 1
+
+Our Config :
+NumOfThreadPerBlocks : 64
+NumOfBlocks : 1
+NumOfBlockPerSM : 16
+NumOfThreadsPerSM : 1024
+
+NUM BLOCKS 1
+Allocated graph
+Launching kernel
+Iter 0
+Block 0 setting vertex 0 as src oddlvl 1000000000 evenlvl 0
+Block 0 setting vertex 1 as src oddlvl 1000000000 evenlvl 0
+Block 0 setting vertex 2 as src oddlvl 1000000000 evenlvl 0
+Block 0 setting vertex 3 as src oddlvl 1000000000 evenlvl 0
+Block 0 setting vertex 4 as src oddlvl 1000000000 evenlvl 0
+Block 0 setting vertex 5 as src oddlvl 1000000000 evenlvl 0
+Block 0 setting vertex 6 as src oddlvl 1000000000 evenlvl 0
+Block 0 setting vertex 7 as src oddlvl 1000000000 evenlvl 0
+Block 0 setting vertex 8 as src oddlvl 1000000000 evenlvl 0
+Block 0 setting vertex 9 as src oddlvl 1000000000 evenlvl 0
+Block 0 setting vertex 10 as src oddlvl 1000000000 evenlvl 0
+Block 0 setting vertex 11 as src oddlvl 1000000000 evenlvl 0
+Block 0 setting vertex 12 as src oddlvl 1000000000 evenlvl 0
+Block 0 setting vertex 13 as src oddlvl 1000000000 evenlvl 0
+Block 0 setting vertex 14 as src oddlvl 1000000000 evenlvl 0
+Block 0 setting vertex 15 as src oddlvl 1000000000 evenlvl 0
+Block 0 setting vertex 16 as src oddlvl 1000000000 evenlvl 0
+Block 0 setting vertex 17 as src oddlvl 1000000000 evenlvl 0
+Block 0 setting vertex 18 as src oddlvl 1000000000 evenlvl 0
+src 0 dst 3 start 0 end 2 edgeIndex 0 edgeStatus 0 evenlvl 1000000000 oddlvl 0 matching -1
+BID 0 bridge edge 0 - 3 tenacity 1 
+src 0 dst 4 start 0 end 2 edgeIndex 1 edgeStatus 0 evenlvl 1000000000 oddlvl 0 matching -1
+BID 0 bridge edge 0 - 4 tenacity 1 
+src 2 dst 5 start 2 end 3 edgeIndex 2 edgeStatus 0 evenlvl 1000000000 oddlvl 0 matching -1
+BID 0 bridge edge 2 - 5 tenacity 1 
+src 3 dst 0 start 3 end 5 edgeIndex 3 edgeStatus 2 evenlvl 1000000000 oddlvl 0 matching -1
+src 3 dst 6 start 3 end 5 edgeIndex 4 edgeStatus 0 evenlvl 1000000000 oddlvl 0 matching -1
+BID 0 bridge edge 3 - 6 tenacity 1 
+src 4 dst 0 start 5 end 7 edgeIndex 5 edgeStatus 2 evenlvl 1000000000 oddlvl 0 matching -1
+src 4 dst 7 start 5 end 7 edgeIndex 6 edgeStatus 0 evenlvl 1000000000 oddlvl 0 matching -1
+BID 0 bridge edge 4 - 7 tenacity 1 
+src 5 dst 2 start 7 end 9 edgeIndex 7 edgeStatus 2 evenlvl 1000000000 oddlvl 0 matching -1
+src 5 dst 8 start 7 end 9 edgeIndex 8 edgeStatus 0 evenlvl 1000000000 oddlvl 0 matching -1
+BID 0 bridge edge 5 - 8 tenacity 1 
+src 6 dst 3 start 9 end 10 edgeIndex 9 edgeStatus 2 evenlvl 1000000000 oddlvl 0 matching -1
+src 7 dst 4 start 10 end 14 edgeIndex 10 edgeStatus 2 evenlvl 1000000000 oddlvl 0 matching -1
+src 7 dst 9 start 10 end 14 edgeIndex 11 edgeStatus 0 evenlvl 1000000000 oddlvl 0 matching -1
+BID 0 bridge edge 7 - 9 tenacity 1 
+src 7 dst 10 start 10 end 14 edgeIndex 12 edgeStatus 0 evenlvl 1000000000 oddlvl 0 matching -1
+BID 0 bridge edge 7 - 10 tenacity 1 
+src 7 dst 11 start 10 end 14 edgeIndex 13 edgeStatus 0 evenlvl 1000000000 oddlvl 0 matching -1
+BID 0 bridge edge 7 - 11 tenacity 1 
+src 8 dst 5 start 14 end 17 edgeIndex 14 edgeStatus 2 evenlvl 1000000000 oddlvl 0 matching -1
+src 8 dst 12 start 14 end 17 edgeIndex 15 edgeStatus 0 evenlvl 1000000000 oddlvl 0 matching -1
+BID 0 bridge edge 8 - 12 tenacity 1 
+src 8 dst 13 start 14 end 17 edgeIndex 16 edgeStatus 0 evenlvl 1000000000 oddlvl 0 matching -1
+BID 0 bridge edge 8 - 13 tenacity 1 
+src 9 dst 7 start 17 end 19 edgeIndex 17 edgeStatus 2 evenlvl 1000000000 oddlvl 0 matching -1
+src 9 dst 14 start 17 end 19 edgeIndex 18 edgeStatus 0 evenlvl 1000000000 oddlvl 0 matching -1
+BID 0 bridge edge 9 - 14 tenacity 1 
+src 10 dst 7 start 19 end 21 edgeIndex 19 edgeStatus 2 evenlvl 1000000000 oddlvl 0 matching -1
+src 10 dst 15 start 19 end 21 edgeIndex 20 edgeStatus 0 evenlvl 1000000000 oddlvl 0 matching -1
+BID 0 bridge edge 10 - 15 tenacity 1 
+src 11 dst 7 start 21 end 23 edgeIndex 21 edgeStatus 2 evenlvl 1000000000 oddlvl 0 matching -1
+src 11 dst 16 start 21 end 23 edgeIndex 22 edgeStatus 0 evenlvl 1000000000 oddlvl 0 matching -1
+BID 0 bridge edge 11 - 16 tenacity 1 
+src 12 dst 8 start 23 end 26 edgeIndex 23 edgeStatus 2 evenlvl 1000000000 oddlvl 0 matching -1
+src 12 dst 16 start 23 end 26 edgeIndex 24 edgeStatus 0 evenlvl 1000000000 oddlvl 0 matching -1
+BID 0 bridge edge 12 - 16 tenacity 1 
+src 12 dst 17 start 23 end 26 edgeIndex 25 edgeStatus 0 evenlvl 1000000000 oddlvl 0 matching -1
+BID 0 bridge edge 12 - 17 tenacity 1 
+src 13 dst 8 start 26 end 28 edgeIndex 26 edgeStatus 2 evenlvl 1000000000 oddlvl 0 matching -1
+src 13 dst 18 start 26 end 28 edgeIndex 27 edgeStatus 0 evenlvl 1000000000 oddlvl 0 matching -1
+BID 0 bridge edge 13 - 18 tenacity 1 
+src 14 dst 9 start 28 end 29 edgeIndex 28 edgeStatus 2 evenlvl 1000000000 oddlvl 0 matching -1
+src 15 dst 10 start 29 end 30 edgeIndex 29 edgeStatus 2 evenlvl 1000000000 oddlvl 0 matching -1
+src 16 dst 11 start 30 end 32 edgeIndex 30 edgeStatus 2 evenlvl 1000000000 oddlvl 0 matching -1
+src 16 dst 12 start 30 end 32 edgeIndex 31 edgeStatus 2 evenlvl 1000000000 oddlvl 0 matching -1
+src 17 dst 12 start 32 end 34 edgeIndex 32 edgeStatus 2 evenlvl 1000000000 oddlvl 0 matching -1
+src 17 dst 18 start 32 end 34 edgeIndex 33 edgeStatus 0 evenlvl 1000000000 oddlvl 0 matching -1
+BID 0 bridge edge 17 - 18 tenacity 1 
+src 18 dst 13 start 34 end 36 edgeIndex 34 edgeStatus 2 evenlvl 1000000000 oddlvl 0 matching -1
+src 18 dst 17 start 34 end 36 edgeIndex 35 edgeStatus 2 evenlvl 1000000000 oddlvl 0 matching -1
+bridgeFront 0 bridgeList_counter 18
+Bridge ID 0 src 0 dst 3
+IN FOR
+stack1[0]=0
+stack2[0]=3
+minlvl(graph,stack1[stack1Top[0]]) == 0 && minlvl(graph,stack2[stack2Top[0]]) == 0
+bridgeID 0 bridge 0 3 support 0 3 -1 -1 -1 -1
+ddfsResult 0 3
+Linking 0 to 3
+Augmenting path
+bridgeFront 1 bridgeList_counter 18
+Bridge ID 1 src 0 dst 4
+Bridge ID 1 src 0 dst continuing since removed4
+bridgeFront 2 bridgeList_counter 18
+Bridge ID 2 src 2 dst 5
+IN FOR
+stack1[0]=2
+stack2[0]=5
+minlvl(graph,stack1[stack1Top[0]]) == 0 && minlvl(graph,stack2[stack2Top[0]]) == 0
+bridgeID 2 bridge 2 5 support 2 5 -1 -1 -1 -1
+ddfsResult 2 5
+Linking 2 to 5
+Augmenting path
+bridgeFront 3 bridgeList_counter 18
+Bridge ID 3 src 3 dst 6
+Bridge ID 3 src 3 dst continuing since removed6
+bridgeFront 4 bridgeList_counter 18
+Bridge ID 4 src 4 dst 7
+IN FOR
+stack1[0]=4
+stack2[0]=7
+minlvl(graph,stack1[stack1Top[0]]) == 0 && minlvl(graph,stack2[stack2Top[0]]) == 0
+bridgeID 4 bridge 4 7 support 4 7 -1 -1 -1 -1
+ddfsResult 4 7
+Linking 4 to 7
+Augmenting path
+bridgeFront 5 bridgeList_counter 18
+Bridge ID 5 src 5 dst 8
+Bridge ID 5 src 5 dst continuing since removed8
+bridgeFront 6 bridgeList_counter 18
+Bridge ID 6 src 7 dst 9
+Bridge ID 6 src 7 dst continuing since removed9
+bridgeFront 7 bridgeList_counter 18
+Bridge ID 7 src 7 dst 10
+Bridge ID 7 src 7 dst continuing since removed10
+bridgeFront 8 bridgeList_counter 18
+Bridge ID 8 src 7 dst 11
+Bridge ID 8 src 7 dst continuing since removed11
+bridgeFront 9 bridgeList_counter 18
+Bridge ID 9 src 8 dst 12
+IN FOR
+stack1[0]=8
+stack2[0]=12
+minlvl(graph,stack1[stack1Top[0]]) == 0 && minlvl(graph,stack2[stack2Top[0]]) == 0
+bridgeID 9 bridge 8 12 support 8 12 -1 -1 -1 -1
+ddfsResult 8 12
+Linking 8 to 12
+Augmenting path
+bridgeFront 10 bridgeList_counter 18
+Bridge ID 10 src 8 dst 13
+Bridge ID 10 src 8 dst continuing since removed13
+bridgeFront 11 bridgeList_counter 18
+Bridge ID 11 src 9 dst 14
+IN FOR
+stack1[0]=9
+stack2[0]=14
+minlvl(graph,stack1[stack1Top[0]]) == 0 && minlvl(graph,stack2[stack2Top[0]]) == 0
+bridgeID 11 bridge 9 14 support 9 14 -1 -1 -1 -1
+ddfsResult 9 14
+Linking 9 to 14
+Augmenting path
+bridgeFront 12 bridgeList_counter 18
+Bridge ID 12 src 10 dst 15
+IN FOR
+stack1[0]=10
+stack2[0]=15
+minlvl(graph,stack1[stack1Top[0]]) == 0 && minlvl(graph,stack2[stack2Top[0]]) == 0
+bridgeID 12 bridge 10 15 support 10 15 -1 -1 -1 -1
+ddfsResult 10 15
+Linking 10 to 15
+Augmenting path
+bridgeFront 13 bridgeList_counter 18
+Bridge ID 13 src 11 dst 16
+IN FOR
+stack1[0]=11
+stack2[0]=16
+minlvl(graph,stack1[stack1Top[0]]) == 0 && minlvl(graph,stack2[stack2Top[0]]) == 0
+bridgeID 13 bridge 11 16 support 11 16 -1 -1 -1 -1
+ddfsResult 11 16
+Linking 11 to 16
+Augmenting path
+bridgeFront 14 bridgeList_counter 18
+Bridge ID 14 src 12 dst 16
+Bridge ID 14 src 12 dst continuing since removed16
+bridgeFront 15 bridgeList_counter 18
+Bridge ID 15 src 12 dst 17
+Bridge ID 15 src 12 dst continuing since removed17
+bridgeFront 16 bridgeList_counter 18
+Bridge ID 16 src 13 dst 18
+IN FOR
+stack1[0]=13
+stack2[0]=18
+minlvl(graph,stack1[stack1Top[0]]) == 0 && minlvl(graph,stack2[stack2Top[0]]) == 0
+bridgeID 16 bridge 13 18 support 13 18 -1 -1 -1 -1
+ddfsResult 13 18
+Linking 13 to 18
+Augmenting path
+bridgeFront 17 bridgeList_counter 18
+Bridge ID 17 src 17 dst 18
+Bridge ID 17 src 17 dst continuing since removed18
+bridgeFront 18 bridgeList_counter 18
+Found path True
+Iter 1
+Block 0 setting vertex 1 as src oddlvl 1000000000 evenlvl 0
+Block 0 setting vertex 6 as src oddlvl 1000000000 evenlvl 0
+Block 0 setting vertex 17 as src oddlvl 1000000000 evenlvl 0
+Block 0 not setting vertex 0 as src oddlvl 1000000000 evenlvl 1000000000
+Block 0 not setting vertex 2 as src oddlvl 1000000000 evenlvl 1000000000
+Block 0 not setting vertex 3 as src oddlvl 1000000000 evenlvl 1000000000
+Block 0 not setting vertex 4 as src oddlvl 1000000000 evenlvl 1000000000
+Block 0 not setting vertex 5 as src oddlvl 1000000000 evenlvl 1000000000
+Block 0 not setting vertex 7 as src oddlvl 1000000000 evenlvl 1000000000
+Block 0 not setting vertex 8 as src oddlvl 1000000000 evenlvl 1000000000
+Block 0 not setting vertex 9 as src oddlvl 1000000000 evenlvl 1000000000
+Block 0 not setting vertex 10 as src oddlvl 1000000000 evenlvl 1000000000
+Block 0 not setting vertex 11 as src oddlvl 1000000000 evenlvl 1000000000
+Block 0 not setting vertex 12 as src oddlvl 1000000000 evenlvl 1000000000
+Block 0 not setting vertex 13 as src oddlvl 1000000000 evenlvl 1000000000
+Block 0 not setting vertex 14 as src oddlvl 1000000000 evenlvl 1000000000
+Block 0 not setting vertex 15 as src oddlvl 1000000000 evenlvl 1000000000
+Block 0 not setting vertex 16 as src oddlvl 1000000000 evenlvl 1000000000
+Block 0 not setting vertex 18 as src oddlvl 1000000000 evenlvl 1000000000
+src 6 dst 3 start 9 end 10 edgeIndex 9 edgeStatus 0 evenlvl 1000000000 oddlvl 0 matching -1
+BID 0 prop edge 6 - 3 
+src 17 dst 12 start 32 end 34 edgeIndex 32 edgeStatus 0 evenlvl 1000000000 oddlvl 0 matching -1
+BID 0 prop edge 17 - 12 
+src 17 dst 18 start 32 end 34 edgeIndex 33 edgeStatus 0 evenlvl 1000000000 oddlvl 0 matching -1
+BID 0 prop edge 17 - 18 
+bridgeFront 0 bridgeList_counter 0
+Found path False
+src 3 dst 0 start 3 end 5 edgeIndex 3 edgeStatus 0 evenlvl 1 oddlvl 1000000000 matching 0
+BID 0 prop edge 3 - 0 
+src 3 dst 6 start 3 end 5 edgeIndex 4 edgeStatus 1 evenlvl 1 oddlvl 1000000000 matching 0
+src 12 dst 8 start 23 end 26 edgeIndex 23 edgeStatus 0 evenlvl 1 oddlvl 1000000000 matching 8
+BID 0 prop edge 12 - 8 
+src 12 dst 16 start 23 end 26 edgeIndex 24 edgeStatus 0 evenlvl 1 oddlvl 1000000000 matching 8
+src 12 dst 17 start 23 end 26 edgeIndex 25 edgeStatus 1 evenlvl 1 oddlvl 1000000000 matching 8
+src 18 dst 13 start 34 end 36 edgeIndex 34 edgeStatus 0 evenlvl 1 oddlvl 1000000000 matching 13
+BID 0 prop edge 18 - 13 
+src 18 dst 17 start 34 end 36 edgeIndex 35 edgeStatus 1 evenlvl 1 oddlvl 1000000000 matching 13
+bridgeFront 0 bridgeList_counter 0
+Found path False
+src 0 dst 3 start 0 end 2 edgeIndex 0 edgeStatus 1 evenlvl 1000000000 oddlvl 2 matching 3
+src 0 dst 4 start 0 end 2 edgeIndex 1 edgeStatus 0 evenlvl 1000000000 oddlvl 2 matching 3
+BID 0 prop edge 0 - 4 
+src 8 dst 5 start 14 end 17 edgeIndex 14 edgeStatus 0 evenlvl 1000000000 oddlvl 2 matching 12
+BID 0 prop edge 8 - 5 
+src 8 dst 12 start 14 end 17 edgeIndex 15 edgeStatus 1 evenlvl 1000000000 oddlvl 2 matching 12
+src 8 dst 13 start 14 end 17 edgeIndex 16 edgeStatus 0 evenlvl 1000000000 oddlvl 2 matching 12
+BID 0 bridge edge 8 - 13 tenacity 5 
+src 13 dst 8 start 26 end 28 edgeIndex 26 edgeStatus 2 evenlvl 1000000000 oddlvl 2 matching 18
+src 13 dst 18 start 26 end 28 edgeIndex 27 edgeStatus 1 evenlvl 1000000000 oddlvl 2 matching 18
+bridgeFront 0 bridgeList_counter 1
+Bridge ID 0 src 8 dst 13
+IN FOR
+stack1[1-1]=8 ml 2 stack2[1-1]=13 ml 2 
+ENTERED IF
+B!=-1
+bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
+ddfsResult 0 0
+Linking 8 to 0
+Linking 13 to 0
+bridgeFront 1 bridgeList_counter 1
+Found path False
+src 4 dst 0 start 5 end 7 edgeIndex 5 edgeStatus 1 evenlvl 3 oddlvl 1000000000 matching 7
+src 4 dst 7 start 5 end 7 edgeIndex 6 edgeStatus 0 evenlvl 3 oddlvl 1000000000 matching 7
+BID 0 prop edge 4 - 7 
+src 5 dst 2 start 7 end 9 edgeIndex 7 edgeStatus 0 evenlvl 3 oddlvl 1000000000 matching 2
+BID 0 prop edge 5 - 2 
+src 5 dst 8 start 7 end 9 edgeIndex 8 edgeStatus 1 evenlvl 3 oddlvl 1000000000 matching 2
+bridgeFront 0 bridgeList_counter 1
+Bridge ID 0 src 8 dst 13
+stack1[0]=0 == stack2[0]=0
+bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
+ddfsResult 0 0
+bridgeFront 1 bridgeList_counter 1
+Found path False
+src 2 dst 5 start 2 end 3 edgeIndex 2 edgeStatus 1 evenlvl 1000000000 oddlvl 4 matching 5
+src 7 dst 4 start 10 end 14 edgeIndex 10 edgeStatus 1 evenlvl 1000000000 oddlvl 4 matching 4
+src 7 dst 9 start 10 end 14 edgeIndex 11 edgeStatus 0 evenlvl 1000000000 oddlvl 4 matching 4
+BID 0 prop edge 7 - 9 
+src 7 dst 10 start 10 end 14 edgeIndex 12 edgeStatus 0 evenlvl 1000000000 oddlvl 4 matching 4
+BID 0 prop edge 7 - 10 
+src 7 dst 11 start 10 end 14 edgeIndex 13 edgeStatus 0 evenlvl 1000000000 oddlvl 4 matching 4
+BID 0 prop edge 7 - 11 
+bridgeFront 0 bridgeList_counter 1
+Bridge ID 0 src 8 dst 13
+stack1[0]=0 == stack2[0]=0
+bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
+ddfsResult 0 0
+bridgeFront 1 bridgeList_counter 1
+Found path False
+src 9 dst 7 start 17 end 19 edgeIndex 17 edgeStatus 1 evenlvl 5 oddlvl 1000000000 matching 14
+src 9 dst 14 start 17 end 19 edgeIndex 18 edgeStatus 0 evenlvl 5 oddlvl 1000000000 matching 14
+BID 0 prop edge 9 - 14 
+src 10 dst 7 start 19 end 21 edgeIndex 19 edgeStatus 1 evenlvl 5 oddlvl 1000000000 matching 15
+src 10 dst 15 start 19 end 21 edgeIndex 20 edgeStatus 0 evenlvl 5 oddlvl 1000000000 matching 15
+BID 0 prop edge 10 - 15 
+src 11 dst 7 start 21 end 23 edgeIndex 21 edgeStatus 1 evenlvl 5 oddlvl 1000000000 matching 16
+src 11 dst 16 start 21 end 23 edgeIndex 22 edgeStatus 0 evenlvl 5 oddlvl 1000000000 matching 16
+BID 0 prop edge 11 - 16 
+bridgeFront 0 bridgeList_counter 1
+Bridge ID 0 src 8 dst 13
+stack1[0]=0 == stack2[0]=0
+bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
+ddfsResult 0 0
+bridgeFront 1 bridgeList_counter 1
+Found path False
+src 14 dst 9 start 28 end 29 edgeIndex 28 edgeStatus 1 evenlvl 1000000000 oddlvl 6 matching 9
+src 15 dst 10 start 29 end 30 edgeIndex 29 edgeStatus 1 evenlvl 1000000000 oddlvl 6 matching 10
+src 16 dst 11 start 30 end 32 edgeIndex 30 edgeStatus 1 evenlvl 1000000000 oddlvl 6 matching 11
+src 16 dst 12 start 30 end 32 edgeIndex 31 edgeStatus 0 evenlvl 1000000000 oddlvl 6 matching 11
+BID 0 bridge edge 16 - 12 tenacity 1000000007 
+bridgeFront 0 bridgeList_counter 1
+Bridge ID 0 src 8 dst 13
+stack1[0]=0 == stack2[0]=0
+bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
+ddfsResult 0 0
+bridgeFront 1 bridgeList_counter 1
+Found path False
+bridgeFront 0 bridgeList_counter 1
+Bridge ID 0 src 8 dst 13
+stack1[0]=0 == stack2[0]=0
+bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
+ddfsResult 0 0
+bridgeFront 1 bridgeList_counter 1
+Found path False
+bridgeFront 0 bridgeList_counter 1
+Bridge ID 0 src 8 dst 13
+stack1[0]=0 == stack2[0]=0
+bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
+ddfsResult 0 0
+bridgeFront 1 bridgeList_counter 1
+Found path False
+bridgeFront 0 bridgeList_counter 1
+Bridge ID 0 src 8 dst 13
+stack1[0]=0 == stack2[0]=0
+bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
+ddfsResult 0 0
+bridgeFront 1 bridgeList_counter 1
+Found path False
+bridgeFront 0 bridgeList_counter 1
+Bridge ID 0 src 8 dst 13
+stack1[0]=0 == stack2[0]=0
+bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
+ddfsResult 0 0
+bridgeFront 1 bridgeList_counter 1
+Found path False
+bridgeFront 0 bridgeList_counter 1
+Bridge ID 0 src 8 dst 13
+stack1[0]=0 == stack2[0]=0
+bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
+ddfsResult 0 0
+bridgeFront 1 bridgeList_counter 1
+Found path False
+bridgeFront 0 bridgeList_counter 1
+Bridge ID 0 src 8 dst 13
+stack1[0]=0 == stack2[0]=0
+bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
+ddfsResult 0 0
+bridgeFront 1 bridgeList_counter 1
+Found path False
+bridgeFront 0 bridgeList_counter 1
+Bridge ID 0 src 8 dst 13
+stack1[0]=0 == stack2[0]=0
+bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
+ddfsResult 0 0
+bridgeFront 1 bridgeList_counter 1
+Found path False
+bridgeFront 0 bridgeList_counter 1
+Bridge ID 0 src 8 dst 13
+stack1[0]=0 == stack2[0]=0
+bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
+ddfsResult 0 0
+bridgeFront 1 bridgeList_counter 1
+Found path False
+bridgeFront 0 bridgeList_counter 1
+Bridge ID 0 src 8 dst 13
+stack1[0]=0 == stack2[0]=0
+bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
+ddfsResult 0 0
+bridgeFront 1 bridgeList_counter 1
+Found path False
+bridgeFront 0 bridgeList_counter 1
+Bridge ID 0 src 8 dst 13
+stack1[0]=0 == stack2[0]=0
+bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
+ddfsResult 0 0
+bridgeFront 1 bridgeList_counter 1
+Found path False
+bridgeFront 0 bridgeList_counter 1
+Bridge ID 0 src 8 dst 13
+stack1[0]=0 == stack2[0]=0
+bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
+ddfsResult 0 0
+bridgeFront 1 bridgeList_counter 1
+Found path False
+bridgeFront 0 bridgeList_counter 1
+Bridge ID 0 src 8 dst 13
+stack1[0]=0 == stack2[0]=0
+bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
+ddfsResult 0 0
+bridgeFront 1 bridgeList_counter 1
+Found path False
+Elapsed time: 22.861824ms 
+
+Size of matching: 8
+

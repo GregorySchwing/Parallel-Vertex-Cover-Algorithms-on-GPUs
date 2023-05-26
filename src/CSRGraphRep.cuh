@@ -73,7 +73,7 @@ DSU allocate_DSU(struct CSRGraph graph){
 
 
 void CSRGraph::reset(){
-
+    bud.reset(vertexNum);
     // Thrust
     thrust::device_ptr<unsigned int> globalColorCounter_thrust_ptr=thrust::device_pointer_cast(globalColorCounter);
     thrust::device_ptr<int> oddlvl_thrust_ptr=thrust::device_pointer_cast(oddlvl);
