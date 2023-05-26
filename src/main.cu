@@ -376,8 +376,9 @@ int main(int argc, char *argv[]) {
         cudaFree(counters_d);
         cudaFreeGraph(graph_d);
 
-        cudaFreeStacks(stacks_d);
-        
+        if(config.version == STACK_ONLY){
+            cudaFreeStacks(stacks_d);
+        }        
         #if USE_GLOBAL_MEMORY
         cudaFree(global_memory_d);
         #endif

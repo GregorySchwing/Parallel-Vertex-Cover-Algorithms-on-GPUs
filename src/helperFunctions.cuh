@@ -62,6 +62,7 @@ __device__ void flip(CSRGraph & graph, int * removedVerticesQueue, unsigned int 
 __device__ bool openingDfs(CSRGraph & graph, DFSWorkList & dfsWL, int * color, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int * budAtDDFSEncounter, int cur, int bcur, int b);
 __device__ void augumentPath(CSRGraph & graph, DFSWorkList & dfsWL, int * color, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int * budAtDDFSEncounter, int u, int v, bool initial=false);
 __device__ void augumentPath(CSRGraph & graph, DFSWorkList & dfsWL, int * color, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int * budAtDDFSEncounter, int u, int v, bool initial){
+    
     if(u == v) return;
     if(!initial && minlvl(graph,u) == graph.evenlvl[u]) { //simply follow predecessors
         // TMP
@@ -165,12 +166,13 @@ __device__ int ddfsMove(CSRGraph & graph, int * stack1, int * stack2, unsigned i
     unsigned int end = graph.srcPtr[u + 1];
     unsigned int edgeIndex;
     printf("src %d start %d end %d ddfsPredecessorsPtr %d\n",u,start, end,ddfsPredecessorsPtr[u]);
-    for(edgeIndex=start+ddfsPredecessorsPtr[u]; edgeIndex < end; edgeIndex++) { // Delete Neighbors of startingVertex
+    if (!ddfsPredecessorsPtr[u]) ddfsPredecessorsPtr[u]=start;
+    edgeIndex=ddfsPredecessorsPtr[u];
+    for(; edgeIndex < end; ddfsPredecessorsPtr[u]++) { // Delete Neighbors of startingVertex
+        edgeIndex=ddfsPredecessorsPtr[u];
         printf("src %d dst %d ddfsPredecessorsPtr %d  pred %d \n",u,graph.dst[edgeIndex], ddfsPredecessorsPtr[u], graph.pred[edgeIndex]);
-
         if (graph.pred[edgeIndex]) {
-            printf("PRED OF %d is %d\n",u,graph.dst[edgeIndex]);
-            ddfsPredecessorsPtr[u]=edgeIndex-start+1;
+            printf("PRED OF %d is %d ddfsPredecessorsPtr[%d] %d\n",u,graph.dst[edgeIndex],u,ddfsPredecessorsPtr[u]);
             int a = graph.dst[edgeIndex];
             int v = graph.bud[a];
             assert(graph.removed[a] == graph.removed[v]);
@@ -200,13 +202,13 @@ __device__ int ddfsMove(CSRGraph & graph, int * stack1, int * stack2, unsigned i
 
     if(stack1Top[0] == 0) {
         if(stack2Top[0] == 1) { //found bottleneck
-            color[stack2[stack2Top[0]]] = 0;
-            return stack2[stack2Top[0]];
+            color[stack2[stack2Top[0]-1]] = 0;
+            return stack2[stack2Top[0]-1];
         }
         //change colors
-        assert(color[stack2[stack2Top[0]]] == color2);
-        stack1[stack1Top[0]++]=stack2[stack2Top[0]];
-        color[stack1[stack1Top[0]]] = color1;
+        assert(color[stack2[stack2Top[0]-1]] == color2);
+        stack1[stack1Top[0]++]=stack2[stack2Top[0]-1];
+        color[stack1[stack1Top[0]-1]] = color1;
         --stack2Top[0];
     }
 
