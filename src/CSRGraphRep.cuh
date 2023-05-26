@@ -227,6 +227,7 @@ CSRGraph allocateGraph(CSRGraph graph){
     cudaMemset(edgeStatus_d, 0, 2*graph.edgeNum*sizeof(char));
     cudaMemset(removed_d, 0, graph.vertexNum*sizeof(bool));
     cudaMemset(removedPredecessorsSize_d, 0, graph.numBlocks*graph.vertexNum*sizeof(int));
+    cudaMemset(ddfsPredecessorsPtr_d, 0, sizeof(int)*graph.vertexNum*graph.numBlocks);
 
 
     Graph.vertexNum = graph.vertexNum;

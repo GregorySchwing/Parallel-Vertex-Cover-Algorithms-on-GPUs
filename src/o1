@@ -289,154 +289,33 @@ Bridge ID 0 src 8 dst 13
 IN FOR
 stack1[1-1]=8 ml 2 stack2[1-1]=13 ml 2 
 ENTERED IF
-B!=-1
-bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
-ddfsResult 0 0
-Linking 8 to 0
-Linking 13 to 0
-bridgeFront 1 bridgeList_counter 1
-Found path False
-src 4 dst 0 start 5 end 7 edgeIndex 5 edgeStatus 1 evenlvl 3 oddlvl 1000000000 matching 7
-src 4 dst 7 start 5 end 7 edgeIndex 6 edgeStatus 0 evenlvl 3 oddlvl 1000000000 matching 7
-BID 0 prop edge 4 - 7 
-src 5 dst 2 start 7 end 9 edgeIndex 7 edgeStatus 0 evenlvl 3 oddlvl 1000000000 matching 2
-BID 0 prop edge 5 - 2 
-src 5 dst 8 start 7 end 9 edgeIndex 8 edgeStatus 1 evenlvl 3 oddlvl 1000000000 matching 2
-bridgeFront 0 bridgeList_counter 1
-Bridge ID 0 src 8 dst 13
-stack1[0]=0 == stack2[0]=0
-bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
-ddfsResult 0 0
-bridgeFront 1 bridgeList_counter 1
-Found path False
-src 2 dst 5 start 2 end 3 edgeIndex 2 edgeStatus 1 evenlvl 1000000000 oddlvl 4 matching 5
-src 7 dst 4 start 10 end 14 edgeIndex 10 edgeStatus 1 evenlvl 1000000000 oddlvl 4 matching 4
-src 7 dst 9 start 10 end 14 edgeIndex 11 edgeStatus 0 evenlvl 1000000000 oddlvl 4 matching 4
-BID 0 prop edge 7 - 9 
-src 7 dst 10 start 10 end 14 edgeIndex 12 edgeStatus 0 evenlvl 1000000000 oddlvl 4 matching 4
-BID 0 prop edge 7 - 10 
-src 7 dst 11 start 10 end 14 edgeIndex 13 edgeStatus 0 evenlvl 1000000000 oddlvl 4 matching 4
-BID 0 prop edge 7 - 11 
-bridgeFront 0 bridgeList_counter 1
-Bridge ID 0 src 8 dst 13
-stack1[0]=0 == stack2[0]=0
-bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
-ddfsResult 0 0
-bridgeFront 1 bridgeList_counter 1
-Found path False
-src 9 dst 7 start 17 end 19 edgeIndex 17 edgeStatus 1 evenlvl 5 oddlvl 1000000000 matching 14
-src 9 dst 14 start 17 end 19 edgeIndex 18 edgeStatus 0 evenlvl 5 oddlvl 1000000000 matching 14
-BID 0 prop edge 9 - 14 
-src 10 dst 7 start 19 end 21 edgeIndex 19 edgeStatus 1 evenlvl 5 oddlvl 1000000000 matching 15
-src 10 dst 15 start 19 end 21 edgeIndex 20 edgeStatus 0 evenlvl 5 oddlvl 1000000000 matching 15
-BID 0 prop edge 10 - 15 
-src 11 dst 7 start 21 end 23 edgeIndex 21 edgeStatus 1 evenlvl 5 oddlvl 1000000000 matching 16
-src 11 dst 16 start 21 end 23 edgeIndex 22 edgeStatus 0 evenlvl 5 oddlvl 1000000000 matching 16
-BID 0 prop edge 11 - 16 
-bridgeFront 0 bridgeList_counter 1
-Bridge ID 0 src 8 dst 13
-stack1[0]=0 == stack2[0]=0
-bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
-ddfsResult 0 0
-bridgeFront 1 bridgeList_counter 1
-Found path False
-src 14 dst 9 start 28 end 29 edgeIndex 28 edgeStatus 1 evenlvl 1000000000 oddlvl 6 matching 9
-src 15 dst 10 start 29 end 30 edgeIndex 29 edgeStatus 1 evenlvl 1000000000 oddlvl 6 matching 10
-src 16 dst 11 start 30 end 32 edgeIndex 30 edgeStatus 1 evenlvl 1000000000 oddlvl 6 matching 11
-src 16 dst 12 start 30 end 32 edgeIndex 31 edgeStatus 0 evenlvl 1000000000 oddlvl 6 matching 11
-BID 0 bridge edge 16 - 12 tenacity 1000000007 
-bridgeFront 0 bridgeList_counter 1
-Bridge ID 0 src 8 dst 13
-stack1[0]=0 == stack2[0]=0
-bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
-ddfsResult 0 0
-bridgeFront 1 bridgeList_counter 1
-Found path False
-bridgeFront 0 bridgeList_counter 1
-Bridge ID 0 src 8 dst 13
-stack1[0]=0 == stack2[0]=0
-bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
-ddfsResult 0 0
-bridgeFront 1 bridgeList_counter 1
-Found path False
-bridgeFront 0 bridgeList_counter 1
-Bridge ID 0 src 8 dst 13
-stack1[0]=0 == stack2[0]=0
-bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
-ddfsResult 0 0
-bridgeFront 1 bridgeList_counter 1
-Found path False
-bridgeFront 0 bridgeList_counter 1
-Bridge ID 0 src 8 dst 13
-stack1[0]=0 == stack2[0]=0
-bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
-ddfsResult 0 0
-bridgeFront 1 bridgeList_counter 1
-Found path False
-bridgeFront 0 bridgeList_counter 1
-Bridge ID 0 src 8 dst 13
-stack1[0]=0 == stack2[0]=0
-bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
-ddfsResult 0 0
-bridgeFront 1 bridgeList_counter 1
-Found path False
-bridgeFront 0 bridgeList_counter 1
-Bridge ID 0 src 8 dst 13
-stack1[0]=0 == stack2[0]=0
-bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
-ddfsResult 0 0
-bridgeFront 1 bridgeList_counter 1
-Found path False
-bridgeFront 0 bridgeList_counter 1
-Bridge ID 0 src 8 dst 13
-stack1[0]=0 == stack2[0]=0
-bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
-ddfsResult 0 0
-bridgeFront 1 bridgeList_counter 1
-Found path False
-bridgeFront 0 bridgeList_counter 1
-Bridge ID 0 src 8 dst 13
-stack1[0]=0 == stack2[0]=0
-bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
-ddfsResult 0 0
-bridgeFront 1 bridgeList_counter 1
-Found path False
-bridgeFront 0 bridgeList_counter 1
-Bridge ID 0 src 8 dst 13
-stack1[0]=0 == stack2[0]=0
-bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
-ddfsResult 0 0
-bridgeFront 1 bridgeList_counter 1
-Found path False
-bridgeFront 0 bridgeList_counter 1
-Bridge ID 0 src 8 dst 13
-stack1[0]=0 == stack2[0]=0
-bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
-ddfsResult 0 0
-bridgeFront 1 bridgeList_counter 1
-Found path False
-bridgeFront 0 bridgeList_counter 1
-Bridge ID 0 src 8 dst 13
-stack1[0]=0 == stack2[0]=0
-bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
-ddfsResult 0 0
-bridgeFront 1 bridgeList_counter 1
-Found path False
-bridgeFront 0 bridgeList_counter 1
-Bridge ID 0 src 8 dst 13
-stack1[0]=0 == stack2[0]=0
-bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
-ddfsResult 0 0
-bridgeFront 1 bridgeList_counter 1
-Found path False
-bridgeFront 0 bridgeList_counter 1
-Bridge ID 0 src 8 dst 13
-stack1[0]=0 == stack2[0]=0
-bridgeID 0 bridge 8 13 support 8 13 -1 -1 -1 -1
-ddfsResult 0 0
-bridgeFront 1 bridgeList_counter 1
-Found path False
-Elapsed time: 22.861824ms 
-
-Size of matching: 8
-
+src 8 start 14 end 17 ddfsPredecessorsPtr 0  pred 1 
+src 8 dst 5 ddfsPredecessorsPtr 0  pred 0 
+src 8 dst 12 ddfsPredecessorsPtr 0  pred 1 
+PRED OF 8 is 12
+IN FOR
+stack1[2-1]=12 ml 1 stack2[1-1]=13 ml 2 
+ENTERED ELSE
+src 13 start 26 end 28 ddfsPredecessorsPtr 0  pred 1 
+src 13 dst 8 ddfsPredecessorsPtr 0  pred 0 
+src 13 dst 18 ddfsPredecessorsPtr 0  pred 1 
+PRED OF 13 is 18
+IN FOR
+stack1[2-1]=12 ml 1 stack2[2-1]=18 ml 1 
+ENTERED IF
+src 12 start 23 end 26 ddfsPredecessorsPtr 0  pred 1 
+src 12 dst 8 ddfsPredecessorsPtr 0  pred 0 
+src 12 dst 16 ddfsPredecessorsPtr 0  pred 0 
+src 12 dst 17 ddfsPredecessorsPtr 0  pred 1 
+PRED OF 12 is 17
+IN FOR
+stack1[3-1]=17 ml 0 stack2[2-1]=18 ml 1 
+ENTERED ELSE
+src 18 start 34 end 36 ddfsPredecessorsPtr 0  pred 1 
+src 18 dst 13 ddfsPredecessorsPtr 0  pred 0 
+src 18 dst 17 ddfsPredecessorsPtr 0  pred 1 
+PRED OF 18 is 17
+IN FOR
+stack1[3-1]=17 ml 0 stack2[1-1]=13 ml 2 
+ENTERED ELSE
+src 13 start 26 end 28 ddfsPredecessorsPtr 2  pred 1 

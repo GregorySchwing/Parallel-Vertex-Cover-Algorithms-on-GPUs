@@ -164,9 +164,13 @@ __device__ int ddfsMove(CSRGraph & graph, int * stack1, int * stack2, unsigned i
     unsigned int start = graph.srcPtr[u];
     unsigned int end = graph.srcPtr[u + 1];
     unsigned int edgeIndex;
-    for(edgeIndex=start+ddfsPredecessorsPtr[u]; edgeIndex < end-start; edgeIndex++) { // Delete Neighbors of startingVertex
+    printf("src %d start %d end %d ddfsPredecessorsPtr %d\n",u,start, end,ddfsPredecessorsPtr[u]);
+    for(edgeIndex=start+ddfsPredecessorsPtr[u]; edgeIndex < end; edgeIndex++) { // Delete Neighbors of startingVertex
+        printf("src %d dst %d ddfsPredecessorsPtr %d  pred %d \n",u,graph.dst[edgeIndex], ddfsPredecessorsPtr[u], graph.pred[edgeIndex]);
+
         if (graph.pred[edgeIndex]) {
-            ddfsPredecessorsPtr[u]=edgeIndex+1;
+            printf("PRED OF %d is %d\n",u,graph.dst[edgeIndex]);
+            ddfsPredecessorsPtr[u]=edgeIndex-start+1;
             int a = graph.dst[edgeIndex];
             int v = graph.bud[a];
             assert(graph.removed[a] == graph.removed[v]);
@@ -253,11 +257,11 @@ __device__ cuda::std::pair<int,int> ddfs(CSRGraph & graph, int src, int dst, int
         if(minlvl(graph,stack1[stack1Top[0]-1]) >= minlvl(graph,stack2[stack2Top[0]-1])){
             printf("ENTERED IF\n");
             //b = ddfsMove(Sr,newRed,Sg, newGreen, out_support);
-            b = ddfsMove(graph,stack1,stack2,stack1Top,stack2Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,budAtDDFSEncounter, newGreen, newRed);
+            b = ddfsMove(graph,stack1,stack2,stack1Top,stack2Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,budAtDDFSEncounter, newRed, newGreen);
         } else{
             printf("ENTERED ELSE\n");
             //b = ddfsMove(Sg,newGreen,Sr, newRed, out_support);
-            b = ddfsMove(graph,stack2,stack1,stack2Top,stack1Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,budAtDDFSEncounter, newRed, newGreen);
+            b = ddfsMove(graph,stack2,stack1,stack2Top,stack1Top,support,supportTop,color,globalColorCounter,ddfsPredecessorsPtr,budAtDDFSEncounter,  newGreen, newRed);
         }
         if(b != -1){
             //return {b,b};
