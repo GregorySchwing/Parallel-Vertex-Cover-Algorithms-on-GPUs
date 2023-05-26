@@ -70,7 +70,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
     initializeCounters(&blockCounters);
     //if (threadIdx.x==0)
     //printf("BlockID active %d\n", blockIdx.x);
-    cooperative_groups::grid_group g = cooperative_groups::this_grid(); 
+    //cooperative_groups::grid_group g = cooperative_groups::this_grid(); 
     #if USE_COUNTERS
         __shared__ unsigned int sm_id;
         if (threadIdx.x==0){

@@ -54,7 +54,9 @@ __device__ void removeAndPushToQueue(CSRGraph & graph, int * removedVerticesQueu
 
 __device__ void flip(CSRGraph & graph, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int u, int v) {
     if(graph.removed[u] || graph.removed[v] || graph.matching[u] == v) return;//flipping only unmatched edges
+    assert(removedVerticesQueueBack[0]<graph.vertexNum);
     removeAndPushToQueue(graph,removedVerticesQueue,removedVerticesQueueBack,u);
+    assert(removedVerticesQueueBack[0]<graph.vertexNum);
     removeAndPushToQueue(graph,removedVerticesQueue,removedVerticesQueueBack,v);
     graph.matching[u] = v;
     graph.matching[v] = u;
