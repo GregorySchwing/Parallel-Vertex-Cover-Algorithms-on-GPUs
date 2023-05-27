@@ -102,6 +102,7 @@ __device__ void augumentPath(CSRGraph & graph, DFSWorkList & dfsWL, int * color,
         augumentPath(graph,dfsWL,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter, u,v);
     }
     else { //through bridge
+        // Start State
         int u3 = dfsWL.myBridge[u].st.st; 
         int v3 = dfsWL.myBridge[u].st.nd; 
         int u2 = dfsWL.myBridge[u].nd.st; 
@@ -114,11 +115,102 @@ __device__ void augumentPath(CSRGraph & graph, DFSWorkList & dfsWL, int * color,
         flip(graph,removedVerticesQueue,removedVerticesQueueBack,u3,v3);
         bool openingDfsSucceed1 = openingDfs(graph,dfsWL,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter, u3,u2,u);
         assert(openingDfsSucceed1);
+        // End State
 
+        // Start State
         int v4 = graph.bud.directParent[u];
         bool openingDfsSucceed2 = openingDfs(graph,dfsWL,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter,v3,v2,v4);
         assert(openingDfsSucceed2);
         augumentPath(graph,dfsWL,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter,v4,v);
+        // End
+    }
+}
+
+__device__ void popStackVars(pii * uvStack,
+                            cuda::std::pair<pii,pii> * currBCurrBStack,
+                            char * stateStack,
+                            int * stackTop,
+                            pii * thisUV,
+                            cuda::std::pair<pii,pii> * thisCurrBCurrB,
+                            char * thisState){
+
+}
+
+__device__ void pushStackVars(pii * uvStack,
+                            cuda::std::pair<pii,pii> * currBCurrBStack,
+                            char * stateStack,
+                            int * stackTop,
+                            pii * thisUV,
+                            cuda::std::pair<pii,pii> * thisCurrBCurrB,
+                            char * thisState){
+
+}
+/*
+ All methods were moved into one method.
+ Return statements were replaced by pop-continues.
+ Recursive calls were replaced by push-continues.
+
+ Places where a recursive call takes place, thus the universe of stack states.
+ 0 - Initial call to AugmentPath, 
+      initialScalar == true, 
+
+      stackDepth == 1, 
+      stackUV[(u0,v0)], 
+      currBCurrBStack[Null], 
+      State[0]
+ 1 - Noninitial call to AugmentPath, 
+      initialScalar == false, 
+
+      stackDepth == > 0, 
+      stackUV[(u,v),...], 
+      currBCurrBStack[Null,..], 
+      State[1,...]
+
+ 2 - Start inside call to openingDfs, 
+      initialScalar == false, 
+
+      stackDepth == > 0, 
+      stackUV[Null,...], 
+      currBCurrBStack[(curr,Bcurr,B),..], 
+      State[2,...]
+
+
+ 3 - Just Flip, 
+      initialScalar == false, 
+
+      stackDepth == > 0, 
+      uvStack[(u,v),...], 
+      currBCurrBStack[Null,..], 
+      State[3,...]
+
+    When you are in the Else condition of AUGPATH, you push the states from bottom up.
+*/
+#define MAXSTACK 50
+__device__ void augumentPathIterativeSwitch(CSRGraph & graph, DFSWorkList & dfsWL, int * color, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int * budAtDDFSEncounter, int u, int v, bool initial){
+    pii uvStack[MAXSTACK];
+    cuda::std::pair<pii,pii> currBCurrBStack[MAXSTACK];
+    char stateStack[MAXSTACK];
+    int stackTop = 0;
+    
+    int type = 0;
+    while(true){
+        pii uv;
+        cuda::std::pair<pii,pii> currBCurrB;
+        char state;
+        popStackVars(uvStack, currBCurrBStack, stateStack, &stackTop,&uv, &currBCurrB, &state);
+        switch(type)
+        {
+            case 0:
+                break;
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            default:
+                break;
+        }
     }
 }
 
@@ -150,6 +242,29 @@ __device__ bool openingDfs(CSRGraph & graph, DFSWorkList & dfsWL, int * color, i
         }
     }
     */
+    return false;
+}
+
+
+__device__ bool openingDfsIterative(CSRGraph & graph, DFSWorkList & dfsWL, int * color, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int * budAtDDFSEncounter, int cur, int bcur, int b){
+    if(bcur == b) {
+        augumentPath(graph,dfsWL,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter,cur,bcur);
+        return true;
+    }
+    unsigned int start = graph.srcPtr[bcur];
+    unsigned int end = graph.srcPtr[bcur + 1];
+    unsigned int edgeIndex;
+    int predSize = 0;
+    for(edgeIndex=start; edgeIndex < end; edgeIndex++) {
+        if (graph.pred[edgeIndex] && budAtDDFSEncounter[edgeIndex] > -1){
+            if ((budAtDDFSEncounter[edgeIndex] == b || color[budAtDDFSEncounter[edgeIndex]] == color[bcur]) &&
+                openingDfs(graph,dfsWL,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter,graph.dst[edgeIndex],budAtDDFSEncounter[edgeIndex],b)){
+                augumentPath(graph,dfsWL,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter, cur,bcur);
+                flip(graph,removedVerticesQueue,removedVerticesQueueBack,bcur,graph.dst[edgeIndex]);
+                return true;
+            }
+        }
+    }
     return false;
 }
 
