@@ -236,7 +236,7 @@ __device__ void augumentPathSubroutine(CSRGraph & graph,
         */
         int v4 = graph.bud.directParent[u];
         {
-            pii thisUV(-1,-1);
+            pii thisUV(v4,v);
             cuda::std::pair<pii,pii> thisCurrBCurrB(pii{-1,-1},pii{-1,-1});
             char thisState = 1;
             pushStackVars(uvStack, currBCurrBStack, stateStack, stackTop,&thisUV, &thisCurrBCurrB, &thisState);
@@ -256,6 +256,66 @@ __device__ void augumentPathSubroutine(CSRGraph & graph,
     }
 }
 
+
+__device__ void openingDfsSubroutine(CSRGraph & graph, 
+                                        DFSWorkList & dfsWL, 
+                                        int * color, 
+                                        int * removedVerticesQueue, 
+                                        unsigned int * removedVerticesQueueBack, 
+                                        int * budAtDDFSEncounter, 
+                                        int cur, 
+                                        int bcur, 
+                                        int b,
+                                        pii * uvStack,
+                                        cuda::std::pair<pii,pii> * currBCurrBStack,
+                                        char * stateStack,
+                                        int * stackTop){
+    if(bcur == b) {
+        {
+            pii thisUV(cur,bcur);
+            cuda::std::pair<pii,pii> thisCurrBCurrB(pii{-1,-1},pii{-1,-1});
+            char thisState = 1;
+            pushStackVars(uvStack, currBCurrBStack, stateStack, stackTop,&thisUV, &thisCurrBCurrB, &thisState);
+        }
+        //augumentPath(graph,dfsWL,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter,cur,bcur);
+        return;
+    }
+    unsigned int start = graph.srcPtr[bcur];
+    unsigned int end = graph.srcPtr[bcur + 1];
+    unsigned int edgeIndex;
+    int predSize = 0;
+    for(edgeIndex=start; edgeIndex < end; edgeIndex++) {
+        if (graph.pred[edgeIndex] && budAtDDFSEncounter[edgeIndex] > -1){
+            if ((budAtDDFSEncounter[edgeIndex] == b || color[budAtDDFSEncounter[edgeIndex]] == color[bcur]) &&
+                /*Need to reverse when pushing
+                openingDfs(graph,dfsWL,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter,graph.dst[edgeIndex],budAtDDFSEncounter[edgeIndex],b)){
+                augumentPath(graph,dfsWL,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter, cur,bcur);
+                flip(graph,removedVerticesQueue,removedVerticesQueueBack,bcur,graph.dst[edgeIndex]);
+                */
+                {
+                    pii thisUV(bcur,graph.dst[edgeIndex]);
+                    cuda::std::pair<pii,pii> thisCurrBCurrB(pii{-1,-1},pii{-1,-1});
+                    char thisState = 3;
+                    pushStackVars(uvStack, currBCurrBStack, stateStack, stackTop,&thisUV, &thisCurrBCurrB, &thisState);
+                }
+                {
+                    pii thisUV(cur,bcur);
+                    cuda::std::pair<pii,pii> thisCurrBCurrB(pii{-1,-1},pii{-1,-1});
+                    char thisState = 1;
+                    pushStackVars(uvStack, currBCurrBStack, stateStack, stackTop,&thisUV, &thisCurrBCurrB, &thisState);
+                }
+                {
+                    pii thisUV(-1,-1);
+                    cuda::std::pair<pii,pii> thisCurrBCurrB(pii{graph.dst[edgeIndex],budAtDDFSEncounter[edgeIndex]},pii{b,-1});
+                    char thisState = 2;
+                    pushStackVars(uvStack, currBCurrBStack, stateStack, stackTop,&thisUV, &thisCurrBCurrB, &thisState);
+                }
+                return;
+            }
+        }
+    }
+    return;
+}
 
 /*
  All methods were moved into one method.
