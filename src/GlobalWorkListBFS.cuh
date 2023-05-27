@@ -19,9 +19,9 @@ __global__ void GlobalWorkList_Set_Sources_kernel(Stacks stacks, unsigned int * 
 
     if (graph.matching[vertex]==-1){
         setLvl(graph,vertex,0);
-        printf("Block %d setting vertex %d as src oddlvl %d evenlvl %d\n", blockIdx.x,vertex,graph.oddlvl[vertex],graph.evenlvl[vertex]);
+        printf("Block %d setting vertex %d as src oddlvl %d evenlvl %d matching %d \n", blockIdx.x,vertex,graph.oddlvl[vertex],graph.evenlvl[vertex],graph.matching[vertex]);
     } else {
-        printf("Block %d not setting vertex %d as src oddlvl %d evenlvl %d\n", blockIdx.x,vertex,graph.oddlvl[vertex],graph.evenlvl[vertex]);
+        printf("Block %d not setting vertex %d as src oddlvl %d evenlvl %d matching %d \n", blockIdx.x,vertex,graph.oddlvl[vertex],graph.evenlvl[vertex],graph.matching[vertex]);
     }
 }
 
@@ -99,6 +99,8 @@ __global__ void GlobalWorkList_BFS_kernel_st(Stacks stacks, unsigned int * minim
 
     unsigned int vertex;
     for (vertex = 0; vertex < graph.vertexNum; ++vertex){
+    if(vertex >= graph.vertexNum) printf("src %d evenlvl %d oddlvl %d matching %d\n",vertex,graph.oddlvl[vertex],graph.evenlvl[vertex],graph.matching[vertex]);
+
     if(vertex >= graph.vertexNum || depth != getLvl(graph, vertex, depth)) continue;
 
     unsigned int start = graph.srcPtr[vertex];
