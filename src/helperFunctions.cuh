@@ -126,35 +126,46 @@ __device__ void augumentPath(CSRGraph & graph, DFSWorkList & dfsWL, int * color,
     }
 }
 
-
-__device__ void popStackVars(pii * uvStack,
-                            pii * currBCurrBStack,
+__device__ void popStackVars(int * uStack,
+                            int * vStack,
                             int * bStack,
+                            int * bCurrStack,
+                            int * currStack,
                             char * stateStack,
                             int * stackTop,
-                            pii * thisUV,
-                            pii * thisCurrBCurrB,
+                            int * thisU,
+                            int * thisV,
                             int * thisB,
+                            int * thisBCurr,
+                            int * thisCurr,
                             char * thisState){
     stackTop[0]--;
-    *thisUV=uvStack[*stackTop];
-    *thisCurrBCurrB=currBCurrBStack[*stackTop];
+    *thisU=uStack[*stackTop];
+    *thisV=vStack[*stackTop];
     *thisB=bStack[*stackTop];
+    *thisBCurr=bCurrStack[*stackTop];
+    *thisCurr=currStack[*stackTop];
     *thisState=stateStack[*stackTop];
 }
 
-__device__ void pushStackVars(pii * uvStack,
-                            pii * currBCurrBStack,
+__device__ void pushStackVars(int * uStack,
+                            int * vStack,
                             int * bStack,
+                            int * bCurrStack,
+                            int * currStack,
                             char * stateStack,
                             int * stackTop,
-                            pii * thisUV,
-                            pii * thisCurrBCurrB,
+                            int * thisU,
+                            int * thisV,
                             int * thisB,
+                            int * thisBCurr,
+                            int * thisCurr,
                             char * thisState){
-    uvStack[*stackTop] = *thisUV;
-    currBCurrBStack[*stackTop] = *thisCurrBCurrB;
+    uStack[*stackTop] = *thisU;
+    vStack[*stackTop] = *thisV;
     bStack[*stackTop] = *thisB;
+    bCurrStack[*stackTop] = *thisBCurr;
+    currStack[*stackTop] = *thisCurr;
     stateStack[*stackTop] = *thisState;
     stackTop[0]++;
 }
@@ -168,9 +179,11 @@ __device__ void augumentPathSubroutine(CSRGraph & graph,
                                         int u, 
                                         int v, 
                                         bool initial,
-                                        pii * uvStack,
-                                        pii * currBCurrBStack,
+                                        int * uStack,
+                                        int * vStack,
                                         int * bStack,
+                                        int * bCurrStack,
+                                        int * currStack,
                                         char * stateStack,
                                         int * stackTop){
     
@@ -209,10 +222,12 @@ __device__ void augumentPathSubroutine(CSRGraph & graph,
         assert(!graph.removed[u]);
         flip(graph,removedVerticesQueue,removedVerticesQueueBack,x,u);
         char thisState = 1;
-        pii thisUV(u,v);
-        pii thisCurrBCurrB(-1,-1);
+        int thisU = u;
+        int thisV = v;
         int thisB = -1;
-        pushStackVars(uvStack, currBCurrBStack, bStack, stateStack, stackTop,&thisUV, &thisCurrBCurrB, &thisB, &thisState);
+        int thisBCurr = -1;
+        int thisCurr = -1;
+        pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisState);
         //augumentPath(graph,dfsWL,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter, u,v);
         // Push state 1
     }
@@ -244,25 +259,32 @@ __device__ void augumentPathSubroutine(CSRGraph & graph,
         */
         int v4 = graph.bud.directParent[u];
         {
-            pii thisUV(v4,v);
-            pii thisCurrBCurrB(-1,-1);
+
+            int thisU = v4;
+            int thisV = v;
             int thisB = -1;
+            int thisBCurr = -1;
+            int thisCurr = -1;
             char thisState = 1;
-        pushStackVars(uvStack, currBCurrBStack, bStack, stateStack, stackTop,&thisUV, &thisCurrBCurrB, &thisB, &thisState);
+            pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisState);
         }
         {
-            pii thisUV(v4,v);
-            pii thisCurrBCurrB(v3,v2);
+            int thisU = v3;
+            int thisV = v2;
             int thisB = v4;
+            int thisBCurr = -1;
+            int thisCurr = -1;
             char thisState = 2;
-        pushStackVars(uvStack, currBCurrBStack, bStack, stateStack, stackTop,&thisUV, &thisCurrBCurrB, &thisB, &thisState);
+            pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisState);
         }
         {
-            pii thisUV(-1,-1);
-            pii thisCurrBCurrB(u3,u2);
+            int thisU = u3;
+            int thisV = u2;
             int thisB = u;
+            int thisBCurr = -1;
+            int thisCurr = -1;
             char thisState = 2;
-            pushStackVars(uvStack, currBCurrBStack, bStack, stateStack, stackTop,&thisUV, &thisCurrBCurrB, &thisB, &thisState);
+            pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisState);
         }
     }
 }
@@ -277,19 +299,24 @@ __device__ void openingDfsSubroutine(CSRGraph & graph,
                                         int cur, 
                                         int bcur, 
                                         int b,
-                                        pii * uvStack,
-                                        pii * currBCurrBStack,
+                                        int * uStack,
+                                        int * vStack,
                                         int * bStack,
+                                        int * bCurrStack,
+                                        int * currStack,
                                         char * stateStack,
                                         int * stackTop,
                                         bool * result){
+    printf("openingDfs %d %d %d\n",cur, bcur, b);
     if(bcur == b) {
         {
-            pii thisUV(cur,bcur);
-            pii thisCurrBCurrB(-1,-1);
+            int thisU = cur;
+            int thisV = bcur;
             int thisB = -1;
+            int thisBCurr = -1;
+            int thisCurr = -1;
             char thisState = 1;
-            pushStackVars(uvStack, currBCurrBStack, bStack, stateStack, stackTop,&thisUV, &thisCurrBCurrB, &thisB, &thisState);
+            pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisState);
         }
         result[0] = true;
         return;
@@ -302,11 +329,13 @@ __device__ void openingDfsSubroutine(CSRGraph & graph,
         if (graph.pred[edgeIndex] && budAtDDFSEncounter[edgeIndex] > -1){
             if (budAtDDFSEncounter[edgeIndex] == b || color[budAtDDFSEncounter[edgeIndex]] == color[bcur]){
                 {
-                    pii thisUV(bcur,graph.dst[edgeIndex]);
-                    pii thisCurrBCurrB(graph.dst[edgeIndex],budAtDDFSEncounter[edgeIndex]);
+                    int thisU = graph.dst[edgeIndex];
+                    int thisV = budAtDDFSEncounter[edgeIndex];
                     int thisB = b;
+                    int thisBCurr = bcur;
+                    int thisCurr = cur;
                     char thisState = 4;
-                    pushStackVars(uvStack, currBCurrBStack, bStack, stateStack, stackTop,&thisUV, &thisCurrBCurrB, &thisB, &thisState);
+                    pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisState);
                 }
                 return;
             }
@@ -367,94 +396,108 @@ __device__ void openingDfsSubroutine(CSRGraph & graph,
 #define MAXSTACK 10
 __device__ void augumentPathIterativeSwitch(CSRGraph & graph, DFSWorkList & dfsWL, int * color, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int * budAtDDFSEncounter, int u, int v, bool initial){
     printf("Entered augumentPathIterativeSwitch\n");
-    __shared__ pii uvStack[MAXSTACK];
-    __shared__ pii currBCurrBStack[MAXSTACK];
+    __shared__ int uStack[MAXSTACK];
+    __shared__ int vStack[MAXSTACK];
     __shared__ int bStack[MAXSTACK];
+    __shared__ int bCurrStack[MAXSTACK];
+    __shared__ int currStack[MAXSTACK];
     __shared__ char stateStack[MAXSTACK];
     int stackTop = 0;
-    pii thisUV = pii(u,v);
-    pii thisCurrBCurrB = pii(-1,-1);
+    int thisU = u;
+    int thisV = v;
     int thisB = -1;
-    printf("Start state %d u %d v %d curr %d bcurr %d b %d \n", 
-            0, thisUV.st, thisUV.nd, thisCurrBCurrB.st,
-            thisCurrBCurrB.nd, thisB);
+    int thisBCurr = -1;
+    int thisCurr = -1;
+    printf("Start state %d u %d v %d b %d stackTop %d\n", 
+            0, thisU, thisV, thisB, stackTop);
     char thisState = 0;
     bool result = false;
-    pushStackVars(uvStack, currBCurrBStack, bStack, stateStack, &stackTop,&thisUV, &thisCurrBCurrB, &thisB, &thisState);
+    pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, stateStack, &stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisState);
     int type = 0;
     while(stackTop>0){
-        popStackVars(uvStack, currBCurrBStack, bStack, stateStack, &stackTop,&thisUV, &thisCurrBCurrB, &thisB, &thisState);
-        printf("Popped state %d u %d v %d curr %d bcurr %d b %d \n", 
-                thisState, thisUV.st, thisUV.nd, thisCurrBCurrB.st,
-                thisCurrBCurrB.nd, thisB);
+        popStackVars(uStack, vStack, bStack, bCurrStack, currStack, stateStack, &stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisState);
+        printf("Popped state %d u %d v %d b %d stackTop %d\n", 
+                thisState, thisU, thisV, thisB, stackTop);
         switch(type)
         {
             case 0:
+                printf("Entered case 0\n");
                 augumentPathSubroutine(graph, 
                                         dfsWL, 
                                         color, 
                                         removedVerticesQueue, 
                                         removedVerticesQueueBack, 
                                         budAtDDFSEncounter, 
-                                        thisUV.st, 
-                                        thisUV.nd, 
+                                        thisU, 
+                                        thisV, 
                                         true,
-                                        uvStack,
-                                        currBCurrBStack,
+                                        uStack,
+                                        vStack,
                                         bStack,
+                                        bCurrStack,
+                                        currStack,
                                         stateStack,
                                         &stackTop);
                 break;
             case 1:
+                printf("Entered case 1\n");
                 augumentPathSubroutine(graph, 
                                         dfsWL, 
                                         color, 
                                         removedVerticesQueue, 
                                         removedVerticesQueueBack, 
                                         budAtDDFSEncounter, 
-                                        thisUV.st, 
-                                        thisUV.nd, 
+                                        thisU, 
+                                        thisV, 
                                         false,
-                                        uvStack,
-                                        currBCurrBStack,
+                                        uStack,
+                                        vStack,
                                         bStack,
+                                        bCurrStack,
+                                        currStack,
                                         stateStack,
                                         &stackTop);
                 break;
             case 2:
+                printf("Entered case 2\n");
                 openingDfsSubroutine(graph, 
                                     dfsWL, 
                                     color, 
                                     removedVerticesQueue, 
                                     removedVerticesQueueBack, 
                                     budAtDDFSEncounter, 
-                                    thisCurrBCurrB.st, 
-                                    thisCurrBCurrB.nd, 
+                                    thisU, 
+                                    thisV, 
                                     thisB, 
-                                    uvStack,
-                                    currBCurrBStack,
+                                    uStack,
+                                    vStack,
                                     bStack,
+                                    bCurrStack,
+                                    currStack,
                                     stateStack,
                                     &stackTop,
                                     &result);
                 break;
             case 3:
-                flip(graph,removedVerticesQueue,removedVerticesQueueBack,thisUV.st,thisUV.nd);
+                printf("Entered case 3\n");
+                flip(graph,removedVerticesQueue,removedVerticesQueueBack,thisU,thisV);
                 break;
             case 4:
+                printf("Entered case 4\n");
                 if (result){
                     {
-                        char thisState = 1;
-                        pushStackVars(uvStack, currBCurrBStack, bStack, stateStack, &stackTop,&thisUV, &thisCurrBCurrB, &thisB, &thisState);
+                        char thisState = 3;
+                        pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, stateStack, &stackTop,&thisBCurr, &thisU, &thisB, &thisBCurr, &thisCurr, &thisState);
                     }
                     {
                         char thisState = 2;
-                        pushStackVars(uvStack, currBCurrBStack, bStack, stateStack, &stackTop,&thisUV, &thisCurrBCurrB, &thisB, &thisState);
+                        pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, stateStack, &stackTop,&thisCurr, &thisBCurr, &thisB, &thisBCurr, &thisCurr, &thisState);
                     }
                     result = false;
                 }
                 break;
             default:
+                printf("Entered case default\n");
                 break;
         }
     }
