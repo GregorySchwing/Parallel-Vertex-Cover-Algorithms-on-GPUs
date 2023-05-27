@@ -126,6 +126,7 @@ __device__ void augumentPath(CSRGraph & graph, DFSWorkList & dfsWL, int * color,
     }
 }
 
+
 __device__ void popStackVars(pii * uvStack,
                             cuda::std::pair<pii,pii> * currBCurrBStack,
                             char * stateStack,
@@ -133,7 +134,10 @@ __device__ void popStackVars(pii * uvStack,
                             pii * thisUV,
                             cuda::std::pair<pii,pii> * thisCurrBCurrB,
                             char * thisState){
-
+    stackTop[0]--;
+    *thisUV=uvStack[*stackTop];
+    *thisCurrBCurrB=currBCurrBStack[*stackTop];
+    *thisState=stateStack[*stackTop];
 }
 
 __device__ void pushStackVars(pii * uvStack,
@@ -143,8 +147,116 @@ __device__ void pushStackVars(pii * uvStack,
                             pii * thisUV,
                             cuda::std::pair<pii,pii> * thisCurrBCurrB,
                             char * thisState){
-
+    uvStack[*stackTop]=*thisUV;
+    currBCurrBStack[*stackTop]=*thisCurrBCurrB;
+    stateStack[*stackTop]=*thisState;
+    stackTop[0]++;
 }
+
+__device__ void augumentPathSubroutine(CSRGraph & graph, 
+                                        DFSWorkList & dfsWL, 
+                                        int * color, 
+                                        int * removedVerticesQueue, 
+                                        unsigned int * removedVerticesQueueBack, 
+                                        int * budAtDDFSEncounter, 
+                                        int u, 
+                                        int v, 
+                                        bool initial,
+                                        pii * uvStack,
+                                        cuda::std::pair<pii,pii> * currBCurrBStack,
+                                        char * stateStack,
+                                        int * stackTop){
+    
+    if(u == v) return;
+    if(!initial && minlvl(graph,u) == graph.evenlvl[u]) { //simply follow predecessors
+        // TMP
+        unsigned int start = graph.srcPtr[u];
+        unsigned int end = graph.srcPtr[u + 1];
+        unsigned int edgeIndex;
+        int predSize = 0;
+        for(edgeIndex=start; edgeIndex < end; edgeIndex++) {
+            if (graph.pred[edgeIndex])
+                predSize++;
+        }
+        assert(predSize == 1); //u should be evenlevel (last minlevel edge is matched, so there is only one predecessor)
+        // First predecessor of u
+        int x = -1; //no need to flip edge since we know it's matched
+        for(edgeIndex=start; edgeIndex < end; edgeIndex++) {
+            if (graph.pred[edgeIndex]){
+                x = graph.dst[edgeIndex];
+                break;
+            }
+        }
+        assert(x > -1);
+        start = graph.srcPtr[x];
+        end = graph.srcPtr[x + 1];
+        int newU = -1;
+        for(edgeIndex=start; edgeIndex < end; edgeIndex++) {
+            if (graph.pred[edgeIndex] && graph.bud[graph.dst[edgeIndex]] == graph.bud[x]){
+                newU = graph.dst[edgeIndex];
+                break;
+            }
+        }
+        assert(newU > -1);
+        u = newU;
+        assert(!graph.removed[u]);
+        flip(graph,removedVerticesQueue,removedVerticesQueueBack,x,u);
+        char thisState = 1;
+        pii thisUV(u,v);
+        cuda::std::pair<pii,pii> thisCurrBCurrB(pii{-1,-1},pii{-1,-1});
+        pushStackVars(uvStack, currBCurrBStack, stateStack, stackTop,&thisUV, &thisCurrBCurrB, &thisState);
+        //augumentPath(graph,dfsWL,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter, u,v);
+        // Push state 1
+    }
+    else { //through bridge
+        // Start State
+        int u3 = dfsWL.myBridge[u].st.st; 
+        int v3 = dfsWL.myBridge[u].st.nd; 
+        int u2 = dfsWL.myBridge[u].nd.st; 
+        int v2 = dfsWL.myBridge[u].nd.nd; 
+        if((color[u2]^1) == color[u] || color[v2] == color[u]) {
+            swap(u2, v2);
+            swap(u3,v3);
+        }
+
+        flip(graph,removedVerticesQueue,removedVerticesQueueBack,u3,v3);
+        /* Original order - Note they are pushed in reverse onto the LIFO stack
+        // Push state 2
+        bool openingDfsSucceed1 = openingDfs(graph,dfsWL,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter, u3,u2,u);
+        assert(openingDfsSucceed1);
+        // End State
+
+        // Push state 2
+        int v4 = graph.bud.directParent[u];
+        bool openingDfsSucceed2 = openingDfs(graph,dfsWL,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter,v3,v2,v4);
+        assert(openingDfsSucceed2);
+        augumentPath(graph,dfsWL,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter,v4,v);
+        // End
+        // Push state 1
+        */
+        int v4 = graph.bud.directParent[u];
+        {
+            pii thisUV(-1,-1);
+            cuda::std::pair<pii,pii> thisCurrBCurrB(pii{-1,-1},pii{-1,-1});
+            char thisState = 1;
+            pushStackVars(uvStack, currBCurrBStack, stateStack, stackTop,&thisUV, &thisCurrBCurrB, &thisState);
+        }
+        {
+            pii thisUV(v4,v);
+            cuda::std::pair<pii,pii> thisCurrBCurrB(pii{v3,v2},pii{v4,-1});
+            char thisState = 2;
+            pushStackVars(uvStack, currBCurrBStack, stateStack, stackTop,&thisUV, &thisCurrBCurrB, &thisState);
+        }
+        {
+            pii thisUV(-1,-1);
+            cuda::std::pair<pii,pii> thisCurrBCurrB(pii{u3,u2},pii{u,-1});
+            char thisState = 2;
+            pushStackVars(uvStack, currBCurrBStack, stateStack, stackTop,&thisUV, &thisCurrBCurrB, &thisState);
+        }
+    }
+}
+
+
 /*
  All methods were moved into one method.
  Return statements were replaced by pop-continues.
@@ -191,13 +303,13 @@ __device__ void augumentPathIterativeSwitch(CSRGraph & graph, DFSWorkList & dfsW
     cuda::std::pair<pii,pii> currBCurrBStack[MAXSTACK];
     char stateStack[MAXSTACK];
     int stackTop = 0;
-    
+    pii thisUV = cuda::std::pair<int,int>(u,v);
+    cuda::std::pair<pii,pii> thisCurrBCurrB = cuda::std::pair<pii,pii>(cuda::std::pair<int,int>(-1,-1),cuda::std::pair<int,int>(-1,-1));
+    char thisState = 0;
+    pushStackVars(uvStack, currBCurrBStack, stateStack, &stackTop,&thisUV, &thisCurrBCurrB, &thisState);
     int type = 0;
     while(true){
-        pii uv;
-        cuda::std::pair<pii,pii> currBCurrB;
-        char state;
-        popStackVars(uvStack, currBCurrBStack, stateStack, &stackTop,&uv, &currBCurrB, &state);
+        popStackVars(uvStack, currBCurrBStack, stateStack, &stackTop,&thisUV, &thisCurrBCurrB, &thisState);
         switch(type)
         {
             case 0:
