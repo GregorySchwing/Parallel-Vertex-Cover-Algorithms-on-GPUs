@@ -46,28 +46,11 @@ struct SharedDFSKernelArgs
 #endif
 
 #if USE_GLOBAL_MEMORY
-__global__ void GlobalWorkList_global_DFS_kernel(GlobalDFSKernelArgs args) {
-    Stacks stacks = args.stacks;
-    unsigned int * minimum = args.minimum;
-    WorkList workList = args.workList;
-    CSRGraph graph = args.graph;
-    DFSWorkList dfsWL = args.dfsWL;
-    Counters* counters = args.counters;
-    int* first_to_dequeue_global = args.first_to_dequeue_global;
-    int* global_memory = args.global_memory;
-    int* NODES_PER_SM = args.NODES_PER_SM;
-    int depth = args.depth;
+__global__ void GlobalWorkList_global_DFS_kernel(Stacks stacks, unsigned int * minimum, WorkList workList, DFSWorkList dfsWL, CSRGraph graph, Counters* counters, 
+    int* first_to_dequeue_global, int* global_memory, int* NODES_PER_SM, int depth) {
 #else
-__global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
-    Stacks stacks = args.stacks;
-    unsigned int * minimum = args.minimum;
-    WorkList workList = args.workList;
-    CSRGraph graph = args.graph;
-    DFSWorkList dfsWL = args.dfsWL;
-    Counters* counters = args.counters;
-    int* first_to_dequeue_global = args.first_to_dequeue_global;
-    int* NODES_PER_SM = args.NODES_PER_SM;
-    int depth = args.depth;
+__global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * minimum, WorkList workList, DFSWorkList dfsWL, CSRGraph graph, Counters* counters, 
+    int* first_to_dequeue_global, int* NODES_PER_SM, int depth) {
 #endif
 
     __shared__ Counters blockCounters;
