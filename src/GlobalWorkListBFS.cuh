@@ -99,7 +99,7 @@ __global__ void GlobalWorkList_BFS_kernel_st(Stacks stacks, unsigned int * minim
 
     unsigned int vertex;
     for (vertex = 0; vertex < graph.vertexNum; ++vertex){
-    if(vertex >= graph.vertexNum) printf("src %d evenlvl %d oddlvl %d matching %d\n",vertex,graph.oddlvl[vertex],graph.evenlvl[vertex],graph.matching[vertex]);
+    if(vertex < graph.vertexNum) printf("depth %d src %d evenlvl %d oddlvl %d matching %d\n",depth, vertex,graph.oddlvl[vertex],graph.evenlvl[vertex],graph.matching[vertex]);
 
     if(vertex >= graph.vertexNum || depth != getLvl(graph, vertex, depth)) continue;
 
@@ -159,7 +159,7 @@ __global__ void GlobalWorkList_Extract_Bridges_kernel_st(Stacks stacks, unsigned
             if (graph.edgeStatus[edgeIndex] == Bridge && graph.bridgeTenacity[edgeIndex] == 2*depth+1) {
                 unsigned int top = atomicAdd(dfsWL.bridgeList_counter,1);
                 //uint64_t edgePair = (uint64_t) vertex << 32 | graph.dst[edgeIndex];
-                //printf("Adding bridge %d %d\n", vertex, graph.dst[edgeIndex]);
+                printf("Adding bridge %d %d ten %d 2*depth+1 %d top %d\n", vertex, graph.dst[edgeIndex],graph.bridgeTenacity[edgeIndex],2*depth+1,top);
                 dfsWL.bridgeList[top] = cuda::std::pair<int,int>(vertex, graph.dst[edgeIndex]);
             }
         }

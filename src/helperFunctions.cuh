@@ -33,7 +33,13 @@ __device__ bool binarySearch(unsigned int * arr, unsigned int l, unsigned int r,
 }
 
 __device__ void setLvl(CSRGraph & graph, int u, int lev){
-    if(lev%2) graph.oddlvl[u] = lev; else graph.evenlvl[u] = lev;
+    if(lev%2){
+        printf("setting %d's oddlvl to %d\n",u,lev);
+        graph.oddlvl[u] = lev; 
+    }else{ 
+        printf("setting %d's evenlvl to %d\n",u,lev);
+        graph.evenlvl[u] = lev;
+    }
 }
 
 __device__ int getLvl(CSRGraph & graph, int u, int lev){
@@ -186,7 +192,7 @@ __device__ void augumentPathSubroutine(CSRGraph & graph,
                                         int * currStack,
                                         char * stateStack,
                                         int * stackTop){
-    
+    printf("augumentPath %d %d\n", u, v);
     if(u == v) return;
     if(!initial && minlvl(graph,u) == graph.evenlvl[u]) { //simply follow predecessors
         // TMP
@@ -418,7 +424,7 @@ __device__ void augumentPathIterativeSwitch(CSRGraph & graph, DFSWorkList & dfsW
         popStackVars(uStack, vStack, bStack, bCurrStack, currStack, stateStack, &stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisState);
         printf("Popped state %d u %d v %d b %d stackTop %d\n", 
                 thisState, thisU, thisV, thisB, stackTop);
-        switch(type)
+        switch(thisState)
         {
             case 0:
                 printf("Entered case 0\n");

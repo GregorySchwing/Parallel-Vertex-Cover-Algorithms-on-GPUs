@@ -28,6 +28,7 @@ struct GlobalDFSKernelArgs
     int* first_to_dequeue_global; 
     int* global_memory; 
     int* NODES_PER_SM;
+    int depth;
 };
 #else
 struct SharedDFSKernelArgs
@@ -40,6 +41,7 @@ struct SharedDFSKernelArgs
     Counters* counters; 
     int* first_to_dequeue_global; 
     int* NODES_PER_SM;
+    int depth;
 };
 #endif
 
@@ -54,6 +56,7 @@ __global__ void GlobalWorkList_global_DFS_kernel(GlobalDFSKernelArgs args) {
     int* first_to_dequeue_global = args.first_to_dequeue_global;
     int* global_memory = args.global_memory;
     int* NODES_PER_SM = args.NODES_PER_SM;
+    int depth = args.depth;
 #else
 __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
     Stacks stacks = args.stacks;
@@ -64,6 +67,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
     Counters* counters = args.counters;
     int* first_to_dequeue_global = args.first_to_dequeue_global;
     int* NODES_PER_SM = args.NODES_PER_SM;
+    int depth = args.depth;
 #endif
 
     __shared__ Counters blockCounters;
@@ -173,7 +177,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
                 graph.bud.linkTo(v,ddfsResult.nd);
 
                 //this part of code is only needed when bottleneck found, but it doesn't mess up anything when called on two paths 
-                setLvl(graph,v,2*i+1-minlvl(graph,v));
+                setLvl(graph,v,2*depth+1-minlvl(graph,v));
                 unsigned int start = graph.srcPtr[v];
                 unsigned int end = graph.srcPtr[v + 1];
                 unsigned int edgeIndex;
@@ -219,7 +223,10 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
                         }
                     }
                 }
+            } else {
+                printf("Not augmenting because %d == %d\n", ddfsResult.st, ddfsResult.nd);
             }
         }while(bridgeFront < dfsWL.bridgeList_counter[0]);
+        dfsWL.bridgeList_counter[0]=0;
     }
 }
