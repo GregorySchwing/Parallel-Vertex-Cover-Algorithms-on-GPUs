@@ -107,7 +107,7 @@ __global__ void GlobalWorkList_BFS_kernel_st(Stacks stacks, unsigned int * minim
     unsigned int end = graph.srcPtr[vertex + 1];
     unsigned int edgeIndex=start;
     for(; edgeIndex < end; edgeIndex++) { // Delete Neighbors of startingVertex
-        printf("src %d dst %d start %d end %d edgeIndex %d edgeStatus %d evenlvl %d oddlvl %d matching %d\n",vertex,graph.dst[edgeIndex],start,end,edgeIndex,graph.edgeStatus[edgeIndex],graph.oddlvl[vertex],graph.evenlvl[vertex],graph.matching[vertex]);
+        printf("depth %d  minlvl(%d)=%d src %d dst %d start %d end %d edgeIndex %d edgeStatus %d evenlvl %d oddlvl %d matching %d\n",depth, graph.dst[edgeIndex],minlvl(graph,graph.dst[edgeIndex]),vertex,graph.dst[edgeIndex],start,end,edgeIndex,graph.edgeStatus[edgeIndex],graph.evenlvl[vertex],graph.oddlvl[vertex],graph.matching[vertex]);
         if (graph.edgeStatus[edgeIndex] == NotScanned && (graph.oddlvl[vertex] == depth) == (graph.matching[vertex] == graph.dst[edgeIndex])) {
             if(minlvl(graph,graph.dst[edgeIndex]) >= depth+1) {
                 graph.edgeStatus[edgeIndex] = Prop;

@@ -47,6 +47,7 @@ __device__ int getLvl(CSRGraph & graph, int u, int lev){
 }
 
 __device__ int minlvl(CSRGraph & graph, int u){
+    printf("smaller of %d and %d is %d\n",graph.oddlvl[u],graph.evenlvl[u],min(graph.oddlvl[u], graph.evenlvl[u]));
     return min(graph.oddlvl[u], graph.evenlvl[u]);
 }
 

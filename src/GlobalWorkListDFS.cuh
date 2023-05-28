@@ -177,6 +177,7 @@ __global__ void GlobalWorkList_shared_DFS_kernel(SharedDFSKernelArgs args) {
                 graph.bud.linkTo(v,ddfsResult.nd);
 
                 //this part of code is only needed when bottleneck found, but it doesn't mess up anything when called on two paths 
+                printf("Setting %d to lvl %d=2*%d+1-%d\n",v,2*depth+1-minlvl(graph,v),depth,minlvl(graph,v));
                 setLvl(graph,v,2*depth+1-minlvl(graph,v));
                 unsigned int start = graph.srcPtr[v];
                 unsigned int end = graph.srcPtr[v + 1];

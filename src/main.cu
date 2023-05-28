@@ -318,6 +318,7 @@ int main(int argc, char *argv[]) {
                     GlobalWorkList_Set_Sources_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
                     for (; depth < graph.vertexNum && !pathFound; ++depth){ 
                         printf("Depth %d\n", depth);
+                        args.depth=depth;
                        GlobalWorkList_BFS_kernel_st <<< 1, 1 >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
                         //GlobalWorkList_BFS_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
                         //GlobalWorkList_Extract_Bridges_kernel <<< dimGridBFS, THREADS_PER_BLOCK >>> (stacks_d, minimum_d, workList_d, dfsWL_d,  graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d, depth);
