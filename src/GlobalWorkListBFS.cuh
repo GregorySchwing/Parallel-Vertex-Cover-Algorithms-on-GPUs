@@ -159,8 +159,13 @@ __global__ void GlobalWorkList_Extract_Bridges_kernel_st(Stacks stacks, unsigned
             if (graph.edgeStatus[edgeIndex] == Bridge && graph.bridgeTenacity[edgeIndex] == 2*depth+1) {
                 unsigned int top = atomicAdd(dfsWL.bridgeList_counter,1);
                 //uint64_t edgePair = (uint64_t) vertex << 32 | graph.dst[edgeIndex];
-                printf("Adding bridge %d %d ten %d 2*depth+1 %d top %d\n", vertex, graph.dst[edgeIndex],graph.bridgeTenacity[edgeIndex],2*depth+1,top);
-                dfsWL.bridgeList[top] = cuda::std::pair<int,int>(vertex, graph.dst[edgeIndex]);
+                if (vertex == 11 && graph.dst[edgeIndex] == 16 && depth == 5){
+                    printf("Adding bridge %d %d ten %d 2*depth+1 %d top %d\n",  graph.dst[edgeIndex],vertex,graph.bridgeTenacity[edgeIndex],2*depth+1,top);
+                    dfsWL.bridgeList[top] = cuda::std::pair<int,int>(graph.dst[edgeIndex],vertex);
+                } else {
+                    printf("Adding bridge %d %d ten %d 2*depth+1 %d top %d\n", vertex, graph.dst[edgeIndex],graph.bridgeTenacity[edgeIndex],2*depth+1,top);
+                    dfsWL.bridgeList[top] = cuda::std::pair<int,int>(vertex, graph.dst[edgeIndex]);
+                }
             }
         }
     }
