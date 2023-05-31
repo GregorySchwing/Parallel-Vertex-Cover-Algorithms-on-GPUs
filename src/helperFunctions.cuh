@@ -61,6 +61,7 @@ __device__ void removeAndPushToQueue(CSRGraph & graph, int * removedVerticesQueu
 
 __device__ void flip(CSRGraph & graph, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int u, int v) {
     if(graph.removed[u] || graph.removed[v] || graph.matching[u] == v) return;//flipping only unmatched edges
+    printf("removedVerticesQueueBack %d\n",removedVerticesQueueBack[0]);
     assert(removedVerticesQueueBack[0]<graph.vertexNum);
     removeAndPushToQueue(graph,removedVerticesQueue,removedVerticesQueueBack,u);
     assert(removedVerticesQueueBack[0]<graph.vertexNum);
@@ -453,7 +454,8 @@ __device__ void openingDfsSubroutineCheckResult(CSRGraph & graph,
         unsigned int end = graph.srcPtr[bcur + 1];
         unsigned int edgeIndex;
         if (result[0]){
-            printf("%d %d %d\n",graph.dst[thisEdgeIndex],budAtDDFSEncounter[thisEdgeIndex],b);
+            //printf("%d %d %d\n",graph.dst[thisEdgeIndex],budAtDDFSEncounter[thisEdgeIndex],b);
+            printf("pushing augPath %d %d onto stack\n",bcur,bcur);
             {
                 int thisU = bcur;
                 int thisV = bcur;
@@ -464,7 +466,7 @@ __device__ void openingDfsSubroutineCheckResult(CSRGraph & graph,
                 int thisEdgeIndex = -1;
                 pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, edgeIndexStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisEdgeIndex, &thisState);
             }
-            result[0]=false;
+            //result[0]=false;
             return;
         } else {
             edgeIndex=thisEdgeIndex+1;
@@ -671,8 +673,8 @@ __device__ void augumentPathIterativeSwitch(CSRGraph & graph, DFSWorkList & dfsW
                                     removedVerticesQueue, 
                                     removedVerticesQueueBack, 
                                     budAtDDFSEncounter, 
-                                    thisU, 
-                                    thisV, 
+                                    thisCurr, 
+                                    thisBCurr, 
                                     thisB, 
                                     thisEdgeIndex,
                                     &result,
