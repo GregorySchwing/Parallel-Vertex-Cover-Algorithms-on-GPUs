@@ -340,6 +340,7 @@ __device__ void openingDfsSubroutine(CSRGraph & graph,
         edgeIndex=thisEdgeIndex;
     int predSize = 0;
     for(; edgeIndex < end; edgeIndex++) {
+        printf("bcur %d ei %d dst %d pred %d budAT %d\n",bcur, edgeIndex, graph.dst[edgeIndex], graph.pred[edgeIndex],budAtDDFSEncounter[edgeIndex]);
         if (graph.pred[edgeIndex] && budAtDDFSEncounter[edgeIndex] > -1){
             if (budAtDDFSEncounter[edgeIndex] == b || color[budAtDDFSEncounter[edgeIndex]] == color[bcur]){
                 printf("%d %d %d\n",graph.dst[edgeIndex],budAtDDFSEncounter[edgeIndex],b);
@@ -422,6 +423,7 @@ __device__ void openingDfsSubroutine(CSRGraph & graph,
             }
         }
     }
+    printf("reached end of edges of %d %d %d\n",cur, bcur, b);
     result[0]=false;
     return;
 }
@@ -737,10 +739,15 @@ __device__ int ddfsMove(CSRGraph & graph, int * stack1, int * stack2, unsigned i
     unsigned int end = graph.srcPtr[u + 1];
     unsigned int edgeIndex;
     printf("src %d start %d end %d ddfsPredecessorsPtr %d\n",u,start, end,ddfsPredecessorsPtr[u]);
-    if (!ddfsPredecessorsPtr[u]) ddfsPredecessorsPtr[u]=start;
-    edgeIndex=ddfsPredecessorsPtr[u];
-    for(; edgeIndex < end; ddfsPredecessorsPtr[u]++) { // Delete Neighbors of startingVertex
-        edgeIndex=ddfsPredecessorsPtr[u];
+    if (!ddfsPredecessorsPtr[u]){
+        ddfsPredecessorsPtr[u]=start;
+        printf("setting ddfsPredecessorsPtr to start %d\n",ddfsPredecessorsPtr[u]);
+    } else{
+        printf("picking up from %d\n",ddfsPredecessorsPtr[u]);
+    }
+
+    for(; ddfsPredecessorsPtr[u] < end; ddfsPredecessorsPtr[u]++) { // Delete Neighbors of startingVertex
+        int edgeIndex=ddfsPredecessorsPtr[u];
         printf("src %d dst %d ddfsPredecessorsPtr %d  pred %d \n",u,graph.dst[edgeIndex], ddfsPredecessorsPtr[u], graph.pred[edgeIndex]);
         if (graph.pred[edgeIndex]) {
             printf("PRED OF %d is %d ddfsPredecessorsPtr[%d] %d\n",u,graph.dst[edgeIndex],u,ddfsPredecessorsPtr[u]);
@@ -762,10 +769,13 @@ __device__ int ddfsMove(CSRGraph & graph, int * stack1, int * stack2, unsigned i
                 color[v] = color1;
                 return -1;
             }
-            else if(v == stack2[stack2Top[0]]){
+            else if(v == stack2[stack2Top[0]-1]){
                 //budAtDDFSEncounter[u]=v;
                 budAtDDFSEncounter[edgeIndex]=v;
                 //childsInDDFSTree_values[childsInDDFSTreeTop[0]]=(uint64_t) a << 32 | v;
+            } else{
+                printf("color[v]=%d,v %d ,stack2[stack2Top[0]] = %d\n",color[v],v,stack2[stack2Top[0]-1]);
+                printf("Not adding to budAtDDFSEncounter %d %d %d \n", u, v,a);
             }
         }
     }
