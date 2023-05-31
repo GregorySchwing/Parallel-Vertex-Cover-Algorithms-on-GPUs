@@ -207,6 +207,8 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
                         }
                     }
                 }
+                removedVerticesQueueBack[0]=0;
+                removedVerticesQueueFront[0]=0;
             } else {
                 printf("Not augmenting because %d == %d\n", ddfsResult.st, ddfsResult.nd);
             }
