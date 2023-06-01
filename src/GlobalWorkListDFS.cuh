@@ -174,6 +174,8 @@ __global__ void GlobalWorkList_shared_DFS_kernel(Stacks stacks, unsigned int * m
                     }
                 }
             }
+            for (int i = 0; i < graph.vertexNum; i++)
+                graph.childsInDDFSTreePtr[i]=0;
             if(ddfsResult.st != ddfsResult.nd) {
                 printf("Augmenting path\n");
                 augumentPathIterativeSwitch(graph,dfsWL,color, removedVerticesQueue, removedVerticesQueueBack, budAtDDFSEncounter, ddfsResult.st,ddfsResult.nd,true);

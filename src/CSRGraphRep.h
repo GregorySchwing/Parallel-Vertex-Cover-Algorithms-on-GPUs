@@ -56,7 +56,7 @@ struct CSRGraph{
     bool* removed;
 
     int* visited;
-
+    int* childsInDDFSTreePtr;
     struct DSU bud;
 
     void create(unsigned int xn,unsigned int xm); // Initializes the graph rep

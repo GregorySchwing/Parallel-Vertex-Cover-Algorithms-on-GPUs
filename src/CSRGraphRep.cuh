@@ -98,6 +98,7 @@ void CSRGraph::reset(){
     //cudaMemset(removedVerticesQueueFront, 0, sizeof(unsigned int));
     cudaMemset(foundPath, false, numBlocks*sizeof(bool));
     cudaMemset(removedPredecessorsSize, 0, numBlocks*vertexNum*sizeof(int));
+    cudaMemset(childsInDDFSTreePtr, 0, vertexNum*sizeof(int));
 
 }
 
@@ -138,6 +139,7 @@ CSRGraph allocateGraph(CSRGraph graph){
     unsigned int * removedVerticesQueueFront_d;
 
     bool * removed_d;
+    int *childsInDDFSTreePtr_d;
     checkCudaErrors(cudaMalloc((void**) &dst_d,sizeof(unsigned int)*2*graph.edgeNum));
     checkCudaErrors(cudaMalloc((void**) &srcPtr_d,sizeof(unsigned int)*(graph.vertexNum+1)));
     checkCudaErrors(cudaMalloc((void**) &degree_d,sizeof(int)*graph.vertexNum));
@@ -154,6 +156,8 @@ CSRGraph allocateGraph(CSRGraph graph){
 
     checkCudaErrors(cudaMalloc((void**) &bridgeFront_d,sizeof(unsigned int)));
     checkCudaErrors(cudaMalloc((void**) &removed_d, graph.vertexNum*sizeof(bool)));
+
+    checkCudaErrors(cudaMalloc((void**) &childsInDDFSTreePtr_d, graph.vertexNum*sizeof(int)));
 
 
     cudaMemset(bridgeFront_d, 0, sizeof(unsigned int));
@@ -249,10 +253,12 @@ CSRGraph allocateGraph(CSRGraph graph){
     Graph.bridgeFront = bridgeFront_d;
     Graph.removed=removed_d;
     Graph.bud = allocate_DSU(graph);
-
+    Graph.childsInDDFSTreePtr= childsInDDFSTreePtr_d;
     cudaMemcpy(dst_d,graph.dst,sizeof(unsigned int)*2*graph.edgeNum,cudaMemcpyHostToDevice);
     cudaMemcpy(srcPtr_d,graph.srcPtr,sizeof(unsigned int)*(graph.vertexNum+1),cudaMemcpyHostToDevice);
     cudaMemcpy(degree_d,graph.degree,sizeof(int)*graph.vertexNum,cudaMemcpyHostToDevice);
+    cudaMemset(childsInDDFSTreePtr_d, 0, graph.vertexNum*sizeof(int));
+
     //cudaMemcpy(unmatched_vertices_d,graph.unmatched_vertices,sizeof(unsigned int)*graph.num_unmatched_vertices,cudaMemcpyHostToDevice);
     //cudaMemcpy(matching_d,graph.matching,sizeof(int)*graph.vertexNum,cudaMemcpyHostToDevice);
 

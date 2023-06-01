@@ -137,49 +137,43 @@ __device__ void augumentPath(CSRGraph & graph, DFSWorkList & dfsWL, int * color,
 __device__ void popStackVars(int * uStack,
                             int * vStack,
                             int * bStack,
-                            int * bCurrStack,
-                            int * currStack,
-                            int * edgeIndexStack,
+                            int * origCurrStack,
+                            int * origBCurrStack,
                             int * stateStack,
                             int * stackTop,
                             int * thisU,
                             int * thisV,
                             int * thisB,
-                            int * thisBCurr,
-                            int * thisCurr,
-                            int * thisEdgeIndex,
+                            int * thisOrigCurr,
+                            int * thisOrigBCurr,
                             int * thisState){
     stackTop[0]--;
     *thisU=uStack[*stackTop];
     *thisV=vStack[*stackTop];
     *thisB=bStack[*stackTop];
-    *thisBCurr=bCurrStack[*stackTop];
-    *thisCurr=currStack[*stackTop];
-    *thisEdgeIndex=edgeIndexStack[*stackTop];
+    *thisOrigCurr=origCurrStack[*stackTop];
+    *thisOrigBCurr=origBCurrStack[*stackTop];
     *thisState=stateStack[*stackTop];
 }
 
 __device__ void pushStackVars(int * uStack,
                             int * vStack,
                             int * bStack,
-                            int * bCurrStack,
-                            int * currStack,
-                            int * edgeIndexStack,
+                            int * origCurrStack,
+                            int * origBCurrStack,
                             int * stateStack,
                             int * stackTop,
                             int * thisU,
                             int * thisV,
                             int * thisB,
-                            int * thisBCurr,
-                            int * thisCurr,
-                            int * thisEdgeIndex,
+                            int * thisOrigCurr,
+                            int * thisOrigBCurr,
                             int * thisState){
     uStack[*stackTop] = *thisU;
     vStack[*stackTop] = *thisV;
     bStack[*stackTop] = *thisB;
-    bCurrStack[*stackTop] = *thisBCurr;
-    currStack[*stackTop] = *thisCurr;
-    edgeIndexStack[*stackTop] = *thisEdgeIndex;
+    origCurrStack[*stackTop] = *thisOrigCurr;
+    origBCurrStack[*stackTop] = *thisOrigBCurr;
     stateStack[*stackTop] = *thisState;
     stackTop[0]++;
     printf("pushed stack top %d state%d\n",stackTop[0],thisState[0]);
@@ -197,9 +191,8 @@ __device__ void augumentPathSubroutine(CSRGraph & graph,
                                         int * uStack,
                                         int * vStack,
                                         int * bStack,
-                                        int * bCurrStack,
-                                        int * currStack,
-                                        int * edgeIndexStack,
+                                        int * origCurStack,
+                                        int * origBCurStack,
                                         int * stateStack,
                                         int * stackTop){
     printf("augumentPath %d %d\n", u, v);
@@ -237,14 +230,14 @@ __device__ void augumentPathSubroutine(CSRGraph & graph,
         u = newU;
         assert(!graph.removed[u]);
         flip(graph,removedVerticesQueue,removedVerticesQueueBack,x,u);
-        int thisState = 1;
+        int thisState = 0;
         int thisU = u;
         int thisV = v;
         int thisB = -1;
-        int thisBCurr = -1;
-        int thisCurr = -1;
+        int thisOrigCur = -1;
+        int thisOrigBCur = -1;
         int thisEdgeIndex = -1;
-        pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, edgeIndexStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisEdgeIndex, &thisState);
+        pushStackVars(uStack, vStack, bStack, origCurStack, origBCurStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisOrigCur, &thisOrigBCur, &thisState);
         //augumentPath(graph,dfsWL,color,removedVerticesQueue,removedVerticesQueueBack,budAtDDFSEncounter, u,v);
         // Push state 1
     }
@@ -280,153 +273,176 @@ __device__ void augumentPathSubroutine(CSRGraph & graph,
             int thisU = v4;
             int thisV = v;
             int thisB = -1;
-            int thisBCurr = -1;
-            int thisCurr = -1;
-            int thisState = 1;
-            int thisEdgeIndex = -1;
-            pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, edgeIndexStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisEdgeIndex, &thisState);
+            int thisOrigCur = -1;
+            int thisOrigBCur = -1;
+            int thisState = 0;
+            pushStackVars(uStack, vStack, bStack, origCurStack, origBCurStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisOrigCur, &thisOrigBCur, &thisState);
         }
         {
             int thisU = v3;
             int thisV = v2;
-            int thisCurr = v3;
-            int thisBCurr = v2;
             int thisB = v4;
-            int thisState = 2;
-            int thisEdgeIndex = -1;
-            pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, edgeIndexStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisEdgeIndex, &thisState);
+            int thisOrigCur = -1;
+            int thisOrigBCur = -1;
+            int thisState = 1;
+            pushStackVars(uStack, vStack, bStack, origCurStack, origBCurStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisOrigCur, &thisOrigBCur, &thisState);
         }
         {
             int thisU = u3;
             int thisV = u2;
-            int thisCurr = u3;
-            int thisBCurr = u2;
             int thisB = u;
-            int thisState = 2;
-            int thisEdgeIndex = -1;
-            pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, edgeIndexStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisEdgeIndex, &thisState);
+            int thisOrigCur = -1;
+            int thisOrigBCur = -1;
+            int thisState = 1;
+            pushStackVars(uStack, vStack, bStack, origCurStack, origBCurStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisOrigCur, &thisOrigBCur, &thisState);
         }
     }
 }
 
 
-__device__ void openingDfsSubroutine(CSRGraph & graph, 
-                                        DFSWorkList & dfsWL, 
-                                        int * color, 
-                                        int * removedVerticesQueue, 
-                                        unsigned int * removedVerticesQueueBack, 
+__device__ void openingDfsSubroutineCall(CSRGraph & graph, 
+                                        int * color,
                                         int * budAtDDFSEncounter, 
-                                        int u,
-                                        int v,
+                                        int * childsInDDFSTreePtr,
                                         int cur, 
                                         int bcur, 
                                         int b,
-                                        int thisEdgeIndex,
-                                        int * result,
                                         int * uStack,
                                         int * vStack,
                                         int * bStack,
-                                        int * bCurrStack,
-                                        int * currStack,
-                                        int *edgeIndexStack,
+                                        int * origCurrStack,
+                                        int * origBCurrStack,
                                         int * stateStack,
                                         int * stackTop){
+    if (bcur == b)
+    {
+        {
+            int thisU = -1;
+            int thisV = -1;
+            int thisB = -1;
+            int thisOrigCurr = -1;
+            int thisOrigBCurr = -1;
+            int thisState = 4;
+            pushStackVars(uStack, vStack, bStack, origCurrStack, origBCurrStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisOrigCurr, &thisOrigBCurr, &thisState);
+        }
+        {
+            int thisU = cur;
+            int thisV = bcur;
+            int thisB = -1;
+            int thisOrigCurr = -1;
+            int thisOrigBCurr = -1;
+            int thisState = 0;
+            pushStackVars(uStack, vStack, bStack, origCurrStack, origBCurrStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisOrigCurr, &thisOrigBCurr, &thisState);
+        }
+        return;
+    }
+
+
     printf("openingDfs %d %d %d\n",cur, bcur, b);
     unsigned int start = graph.srcPtr[bcur];
     unsigned int end = graph.srcPtr[bcur + 1];
-    unsigned int edgeIndex;
-    if(thisEdgeIndex == -1)
-        edgeIndex=start;
-    else 
-        edgeIndex=thisEdgeIndex;
     int predSize = 0;
-    for(; edgeIndex < end; edgeIndex++) {
-        printf("bcur %d ei %d dst %d pred %d budAT %d\n",bcur, edgeIndex, graph.dst[edgeIndex], graph.pred[edgeIndex],budAtDDFSEncounter[edgeIndex]);
+    if(childsInDDFSTreePtr[bcur] == 0)
+        childsInDDFSTreePtr[bcur]=start;
+    for(; childsInDDFSTreePtr[bcur] < end; childsInDDFSTreePtr[bcur]++) {
+        unsigned int edgeIndex = childsInDDFSTreePtr[bcur];
         if (graph.pred[edgeIndex] && budAtDDFSEncounter[edgeIndex] > -1){
             if (budAtDDFSEncounter[edgeIndex] == b || color[budAtDDFSEncounter[edgeIndex]] == color[bcur]){
-                printf("%d %d %d\n",graph.dst[edgeIndex],budAtDDFSEncounter[edgeIndex],b);
-                // Immediately know this is true
-                // augmentPath(a.st,a.nd)
-                // augumentPath(cur, bcur);
-                // flip(bcur,a.st);
-
-                // a.st == graph.dst[edgeIndex] == u, when checking result
-                // a.nd == budAtDDFSEncounter[edgeIndex] == v, when checking result
-
-                // cur  == cur
-                // bcur == bcur
-                // b    == b
-                
-                // On next pop budAtDDFSEncounter[edgeIndex] == bcur
-                // if(bcur == b) {
-                if(budAtDDFSEncounter[edgeIndex] == b) {
-                    printf("pushing 3 states\n");
-                    {
-                        int thisU = graph.dst[edgeIndex];
-                        int thisV = bcur;
-                        int thisB = -1;
-                        int thisBCurr = -1;
-                        int thisCurr = -1;
-                        int thisState = 3;
-                        int thisEdgeIndex = -1;
-                        pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, edgeIndexStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisEdgeIndex, &thisState);
-                    }
-                    {
-                        int thisU = cur;
-                        int thisV = bcur;
-                        int thisB = -1;
-                        int thisBCurr = -1;
-                        int thisCurr = -1;
-                        int thisState = 1;
-                        int thisEdgeIndex = -1;
-                        pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, edgeIndexStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisEdgeIndex, &thisState);
-                    }
-                    // This is the tail recursion base case, moved into this call.
-                    {
-                        int thisU = graph.dst[edgeIndex];
-                        int thisV = budAtDDFSEncounter[edgeIndex];
-                        int thisB = -1;
-                        int thisBCurr = -1;
-                        int thisCurr = -1;
-                        int thisState = 1;
-                        int thisEdgeIndex = -1;
-                        pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, edgeIndexStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisEdgeIndex, &thisState);
-                    }
-                    result[0]=true;
-                    return;
-                } else {
-                    // Need to check the result of a second call
-                    // Checking state
-                    printf("pushing 2 states\n");
-                    {
-                        int thisU = bcur;
-                        int thisV = budAtDDFSEncounter[edgeIndex];
-                        int thisCurr = cur;
-                        int thisBCurr = bcur;
-                        int thisB = b;
-                        int thisState = 5;
-                        int thisEdgeIndex = edgeIndex;
-                        pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, edgeIndexStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisEdgeIndex, &thisState);
-                    }
-                    // Second call
-                    {
-                        int thisU = cur;
-                        int thisV = bcur;
-                        int thisCurr = graph.dst[edgeIndex];
-                        int thisBCurr = budAtDDFSEncounter[edgeIndex];
-                        int thisB = b;
-                        int thisState = 2;
-                        int thisEdgeIndex = -1;
-                        pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, edgeIndexStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisEdgeIndex, &thisState);
-                    }
-                    return;
+                {
+                    int thisU = graph.dst[edgeIndex];
+                    int thisV = budAtDDFSEncounter[edgeIndex];
+                    int thisB = b;
+                    int thisOrigCurr = cur;
+                    int thisOrigBCurr = bcur;
+                    int thisState = 2;
+                    pushStackVars(uStack, vStack, bStack, origCurrStack, origBCurrStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisOrigCurr, &thisOrigBCurr, &thisState);
                 }
+                {
+                    int thisU = graph.dst[edgeIndex];
+                    int thisV = budAtDDFSEncounter[edgeIndex];
+                    int thisB = b;
+                    int thisOrigCurr = -1;
+                    int thisOrigBCurr = -1;
+                    int thisState = 1;
+                    pushStackVars(uStack, vStack, bStack, origCurrStack, origBCurrStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisOrigCurr, &thisOrigBCurr, &thisState);
+                }
+                return;
             }
         }
     }
-    printf("reached end of edges of %d %d %d\n",cur, bcur, b);
-    result[0]=false;
+    {
+        int thisU = -1;
+        int thisV = -1;
+        int thisB = -1;
+        int thisOrigCurr = -1;
+        int thisOrigBCurr = -1;
+        int thisState = 5;
+        pushStackVars(uStack, vStack, bStack, origCurrStack, origBCurrStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisOrigCurr, &thisOrigBCurr, &thisState);
+    }
     return;
+}
+
+
+
+__device__ void openingDfsSubroutineCheck(CSRGraph & graph, 
+                                        int * childsInDDFSTreePtr,
+                                        int cur, 
+                                        int bcur, 
+                                        int b,
+                                        int origCur, 
+                                        int origBCur, 
+                                        bool success,
+                                        int * uStack,
+                                        int * vStack,
+                                        int * bStack,
+                                        int * origCurrStack,
+                                        int * origBCurrStack,
+                                        int * stateStack,
+                                        int * stackTop){
+  if (success)
+  {
+    {
+        int thisU = -1;
+        int thisV = -1;
+        int thisB = -1;
+        int thisOrigCurr = -1;
+        int thisOrigBCurr = -1;
+        int thisState = 4;
+        pushStackVars(uStack, vStack, bStack, origCurrStack, origBCurrStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisOrigCurr, &thisOrigBCurr, &thisState);
+    }
+    {
+        int thisU = origBCur;
+        int thisV = cur;
+        int thisB = -1;
+        int thisOrigCurr = -1;
+        int thisOrigBCurr = -1;
+        int thisState = 3;
+        pushStackVars(uStack, vStack, bStack, origCurrStack, origBCurrStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisOrigCurr, &thisOrigBCurr, &thisState);
+    }
+    {
+        int thisU = origCur;
+        int thisV = origBCur;
+        int thisB = -1;
+        int thisOrigCurr = -1;
+        int thisOrigBCurr = -1;
+        int thisState = 0;
+        pushStackVars(uStack, vStack, bStack, origCurrStack, origBCurrStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisOrigCurr, &thisOrigBCurr, &thisState);
+    }
+    return;
+  } else {
+    // Continue previous call
+    childsInDDFSTreePtr[origBCur]++;
+    {
+        int thisU = origCur;
+        int thisV = origBCur;
+        int thisB = b;
+        int thisOrigCurr = -1;
+        int thisOrigBCurr = -1;
+        int thisState = 1;
+        pushStackVars(uStack, vStack, bStack, origCurrStack, origBCurrStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisOrigCurr, &thisOrigBCurr, &thisState);
+    }
+    return;
+  }
 }
 
 
@@ -464,7 +480,7 @@ __device__ void openingDfsSubroutineCheckResult(CSRGraph & graph,
                 int thisCurr = cur;
                 int thisState = 1;
                 int thisEdgeIndex = -1;
-                pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, edgeIndexStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisEdgeIndex, &thisState);
+    pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisState);
             }
             //result[0]=false;
             return;
@@ -479,7 +495,7 @@ __device__ void openingDfsSubroutineCheckResult(CSRGraph & graph,
                 int thisCurr = cur;
                 int thisState = 5;
                 int thisEdgeIndex = edgeIndex;
-                pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, edgeIndexStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisEdgeIndex, &thisState);
+    pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisState);
             }
             {
                 int thisU = bcur;
@@ -489,7 +505,7 @@ __device__ void openingDfsSubroutineCheckResult(CSRGraph & graph,
                 int thisCurr = cur;
                 int thisState = 2;
                 int thisEdgeIndex = -1;
-                pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, edgeIndexStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisEdgeIndex, &thisState);
+    pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, stateStack, stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisState);
             }
             return;
         }
@@ -543,47 +559,32 @@ __device__ void openingDfsSubroutineCheckResult(CSRGraph & graph,
 
     When you are in the Else condition of AUGPATH, you push the states from bottom up.
 */
-#define MAXSTACK 8
-__device__ void augumentPathIterativeSwitch(CSRGraph & graph, DFSWorkList & dfsWL, int * color, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int * budAtDDFSEncounter, int u, int v, bool initial){
+#define MAXSTACK 20
+__device__ void augumentPathIterativeSwitch(CSRGraph & graph, DFSWorkList & dfsWL, int * color, int * removedVerticesQueue, unsigned int * removedVerticesQueueBack, int * budAtDDFSEncounter, int u, int v, bool _initial){
     printf("Entered augumentPathIterativeSwitch\n");
     __shared__ int uStack[MAXSTACK];
     __shared__ int vStack[MAXSTACK];
     __shared__ int bStack[MAXSTACK];
-    __shared__ int bCurrStack[MAXSTACK];
-    __shared__ int currStack[MAXSTACK];
-    __shared__ int edgeIndexStack[MAXSTACK];
+    __shared__ int origCurStack[MAXSTACK];
+    __shared__ int origBCurrStack[MAXSTACK];
     __shared__ int stateStack[MAXSTACK];
     int stackTop = 0;
     int thisU = u;
     int thisV = v;
     int thisB = -1;
-    int thisBCurr = -1;
-    int thisEdgeIndex = -1;
-    int thisCurr = -1;
-    int result = false;
+    int thisOrigCur = -1;
+    int thisOrigBcur = -1;
+    int success = false;
+    bool initial = true;
     printf("Start state %d u %d v %d b %d stackTop %d\n", 
             0, thisU, thisV, thisB, stackTop);
     int thisState = 0;
-    pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, edgeIndexStack, stateStack, &stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisEdgeIndex, &thisState);
+    pushStackVars(uStack, vStack, bStack, origCurStack, origBCurrStack, stateStack, &stackTop,&thisU, &thisV, &thisB, &thisOrigCur, &thisOrigBcur, &thisState);
     int type = 0;
     while(stackTop>0){
-        for (int index = 0; index < stackTop; ++index){
-            printf("index %d u %d v %d b %d bCurr %d curr %d ei %d state %d\n",
-            index,    
-            uStack[index],
-            vStack[index],
-            bStack[index],
-            bCurrStack[index],
-            currStack[index],
-            edgeIndexStack[index],
-            stateStack[index]);
-        }
-        popStackVars(uStack, vStack, bStack, bCurrStack, currStack, edgeIndexStack,stateStack, &stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisEdgeIndex, &thisState);
-        printf("Popped state %d u %d v %d b %d stackTop %d\n", 
-                thisState, thisU, thisV, thisB, stackTop);
-        switch(thisState)
-        {
-            case 0:
+        popStackVars(uStack, vStack, bStack, origCurStack, origBCurrStack,stateStack, &stackTop,&thisU, &thisV, &thisB, &thisOrigCur, &thisOrigBcur, &thisState);
+        switch(thisState) {
+            case 0 :
                 printf("Entered case 0\n");
                 augumentPathSubroutine(graph, 
                                         dfsWL, 
@@ -593,103 +594,60 @@ __device__ void augumentPathIterativeSwitch(CSRGraph & graph, DFSWorkList & dfsW
                                         budAtDDFSEncounter, 
                                         thisU, 
                                         thisV, 
-                                        true,
+                                        initial,
                                         uStack,
                                         vStack,
                                         bStack,
-                                        bCurrStack,
-                                        currStack,
-                                        edgeIndexStack,
+                                        origCurStack,
+                                        origBCurrStack,
                                         stateStack,
                                         &stackTop);
-                break;
-            case 1:
-                printf("Entered case 1\n");
-                augumentPathSubroutine(graph, 
-                                        dfsWL, 
-                                        color, 
-                                        removedVerticesQueue, 
-                                        removedVerticesQueueBack, 
-                                        budAtDDFSEncounter, 
-                                        thisU, 
-                                        thisV, 
-                                        false,
-                                        uStack,
-                                        vStack,
-                                        bStack,
-                                        bCurrStack,
-                                        currStack,
-                                        edgeIndexStack,
-                                        stateStack,
-                                        &stackTop);
-                break;
-            case 2:
-                printf("Entered case 2\n");
-                openingDfsSubroutine(graph, 
-                                    dfsWL, 
-                                    color, 
-                                    removedVerticesQueue, 
-                                    removedVerticesQueueBack, 
+                initial=false;
+                break; //optional
+            case 1 :
+                openingDfsSubroutineCall(graph, 
+                                    color,
                                     budAtDDFSEncounter, 
+                                    graph.childsInDDFSTreePtr,
                                     thisU, 
-                                    thisV, 
-                                    thisCurr,
-                                    thisBCurr,
+                                    thisV,
                                     thisB, 
-                                    thisEdgeIndex,
-                                    &result,
                                     uStack,
                                     vStack,
                                     bStack,
-                                    bCurrStack,
-                                    currStack,
-                                    edgeIndexStack,
+                                    origCurStack,
+                                    origBCurrStack,
                                     stateStack,
                                     &stackTop);
-                printf("returned from openingDfsSubroutine\n");
-                break;
-            case 3:
-                printf("Entered case 3\n");
+                break; //optional
+            case 2 :
+                openingDfsSubroutineCheck(graph, 
+                                    graph.childsInDDFSTreePtr,
+                                    thisU, 
+                                    thisV,
+                                    thisB, 
+                                    thisOrigCur,
+                                    thisOrigBcur,
+                                    success,
+                                    uStack,
+                                    vStack,
+                                    bStack,
+                                    origCurStack,
+                                    origBCurrStack,
+                                    stateStack,
+                                    &stackTop);
+                break; //optional
+            case 3 :
                 flip(graph,removedVerticesQueue,removedVerticesQueueBack,thisU,thisV);
-                break;
-            case 4:
-                printf("Entered case 4\n");
-                {
-                    int thisState = 3;
-                    int thisEdgeIndex = -1;
-                    pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, edgeIndexStack, stateStack, &stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisEdgeIndex, &thisState);
-                }
-                {
-                    int thisState = 2;
-                    int thisEdgeIndex = -1;
-                    pushStackVars(uStack, vStack, bStack, bCurrStack, currStack, edgeIndexStack, stateStack, &stackTop,&thisU, &thisV, &thisB, &thisBCurr, &thisCurr, &thisEdgeIndex, &thisState);
-                }
-                break;
-            case 5:
-                printf("Entered case 5\n");
-                openingDfsSubroutineCheckResult(graph, 
-                                    dfsWL, 
-                                    color, 
-                                    removedVerticesQueue, 
-                                    removedVerticesQueueBack, 
-                                    budAtDDFSEncounter, 
-                                    thisCurr, 
-                                    thisBCurr, 
-                                    thisB, 
-                                    thisEdgeIndex,
-                                    &result,
-                                    uStack,
-                                    vStack,
-                                    bStack,
-                                    bCurrStack,
-                                    currStack,
-                                    edgeIndexStack,
-                                    stateStack,
-                                    &stackTop);
-                printf("returned from openingDfsSubroutine\n");
-                break;
-            default:
-                printf("Entered case default\n");
+                break; //optional
+            case 4 :
+                success = true;
+                break; //optional
+            case 5 :
+                success = false;
+                break; //optional
+            // you can have any number of case statements.
+            default : //Optional
                 break;
         }
     }
