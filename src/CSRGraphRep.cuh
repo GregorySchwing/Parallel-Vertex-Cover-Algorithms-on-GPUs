@@ -2,10 +2,11 @@
 
 CSRGraph allocateGraph(CSRGraph graph){
     CSRGraph Graph;
-
+    unsigned int* srcPtrUncompressed_d;
     unsigned int* dst_d;
     unsigned int* srcPtr_d;
     int* degree_d;
+    cudaMalloc((void**) &srcPtrUncompressed_d,sizeof(unsigned int)*2*graph.edgeNum);
     cudaMalloc((void**) &dst_d,sizeof(unsigned int)*2*graph.edgeNum);
     cudaMalloc((void**) &srcPtr_d,sizeof(unsigned int)*(graph.vertexNum+1));
     cudaMalloc((void**) &degree_d,sizeof(int)*graph.vertexNum);
@@ -14,8 +15,10 @@ CSRGraph allocateGraph(CSRGraph graph){
     Graph.edgeNum = graph.edgeNum;
     Graph.dst = dst_d;
     Graph.srcPtr = srcPtr_d;
+    Graph.srcPtrUncompressed = srcPtrUncompressed_d;
     Graph.degree = degree_d;
 
+    cudaMemcpy(srcPtrUncompressed_d,graph.srcPtrUncompressed,sizeof(unsigned int)*2*graph.edgeNum,cudaMemcpyHostToDevice);
     cudaMemcpy(dst_d,graph.dst,sizeof(unsigned int)*2*graph.edgeNum,cudaMemcpyHostToDevice);
     cudaMemcpy(srcPtr_d,graph.srcPtr,sizeof(unsigned int)*(graph.vertexNum+1),cudaMemcpyHostToDevice);
     cudaMemcpy(degree_d,graph.degree,sizeof(int)*graph.vertexNum,cudaMemcpyHostToDevice);
