@@ -324,8 +324,6 @@ int main(int argc, char *argv[]) {
                 while(cudaStreamQuery(stream1)){
                     cudaMemcpyAsync(&counter_h, workList_d.counter, sizeof(Counter), cudaMemcpyDeviceToHost, stream2);
                     cudaMemcpyAsync(&workListCount_h, workList_d.count, sizeof(int), cudaMemcpyDeviceToHost, stream2);
-                    cudaMemcpyAsync(&counter_h, workList_d.counter, sizeof(Counter), cudaMemcpyDeviceToHost, stream2);
-                    cudaMemcpyAsync(&workListCount_h, workList_d.count, sizeof(int), cudaMemcpyDeviceToHost, stream2);
                     cudaMemcpyAsync(&Pos_h, workList_d.head_tail, sizeof(HT), cudaMemcpyDeviceToHost, stream2);
                     cudaMemcpyAsync(&currentMatchingSize, minimum_d, sizeof(int), cudaMemcpyDeviceToHost, stream2);
 

@@ -117,7 +117,7 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * maxim
         endTime(MAX_DEGREE,&blockCounters);
         if(threadIdx.x == 0) {
             maximum_s = atomicOr(maximum,0);
-            atomicMax(maximum, numMatchedVertices);
+            //atomicMax(maximum, numMatchedVertices);
             //printf("block id %d currentEdgeIndex %d nextEdge %d maximum_s %d graph.vertexNum %d\n",blockIdx.x,currentEdgeIndex, nextEdge,maximum_s,graph.vertexNum);
         }
         __syncthreads();
@@ -172,7 +172,6 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * maxim
             // Prepare the child that removes the neighbors of the max vertex to be processed on the next iteration
             deleteNextEdge(graph, vertexDegrees_s, currentEdgeIndex);
             endTime(PREPARE_LEFT_CHILD,&blockCounters);
-            //currentEdgeIndex=0;
             dequeueOrPopNextItr = false;
         }
         __syncthreads();
