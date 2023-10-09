@@ -78,9 +78,9 @@ __device__ unsigned int findNextEdge(unsigned int* srcPtrUncompressed, unsigned 
 
 
 __device__ unsigned int findNextEdge(unsigned int* srcPtrUncompressed, unsigned int *dst, int *vertexDegrees_s, unsigned int currentEdgeIndex, unsigned int numberOfEdges, unsigned int numberOfVertices) {
-    for (unsigned int nextEdge = currentEdgeIndex; nextEdge < numberOfEdges; ++nextEdge) {
-        int source = srcPtrUncompressed[nextEdge];
-        int destination = dst[nextEdge];
+    for (unsigned int nextEdge = currentEdgeIndex+1; nextEdge < (currentEdgeIndex+1)+numberOfEdges; ++nextEdge) {
+        int source = srcPtrUncompressed[nextEdge%numberOfEdges];
+        int destination = dst[nextEdge%numberOfEdges];
         //printf("SRC %d DST %d numVertices %d\n",source, destination, numberOfVertices);
         assert(source<numberOfVertices);
         assert(destination<numberOfVertices);
@@ -90,9 +90,9 @@ __device__ unsigned int findNextEdge(unsigned int* srcPtrUncompressed, unsigned 
 
         bool foundEdge = (sourceDegree > 0 && destinationDegree > 0);
         if (foundEdge)
-            return nextEdge;
+            return nextEdge%numberOfEdges;
     }
-    return numberOfEdges;
+    return currentEdgeIndex;
 }
 
 
