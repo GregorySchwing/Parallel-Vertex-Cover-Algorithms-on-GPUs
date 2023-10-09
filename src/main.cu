@@ -72,6 +72,7 @@ int main(int argc, char *argv[]) {
 
     unsigned int minimum = (RemoveMaxMinimum < RemoveEdgeMinimum) ? RemoveMaxMinimum : RemoveEdgeMinimum;
     #else
+    // Max depth if v/2
     unsigned int minimum = graph.vertexNum/2;
     unsigned int RemoveEdgeMinimum = 0;
     unsigned int RemoveMaxMinimum = 0;
@@ -274,6 +275,22 @@ int main(int argc, char *argv[]) {
         }
         sharedMemNeeded *= sizeof(int);
         
+        cudaStream_t stream1, stream2;
+        cudaStreamCreate(&stream1);
+        cudaStreamCreate(&stream2);
+        cudaDeviceSynchronize();
+        Counter counter_h;
+        int workListCount_h = 0;
+        unsigned int workList_size_h = config.globalListSize;
+        HT Pos_h, iter=0;
+        FILE *fp;  
+        fp = fopen("log.txt", "w");//opening file
+        fprintf(fp,"%s %s %s %s %s %s\n","iter",
+                                                "Pos_h%workList_size_h", 
+                                                "numEnqueued", 
+                                                "numWaiting", 
+                                                "combined",
+                                                "currentMatchingSize");
         cudaEvent_t start, stop;
         cudaDeviceSynchronize();
         cudaEventCreate(&start);
@@ -293,7 +310,33 @@ int main(int argc, char *argv[]) {
             if (config.version == HYBRID && config.instance==PVC){
                 GlobalWorkListParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, k_d, kFound_d, NODES_PER_SM_d);
             } else if(config.version == HYBRID && config.instance==MVC) {
-                GlobalWorkList_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
+                GlobalWorkList_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded, stream1  >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
+               // CSQ returns
+                // cudaSuccess if done == 0
+                // cudaErrorNotReady if not done == 600
+                cudaError_t running = cudaStreamQuery(stream1);
+                printf("STATUS %d\n",running);
+                //GlobalWorkList_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
+                Counter counter_h;
+                int workListCount_h = 0;
+                int currentMatchingSize = 0;
+                cudaError_t error = cudaGetLastError();   // add this line, and check the error code
+                while(cudaStreamQuery(stream1)){
+                    cudaMemcpyAsync(&counter_h, workList_d.counter, sizeof(Counter), cudaMemcpyDeviceToHost, stream2);
+                    cudaMemcpyAsync(&workListCount_h, workList_d.count, sizeof(int), cudaMemcpyDeviceToHost, stream2);
+                    cudaMemcpyAsync(&counter_h, workList_d.counter, sizeof(Counter), cudaMemcpyDeviceToHost, stream2);
+                    cudaMemcpyAsync(&workListCount_h, workList_d.count, sizeof(int), cudaMemcpyDeviceToHost, stream2);
+                    cudaMemcpyAsync(&Pos_h, workList_d.head_tail, sizeof(HT), cudaMemcpyDeviceToHost, stream2);
+                    cudaMemcpyAsync(&currentMatchingSize, minimum_d, sizeof(int), cudaMemcpyDeviceToHost, stream2);
+
+                    cudaStreamSynchronize(stream2);
+                    fprintf(fp,"%lu %d %d %d %d %d\n",iter++,
+                                           Pos_h%workList_size_h, 
+                                           counter_h.numEnqueued, 
+                                           counter_h.numWaiting, 
+                                           counter_h.combined,
+                                           currentMatchingSize);
+                }
             } else if(config.version == STACK_ONLY && config.instance==PVC){
                 LocalStacksParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, graph_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
             } else if(config.version == STACK_ONLY && config.instance==MVC) {
@@ -358,7 +401,8 @@ int main(int argc, char *argv[]) {
             printf("\nMinimum is greater than K: %u\n\n",k);
         }
     } else {
-        printf("\nSize of minimum vertex cover: %u\n\n", minimum);
+        //printf("\nSize of minimum vertex cover: %u\n\n", minimum);
+        printf("\nSize of maximum matching: %u\n\n", minimum/2);
     }
 
     return 0;

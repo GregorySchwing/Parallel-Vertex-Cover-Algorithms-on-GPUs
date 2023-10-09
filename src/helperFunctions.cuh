@@ -78,7 +78,6 @@ __device__ unsigned int findNextEdge(unsigned int* srcPtrUncompressed, unsigned 
 
 
 __device__ unsigned int findNextEdge(unsigned int* srcPtrUncompressed, unsigned int *dst, int *vertexDegrees_s, unsigned int currentEdgeIndex, unsigned int numberOfEdges, unsigned int numberOfVertices) {
-    
     for (unsigned int nextEdge = currentEdgeIndex; nextEdge < numberOfEdges; ++nextEdge) {
         int source = srcPtrUncompressed[nextEdge];
         int destination = dst[nextEdge];
@@ -129,7 +128,7 @@ __device__ void deleteNeighborsOfMaxDegreeVertex(CSRGraph graph,int* vertexDegre
 
 
 
-__device__ void deleteEndpointsOfNextEdge(CSRGraph graph,int* vertexDegrees_s, unsigned int* numDeletedVertices, int* vertexDegrees_s2, 
+__device__ void skipEdge(CSRGraph graph,int* vertexDegrees_s, unsigned int* numDeletedVertices, int* vertexDegrees_s2, 
     unsigned int* numDeletedVertices2, unsigned int nextEdge){
 
     *numDeletedVertices2 = nextEdge+1;
@@ -137,29 +136,6 @@ __device__ void deleteEndpointsOfNextEdge(CSRGraph graph,int* vertexDegrees_s, u
         vertexDegrees_s2[vertex] = vertexDegrees_s[vertex];
     }
     __syncthreads();
-    auto src = graph.srcPtrUncompressed[nextEdge];
-    auto dst = graph.dst[nextEdge];
-
-    for(unsigned int edge = graph.srcPtr[src] + threadIdx.x; edge < graph.srcPtr[src + 1]; edge+=blockDim.x) { // Delete Neighbors of maxVertex
-        unsigned int neighbor = graph.dst[edge];
-        if (vertexDegrees_s2[neighbor] != -1 && edge > numDeletedVertices[0]){
-            atomicSub(&vertexDegrees_s2[neighbor], 1);
-        }
-    }
-    
-    for(unsigned int edge = graph.srcPtr[dst] + threadIdx.x; edge < graph.srcPtr[dst + 1]; edge+=blockDim.x) { // Delete Neighbors of maxVertex
-        unsigned int neighbor = graph.dst[edge];
-        if (vertexDegrees_s2[neighbor] != -1 && edge > numDeletedVertices[0]){
-            atomicSub(&vertexDegrees_s2[neighbor], 1);
-        }
-    }
-    
-    __syncthreads();
-
-    if(threadIdx.x==0) {
-        vertexDegrees_s2[src] = -1;
-        vertexDegrees_s2[dst] = -1;
-    }
 }
 
 
@@ -186,13 +162,8 @@ __device__ void deleteNextEdge(CSRGraph graph,int* vertexDegrees_s, unsigned int
     auto src = graph.srcPtrUncompressed[nextEdge];
     auto dst = graph.dst[nextEdge];
     if(threadIdx.x == 0){
-        --vertexDegrees_s[src];
-        --vertexDegrees_s[dst];
-        printf("Remove edge (%d, %d)\n",src,dst);
-        for(unsigned int vertex = 0; vertex<graph.vertexNum; vertex++){
-            printf("%d ", vertexDegrees_s[vertex]);
-        }
-        printf("\n");
+        vertexDegrees_s[src]=-1;
+        vertexDegrees_s[dst]=-1;
     }
 }
 
@@ -476,7 +447,7 @@ __device__ unsigned int findNumOfEdges(unsigned int vertexNum, int *vertexDegree
 
 // E <= V/2
 // This is the upper bound on edges this branch can add to M
-__device__ unsigned int findNumOfAddableEdgesInMatching(unsigned int vertexNum, int *vertexDegrees_s, int * shared_mem){
+__device__ unsigned int remainingUnmatchedVertices(unsigned int vertexNum, int *vertexDegrees_s, int * shared_mem){
     int sumDegree = 0;
     for(unsigned int vertex = threadIdx.x; vertex < vertexNum; vertex += blockDim.x) {
         int degree = vertexDegrees_s[vertex];
@@ -500,11 +471,11 @@ __device__ unsigned int findNumOfAddableEdgesInMatching(unsigned int vertexNum, 
 }
 
 // Edges added to the matching, have endpoints with degree == -1
-__device__ unsigned int findNumOfEdgesInCurrentMatching(unsigned int vertexNum, int *vertexDegrees_s, int * shared_mem){
+__device__ unsigned int getMatchedVertices(unsigned int vertexNum, int *vertexDegrees_s, int * shared_mem){
     int sumDegree = 0;
     for(unsigned int vertex = threadIdx.x; vertex < vertexNum; vertex += blockDim.x) {
         int degree = vertexDegrees_s[vertex];
-        if(degree < 0){ 
+        if(degree <= 0){ 
             sumDegree += 1;
         }
     }
@@ -520,7 +491,7 @@ __device__ unsigned int findNumOfEdgesInCurrentMatching(unsigned int vertexNum, 
         }
         __syncthreads();
     }
-    return degree_s[0]/2;
+    return degree_s[0];
 }
 
 
