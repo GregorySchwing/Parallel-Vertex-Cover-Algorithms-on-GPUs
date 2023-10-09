@@ -117,6 +117,7 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * maxim
         endTime(MAX_DEGREE,&blockCounters);
         if(threadIdx.x == 0) {
             maximum_s = atomicOr(maximum,0);
+            atomicMax(maximum, numMatchedVertices);
             //printf("block id %d currentEdgeIndex %d nextEdge %d maximum_s %d graph.vertexNum %d\n",blockIdx.x,currentEdgeIndex, nextEdge,maximum_s,graph.vertexNum);
         }
         __syncthreads();
@@ -125,7 +126,7 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * maxim
         // Someone else found a perfect matching
         || maximum_s == graph.vertexNum 
         // Allowable on when matching is empty. Otherwise, indicates node lacks children
-        || nextEdge == currentEdgeIndex) { // Reached the bottom of the tree, maximum vertex cover possibly found
+        || nextEdge == 2*graph.edgeNum) { // Reached the bottom of the tree, maximum vertex cover possibly found
             if(threadIdx.x==0){
                 //atomicMin(maximum, currentEdgeIndex);
                 //printf("atomicMax block id %d numMatchedVertices %u maximum_s %d, current edge %u graph.vertexNum/2 %d\n",blockIdx.x,numMatchedVertices, maximum_s, currentEdgeIndex,graph.vertexNum/2);
@@ -171,7 +172,7 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * maxim
             // Prepare the child that removes the neighbors of the max vertex to be processed on the next iteration
             deleteNextEdge(graph, vertexDegrees_s, currentEdgeIndex);
             endTime(PREPARE_LEFT_CHILD,&blockCounters);
-
+            //currentEdgeIndex=0;
             dequeueOrPopNextItr = false;
         }
         __syncthreads();

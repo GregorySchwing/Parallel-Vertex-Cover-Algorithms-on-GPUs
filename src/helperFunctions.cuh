@@ -78,9 +78,9 @@ __device__ unsigned int findNextEdge(unsigned int* srcPtrUncompressed, unsigned 
 
 
 __device__ unsigned int findNextEdge(unsigned int* srcPtrUncompressed, unsigned int *dst, int *vertexDegrees_s, unsigned int currentEdgeIndex, unsigned int numberOfEdges, unsigned int numberOfVertices) {
-    for (unsigned int nextEdge = currentEdgeIndex+1; nextEdge < (currentEdgeIndex+1)+numberOfEdges; ++nextEdge) {
-        int source = srcPtrUncompressed[nextEdge%numberOfEdges];
-        int destination = dst[nextEdge%numberOfEdges];
+    for (unsigned int nextEdge = currentEdgeIndex; nextEdge < numberOfEdges; ++nextEdge) {
+        int source = srcPtrUncompressed[nextEdge];
+        int destination = dst[nextEdge];
         //printf("SRC %d DST %d numVertices %d\n",source, destination, numberOfVertices);
         assert(source<numberOfVertices);
         assert(destination<numberOfVertices);
@@ -90,9 +90,9 @@ __device__ unsigned int findNextEdge(unsigned int* srcPtrUncompressed, unsigned 
 
         bool foundEdge = (sourceDegree > 0 && destinationDegree > 0);
         if (foundEdge)
-            return nextEdge%numberOfEdges;
+            return nextEdge;
     }
-    return currentEdgeIndex;
+    return numberOfEdges;
 }
 
 
@@ -130,7 +130,7 @@ __device__ void deleteNeighborsOfMaxDegreeVertex(CSRGraph graph,int* vertexDegre
 
 __device__ void skipEdge(CSRGraph graph,int* vertexDegrees_s, unsigned int* numDeletedVertices, int* vertexDegrees_s2, 
     unsigned int* numDeletedVertices2, unsigned int nextEdge){
-
+    *numDeletedVertices=nextEdge;
     *numDeletedVertices2 = nextEdge+1;
     for(unsigned int vertex = threadIdx.x; vertex<graph.vertexNum; vertex+=blockDim.x){
         vertexDegrees_s2[vertex] = vertexDegrees_s[vertex];
@@ -165,6 +165,7 @@ __device__ void deleteNextEdge(CSRGraph graph,int* vertexDegrees_s, unsigned int
         vertexDegrees_s[src]=-1;
         vertexDegrees_s[dst]=-1;
     }
+    __syncthreads();
 }
 
 
