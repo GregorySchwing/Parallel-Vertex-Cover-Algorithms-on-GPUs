@@ -6,6 +6,7 @@ struct CSRGraph{
     unsigned int edgeNum; // Number of Edges
     unsigned int* dst;
     unsigned int* srcPtr;
+    unsigned int* srcPtrUncompressed;
     int* degree;
     
     void create(unsigned int xn,unsigned int xm); // Initializes the graph rep

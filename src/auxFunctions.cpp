@@ -182,10 +182,12 @@ CSRGraph createCSRGraphFromFile(const char *filename)
 	{
 		assert(edgeList[0][i] < vertexNum);
 		assert(srcPtr2[edgeList[0][i]] < 2 * edgeNum);
+		graph.srcPtrUncompressed[srcPtr2[edgeList[0][i]]]=edgeList[0][i];
 		graph.dst[srcPtr2[edgeList[0][i]]] = edgeList[1][i];
 		srcPtr2[edgeList[0][i]]++;
 		assert(edgeList[1][i] < vertexNum);
 		assert(srcPtr2[edgeList[1][i]] < 2 * edgeNum);
+		graph.srcPtrUncompressed[srcPtr2[edgeList[1][i]]]=edgeList[1][i];
 		graph.dst[srcPtr2[edgeList[1][i]]] = edgeList[0][i];
 		srcPtr2[edgeList[1][i]]++;
 	}

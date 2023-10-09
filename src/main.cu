@@ -6,6 +6,8 @@
 #include "Sequential.h"
 #include "auxFunctions.h"
 #include "CSRGraphRep.cuh"
+#define VC 0
+#if VC
 #define USE_GLOBAL_MEMORY 0
 #include "LocalStacks.cuh"
 #include "GlobalWorkList.cuh"
@@ -18,8 +20,24 @@
 #include "LocalStacksParameterized.cuh"
 #include "GlobalWorkListParameterized.cuh"
 #undef USE_GLOBAL_MEMORY
+#else
+#define USE_GLOBAL_MEMORY 0
+#include "LocalStacks.cuh"
+#include "GlobalWorkList_MCM.cuh"
+#include "LocalStacksParameterized.cuh"
+#include "GlobalWorkListParameterized.cuh"
+#undef USE_GLOBAL_MEMORY
+#define USE_GLOBAL_MEMORY 1
+#include "LocalStacks.cuh"
+#include "GlobalWorkList.cuh"
+#include "LocalStacksParameterized.cuh"
+#include "GlobalWorkListParameterized.cuh"
+#undef USE_GLOBAL_MEMORY
+#endif
 #include "SequentialParameterized.h"
-
+#include <thrust/device_vector.h>
+#include <thrust/host_vector.h>
+#include <iostream>
 using namespace std;
 
 int main(int argc, char *argv[]) {
@@ -33,7 +51,7 @@ int main(int argc, char *argv[]) {
 
     chrono::time_point<std::chrono::system_clock> begin, end;
 	std::chrono::duration<double> elapsed_seconds_max, elapsed_seconds_edge, elapsed_seconds_mvc;
-
+    #if VC
     begin = std::chrono::system_clock::now(); 
     unsigned int RemoveMaxMinimum = RemoveMaxApproximateMVC(graph);
     end = std::chrono::system_clock::now(); 
@@ -53,7 +71,12 @@ int main(int argc, char *argv[]) {
     fflush(stdout);
 
     unsigned int minimum = (RemoveMaxMinimum < RemoveEdgeMinimum) ? RemoveMaxMinimum : RemoveEdgeMinimum;
-
+    #else
+    // Max depth if v/2
+    unsigned int minimum = graph.vertexNum/2;
+    unsigned int RemoveEdgeMinimum = 0;
+    unsigned int RemoveMaxMinimum = 0;
+    #endif
     unsigned int k = config.k; 
     unsigned int kFound = 0;
 
@@ -104,6 +127,7 @@ int main(int argc, char *argv[]) {
         printf("\nOur Config :\n");
         int numThreadsPerBlock = config.blockDim;
         int numBlocksPerSm; 
+        #if VC
         if (config.useGlobalMemory){
             if (config.version == HYBRID && config.instance==PVC){
                 cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkListParameterized_global_kernel, numThreadsPerBlock, 0);
@@ -125,7 +149,45 @@ int main(int argc, char *argv[]) {
                 cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacks_shared_kernel, numThreadsPerBlock, 0);
             }
         }
-
+        #else
+        if (config.useGlobalMemory){
+            if (config.version == HYBRID && config.instance==PVC){
+                //cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkListParameterized_global_kernel, numThreadsPerBlock, 0);
+                printf("unsupported version %d instance %d\n",config.version, config.instance);
+                exit(1);
+            } else if(config.version == HYBRID && config.instance==MVC) {
+                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkList_global_kernel, numThreadsPerBlock, 0);
+                //printf("unsupported version %d instance %d\n",config.version, config.instance);
+                //exit(1);
+            } else if(config.version == STACK_ONLY && config.instance==PVC){
+                //cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacksParameterized_global_kernel, numThreadsPerBlock, 0);
+                printf("unsupported version %d instance %d\n",config.version, config.instance);
+                exit(1);
+            } else if(config.version == STACK_ONLY && config.instance==MVC) {
+                //cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacks_global_kernel, numThreadsPerBlock, 0);
+                printf("unsupported version %d instance %d\n",config.version, config.instance);
+                exit(1);
+            }
+        } else {
+            if (config.version == HYBRID && config.instance==PVC){
+                //cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkListParameterized_shared_kernel, numThreadsPerBlock, 0);
+                printf("unsupported version %d instance %d\n",config.version, config.instance);
+                exit(1);
+            } else if(config.version == HYBRID && config.instance==MVC) {
+                cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, GlobalWorkList_shared_kernel, numThreadsPerBlock, 0);
+                //printf("unsupported version %d instance %d\n",config.version, config.instance);
+                //exit(1);
+            } else if(config.version == STACK_ONLY && config.instance==PVC){
+                //cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacksParameterized_shared_kernel, numThreadsPerBlock, 0);
+                printf("unsupported version %d instance %d\n",config.version, config.instance);
+                exit(1);
+            } else if(config.version == STACK_ONLY && config.instance==MVC) {
+                //cudaOccupancyMaxActiveBlocksPerMultiprocessor(&numBlocksPerSm, LocalStacks_shared_kernel, numThreadsPerBlock, 0);
+                printf("unsupported version %d instance %d\n",config.version, config.instance);
+                exit(1);
+            }
+        }
+        #endif
         unsigned int tempNumBlocks;
         if(config.numBlocks){
             tempNumBlocks = config.numBlocks;
@@ -174,6 +236,7 @@ int main(int argc, char *argv[]) {
         cudaMalloc((void**)&counters_d, numBlocks*sizeof(Counters));
 
         // Copy minimum
+        minimum = 0;
         cudaMemcpy(minimum_d, &minimum, sizeof(unsigned int), cudaMemcpyHostToDevice);
 
         unsigned int *k_d = NULL;
@@ -212,6 +275,22 @@ int main(int argc, char *argv[]) {
         }
         sharedMemNeeded *= sizeof(int);
         
+        cudaStream_t stream1, stream2;
+        cudaStreamCreate(&stream1);
+        cudaStreamCreate(&stream2);
+        cudaDeviceSynchronize();
+        Counter counter_h;
+        int workListCount_h = 0;
+        unsigned int workList_size_h = config.globalListSize;
+        HT Pos_h, iter=0;
+        FILE *fp;  
+        fp = fopen("log.txt", "w");//opening file
+        fprintf(fp,"%s %s %s %s %s %s\n","iter",
+                                                "Pos_h%workList_size_h", 
+                                                "numEnqueued", 
+                                                "numWaiting", 
+                                                "combined",
+                                                "currentMatchingSize");
         cudaEvent_t start, stop;
         cudaDeviceSynchronize();
         cudaEventCreate(&start);
@@ -231,7 +310,31 @@ int main(int argc, char *argv[]) {
             if (config.version == HYBRID && config.instance==PVC){
                 GlobalWorkListParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, k_d, kFound_d, NODES_PER_SM_d);
             } else if(config.version == HYBRID && config.instance==MVC) {
-                GlobalWorkList_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
+                GlobalWorkList_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded, stream1  >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
+               // CSQ returns
+                // cudaSuccess if done == 0
+                // cudaErrorNotReady if not done == 600
+                cudaError_t running = cudaStreamQuery(stream1);
+                printf("STATUS %d\n",running);
+                //GlobalWorkList_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, minimum_d, workList_d, graph_d, counters_d, first_to_dequeue_global_d, NODES_PER_SM_d);
+                Counter counter_h;
+                int workListCount_h = 0;
+                int currentMatchingSize = 0;
+                cudaError_t error = cudaGetLastError();   // add this line, and check the error code
+                while(cudaStreamQuery(stream1)){
+                    cudaMemcpyAsync(&counter_h, workList_d.counter, sizeof(Counter), cudaMemcpyDeviceToHost, stream2);
+                    cudaMemcpyAsync(&workListCount_h, workList_d.count, sizeof(int), cudaMemcpyDeviceToHost, stream2);
+                    cudaMemcpyAsync(&Pos_h, workList_d.head_tail, sizeof(HT), cudaMemcpyDeviceToHost, stream2);
+                    cudaMemcpyAsync(&currentMatchingSize, minimum_d, sizeof(int), cudaMemcpyDeviceToHost, stream2);
+
+                    cudaStreamSynchronize(stream2);
+                    fprintf(fp,"%lu %d %d %d %d %d\n",iter++,
+                                           Pos_h%workList_size_h, 
+                                           counter_h.numEnqueued, 
+                                           counter_h.numWaiting, 
+                                           counter_h.combined,
+                                           currentMatchingSize);
+                }
             } else if(config.version == STACK_ONLY && config.instance==PVC){
                 LocalStacksParameterized_shared_kernel <<< numBlocks , numThreadsPerBlock, sharedMemNeeded >>> (stacks_d, graph_d, k_d, kFound_d, counters_d, pathCounter_d, NODES_PER_SM_d, config.startingDepth);
             } else if(config.version == STACK_ONLY && config.instance==MVC) {
@@ -246,7 +349,7 @@ int main(int argc, char *argv[]) {
             printf("GPU Error: %s\n", cudaGetErrorString(err));
             exit(1);
         }
-
+        
         // Copy back result
         if(config.instance == PVC){
             cudaMemcpy(&kFound, kFound_d, sizeof(unsigned int), cudaMemcpyDeviceToHost);
@@ -296,7 +399,8 @@ int main(int argc, char *argv[]) {
             printf("\nMinimum is greater than K: %u\n\n",k);
         }
     } else {
-        printf("\nSize of minimum vertex cover: %u\n\n", minimum);
+        //printf("\nSize of minimum vertex cover: %u\n\n", minimum);
+        printf("\nSize of maximum matching: %u\n\n", minimum/2);
     }
 
     return 0;

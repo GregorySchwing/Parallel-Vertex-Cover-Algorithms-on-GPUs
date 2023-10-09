@@ -13,6 +13,7 @@ void CSRGraph::create(unsigned int xn,unsigned int xm){
         vertexNum =xn;
         edgeNum =xm;
 
+        srcPtrUncompressed = (unsigned int*)malloc(sizeof(unsigned int)*2*edgeNum);
         dst = (unsigned int*)malloc(sizeof(unsigned int)*2*edgeNum);
         srcPtr = (unsigned int*)malloc(sizeof(unsigned int)*(vertexNum+1));
         degree = (int*)malloc(sizeof(int)*vertexNum);
