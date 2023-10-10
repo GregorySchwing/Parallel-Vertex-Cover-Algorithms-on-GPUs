@@ -113,7 +113,13 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * maxim
         //findMaxDegree(graph.vertexNum, &maxVertex, &maxDegree, vertexDegrees_s, vertexDegrees_s2);
         // Find the source containing the current edge considered
         // Find the next edge between two vertices with non-zero degree.
-        unsigned int nextEdge = findNextEdge(graph.srcPtrUncompressed, graph.dst, vertexDegrees_s, currentEdgeIndex, 2*graph.edgeNum, graph.vertexNum);            
+        //unsigned int nextEdge = findNextEdge(graph.srcPtrUncompressed, graph.dst, vertexDegrees_s, currentEdgeIndex, 2*graph.edgeNum, graph.vertexNum);            
+        unsigned int nextEdge = findNextEdgeByWarp(graph.srcPtrUncompressed, graph.dst, vertexDegrees_s, currentEdgeIndex, 2*graph.edgeNum, graph.vertexNum);            
+        /*
+        if (threadIdx.x==0)
+            printf("%d %d \n",nextEdge,nextEdgeFast);
+        assert(nextEdge==nextEdgeFast);
+        */
         endTime(MAX_DEGREE,&blockCounters);
         if(threadIdx.x == 0) {
             maximum_s = atomicOr(maximum,0);

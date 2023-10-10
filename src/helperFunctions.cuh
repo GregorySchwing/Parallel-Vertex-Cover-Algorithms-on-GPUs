@@ -8,6 +8,12 @@ __constant__ int MultiplyDeBruijnBitPosition[32] =
     31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
 };
 
+#define FULL_MASK 0xffffffff
+
+__host__ __device__ int divup(int x, int y) { return x / y + (x % y ? 1 : 0); }
+__device__ inline int lane_id(void) { return threadIdx.x % warpSize; }
+__device__ inline int warp_id(void) { return threadIdx.x / warpSize; }
+
 __device__ long long int square(int num){
     return num*num;
 }
@@ -94,6 +100,57 @@ __device__ unsigned int findNextEdge(unsigned int* srcPtrUncompressed, unsigned 
     }
     return numberOfEdges;
 }
+
+
+__device__ unsigned int findNextEdgeByWarp(unsigned int* srcPtrUncompressed, unsigned int *dst, int *vertexDegrees_s, unsigned int currentEdgeIndex, unsigned int numberOfEdges, unsigned int numberOfVertices) {
+    int iterations = divup(numberOfEdges-currentEdgeIndex, warpSize);
+    unsigned int nextEdge = currentEdgeIndex + threadIdx.x;
+    int source,destination,sourceDegree,destinationDegree;
+    bool foundEdge;
+    // Block size are limited to 1024; 
+    // 32 is the max number of warps per block
+    // First 32 entries are whether the predicate is true
+    // Second 32 are the value
+    __shared__ unsigned int minEdgeIdxInWarp[64];
+    __shared__ unsigned int foundEdgeInBlock;
+    __shared__ unsigned int lowestEligibleEdge;
+    // Min tpb is 64 :)
+    if (threadIdx.x < 64)
+        minEdgeIdxInWarp[threadIdx.x]=0;
+    __syncthreads();
+
+    for (int currentIt = 0; currentIt < iterations; ++currentIt){
+        source = srcPtrUncompressed[nextEdge%numberOfEdges];
+        destination = dst[nextEdge%numberOfEdges];
+        sourceDegree = vertexDegrees_s[source];
+        destinationDegree = vertexDegrees_s[destination];
+        // Prevent wrap around
+        foundEdge = (sourceDegree > 0 && destinationDegree > 0 & nextEdge >= currentEdgeIndex);
+        // Use warp-level ballot to check if any thread found an edge
+        int warpResult = __ballot_sync(0xffffffff,foundEdge);
+        // If result is false, lane 0 writes false and its edge
+        // If result is true, winning lane writes true and its edge
+        if (lane_id()==MultiplyDeBruijnBitPosition[((uint32_t)((warpResult & -warpResult) * 0x077CB531U)) >> 27]){
+            minEdgeIdxInWarp[warp_id()]=warpResult;
+            minEdgeIdxInWarp[32+warp_id()]=nextEdge;
+        }
+        // All warps have written to sm
+        __syncthreads();
+        if (warp_id()==0){
+            foundEdge = minEdgeIdxInWarp[lane_id()];
+            foundEdgeInBlock = __ballot_sync(0xffffffff,foundEdge);            
+            lowestEligibleEdge = minEdgeIdxInWarp[32+MultiplyDeBruijnBitPosition[((uint32_t)((foundEdgeInBlock & -foundEdgeInBlock) * 0x077CB531U)) >> 27]];
+        }
+        __syncthreads();
+        if(foundEdgeInBlock){
+            return lowestEligibleEdge;
+        } else {
+            nextEdge+=blockDim.x;
+        }
+    }
+    return numberOfEdges;
+}
+
 
 
 __device__ void deleteNeighborsOfMaxDegreeVertex(CSRGraph graph,int* vertexDegrees_s, unsigned int* numDeletedVertices, int* vertexDegrees_s2, 
