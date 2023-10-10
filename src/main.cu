@@ -29,7 +29,7 @@
 #undef USE_GLOBAL_MEMORY
 #define USE_GLOBAL_MEMORY 1
 #include "LocalStacks.cuh"
-#include "GlobalWorkList.cuh"
+#include "GlobalWorkList_MCM.cuh"
 #include "LocalStacksParameterized.cuh"
 #include "GlobalWorkListParameterized.cuh"
 #undef USE_GLOBAL_MEMORY
