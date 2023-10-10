@@ -119,9 +119,10 @@ int main(int argc, char *argv[]) {
         int maxSharedMemPerMultiProcessor;
         cudaDeviceGetAttribute(&maxSharedMemPerMultiProcessor,cudaDevAttrMaxSharedMemoryPerMultiprocessor,0);
         printf("MaxSharedMemPerMultiProcessor : %d\n",maxSharedMemPerMultiProcessor);
-
-        setBlockDimAndUseGlobalMemory(config,graph,maxSharedMemPerMultiProcessor,prop.totalGlobalMem, maxThreadsPerMultiProcessor, maxThreadsPerBlock, 
+        setBlockDimAndUseGlobalMemoryAutoWorkListSize(config,graph,maxSharedMemPerMultiProcessor,prop.totalGlobalMem, maxThreadsPerMultiProcessor, maxThreadsPerBlock, 
             maxThreadsPerMultiProcessor, numOfMultiProcessors, minimum);
+        //setBlockDimAndUseGlobalMemory(config,graph,maxSharedMemPerMultiProcessor,prop.totalGlobalMem, maxThreadsPerMultiProcessor, maxThreadsPerBlock, 
+        //    maxThreadsPerMultiProcessor, numOfMultiProcessors, minimum);
         performChecks(graph, config);
 
         printf("\nOur Config :\n");
@@ -362,7 +363,7 @@ int main(int argc, char *argv[]) {
         printf("Elapsed time: %fms \n", milliseconds);
 
         printResults(config, RemoveMaxMinimum, RemoveEdgeMinimum, elapsed_seconds_max.count(), elapsed_seconds_edge.count(), minimum, milliseconds, numBlocks, 
-            numBlocksPerSm, numThreadsPerSM, graph.vertexNum-1, graph.edgeNum, kFound);
+            numBlocksPerSm, numThreadsPerSM, graph.vertexNum, graph.edgeNum, kFound);
 
         #if USE_COUNTERS
         printCountersInFile(config,counters_d,numBlocks);
