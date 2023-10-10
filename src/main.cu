@@ -362,7 +362,7 @@ int main(int argc, char *argv[]) {
         printf("Elapsed time: %fms \n", milliseconds);
 
         printResults(config, RemoveMaxMinimum, RemoveEdgeMinimum, elapsed_seconds_max.count(), elapsed_seconds_edge.count(), minimum, milliseconds, numBlocks, 
-            numBlocksPerSm, numThreadsPerSM, graph.vertexNum-1, graph.edgeNum, kFound);
+            numBlocksPerSm, numThreadsPerSM, graph.vertexNum, graph.edgeNum, kFound);
 
         #if USE_COUNTERS
         printCountersInFile(config,counters_d,numBlocks);
