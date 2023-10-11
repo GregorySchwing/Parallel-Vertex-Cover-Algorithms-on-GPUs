@@ -29,8 +29,8 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * maxim
 
     int stackTop = -1;
     unsigned int stackSize = (stacks.minimum + 1);
-    // This is still degrees.
-    volatile int * stackVertexDegrees = &stacks.stacks[blockIdx.x * stackSize * graph.vertexNum];
+    // Add one to make this offsets
+    volatile int * stackVertexDegrees = &stacks.stacks[blockIdx.x * stackSize * (graph.vertexNum+1)];
     // Starts at zero.  I use this as an edge index of the currently considered edge.
     volatile unsigned int * stackcurrentEdgeIndex = &stacks.stacksNumDeletedVertices[blockIdx.x * stackSize];
 
