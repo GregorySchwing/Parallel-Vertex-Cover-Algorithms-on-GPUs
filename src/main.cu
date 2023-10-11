@@ -73,7 +73,8 @@ int main(int argc, char *argv[]) {
     unsigned int minimum = (RemoveMaxMinimum < RemoveEdgeMinimum) ? RemoveMaxMinimum : RemoveEdgeMinimum;
     #else
     // Max depth if v/2
-    unsigned int minimum = graph.vertexNum/2;
+    //unsigned int minimum = graph.vertexNum/2;
+    unsigned int minimum = graph.edgeNum;
     unsigned int RemoveEdgeMinimum = 0;
     unsigned int RemoveMaxMinimum = 0;
     #endif
@@ -401,7 +402,7 @@ int main(int argc, char *argv[]) {
         }
     } else {
         //printf("\nSize of minimum vertex cover: %u\n\n", minimum);
-        printf("\nSize of maximum matching: %u\n\n", minimum/2);
+        printf("\nSize of maximum matching: (%u-%u)/2= %u\n\n", minimum,graph.degreeZeroVertices,(minimum-graph.degreeZeroVertices)/2);
     }
 
     return 0;

@@ -209,10 +209,12 @@ CSRGraph createCSRGraphFromFile(const char *filename)
 	// The degree array will be used to set the start pointer of a CSR row
 	for (unsigned int vertex = 0; vertex < graph.vertexNum; ++vertex)
 	{
-		if(graph.degree[vertex]==0)
+		if(graph.degree[vertex]==0){
 			graph.degree[vertex]=-1;
-		else
+			graph.degreeZeroVertices++;
+		} else {
 			graph.degree[vertex]=0;
+		}
 	}
 
 	return graph;

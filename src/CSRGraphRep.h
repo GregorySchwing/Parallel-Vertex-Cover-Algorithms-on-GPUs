@@ -4,6 +4,7 @@
 struct CSRGraph{
     unsigned int vertexNum; // Number of Vertices
     unsigned int edgeNum; // Number of Edges
+    unsigned int degreeZeroVertices; // Number of degree zero vertices.
     unsigned int* dst;
     unsigned int* srcPtr;
     unsigned int* srcPtrUncompressed;
