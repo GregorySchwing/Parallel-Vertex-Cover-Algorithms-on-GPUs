@@ -268,9 +268,9 @@ int main(int argc, char *argv[]) {
             cudaMemcpy(pathCounter_d, &pathCounter, sizeof(unsigned int), cudaMemcpyHostToDevice);
         }
 
-        int sharedMemNeeded = graph.vertexNum;
-        if(graph.vertexNum > numThreadsPerBlock*2){
-            sharedMemNeeded+=graph.vertexNum;
+        int sharedMemNeeded = graph.vertexNum+1;
+        if(graph.vertexNum+1 > numThreadsPerBlock*2){
+            sharedMemNeeded+=graph.vertexNum+1;
         } else {
             sharedMemNeeded+=numThreadsPerBlock*2;
         }
@@ -386,9 +386,10 @@ int main(int argc, char *argv[]) {
         #endif
 
         if(config.version == HYBRID){
-            cudaFree(pathCounter_d);
             cudaFreeWorkList(workList_d);
             cudaFree(first_to_dequeue_global_d);
+        } else {
+            cudaFree(pathCounter_d);
         }
 
     }

@@ -120,7 +120,7 @@ __device__ void readData(int* vertexDegree_s, unsigned int * vcSize, WorkList wo
 	}
 	__syncthreads();
 
-	for(unsigned int vertex = threadIdx.x; vertex < vertexNum; vertex += blockDim.x) {
+	for(unsigned int vertex = threadIdx.x; vertex < vertexNum+1; vertex += blockDim.x) {
 		vertexDegree_s[vertex] = workList.list[P*vertexNum + vertex];
 	}
 
@@ -145,7 +145,7 @@ __device__ void putData(int* vertexDegree_s, unsigned int * vcSize, WorkList wor
 
 	__syncthreads();
 
-	for(unsigned int i = threadIdx.x; i < vertexNum; i += blockDim.x) {
+	for(unsigned int i = threadIdx.x; i < vertexNum+1; i += blockDim.x) {
 		workList.list[i + (P)*(vertexNum)] = vertexDegree_s[i];
 	}
 

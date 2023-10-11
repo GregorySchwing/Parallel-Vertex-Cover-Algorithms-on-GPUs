@@ -10,7 +10,7 @@ struct Stacks{
 __device__ void popStack(unsigned int vertexNum, int* vertexDegrees_s, unsigned int* numDeletedVertices, volatile int * stackVertexDegrees, 
     volatile unsigned int* stackNumDeletedVertices, int * stackTop){
 
-    for(unsigned int vertex = threadIdx.x; vertex < vertexNum; vertex += blockDim.x) {
+    for(unsigned int vertex = threadIdx.x; vertex < vertexNum+1; vertex += blockDim.x) {
         vertexDegrees_s[vertex] = stackVertexDegrees[(*stackTop)*vertexNum + vertex];
     }
 
@@ -23,7 +23,7 @@ __device__ void pushStack(unsigned int vertexNum, int* vertexDegrees_s, unsigned
     volatile unsigned int* stackNumDeletedVertices, int * stackTop){
 
     ++(*stackTop);
-    for(unsigned int vertex = threadIdx.x; vertex < vertexNum ; vertex += blockDim.x) {
+    for(unsigned int vertex = threadIdx.x; vertex < vertexNum+1; vertex += blockDim.x) {
         stackVertexDegrees[(*stackTop)*vertexNum + vertex] = vertexDegrees_s[vertex];
     }
     if(threadIdx.x == 0) {
@@ -36,7 +36,8 @@ Stacks allocateStacks(int vertexNum, int numBlocks, unsigned int minimum){
 
     volatile int* stacks_d;
     volatile unsigned int* stacksNumDeletedVertices_d;
-    cudaMalloc((void**) &stacks_d, (minimum + 1) * (vertexNum) * sizeof(int) * numBlocks);
+    // Offsets instead of degrees
+    cudaMalloc((void**) &stacks_d, (minimum + 1) * (vertexNum + 1) * sizeof(int) * numBlocks);
     cudaMalloc((void**) &stacksNumDeletedVertices_d, (minimum + 1) * sizeof(unsigned int) * numBlocks);
 
     stacks.stacks = stacks_d;

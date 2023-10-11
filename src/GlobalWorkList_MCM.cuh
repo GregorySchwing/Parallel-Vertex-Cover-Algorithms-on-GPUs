@@ -39,12 +39,12 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * maxim
     unsigned int currentEdgeIndex2;
     
     #if USE_GLOBAL_MEMORY
-    int * vertexDegrees_s = &global_memory[graph.vertexNum*(2*blockIdx.x)];
-    int * vertexDegrees_s2 = &global_memory[graph.vertexNum*(2*blockIdx.x + 1)];
+    int * vertexDegrees_s = &global_memory[(graph.vertexNum+1)*(2*blockIdx.x)];
+    int * vertexDegrees_s2 = &global_memory[(graph.vertexNum+1)*(2*blockIdx.x + 1)];
     #else
     extern __shared__ int shared_mem[];
     int * vertexDegrees_s = shared_mem;
-    int * vertexDegrees_s2 = &shared_mem[graph.vertexNum];
+    int * vertexDegrees_s2 = &shared_mem[graph.vertexNum+1];
     #endif
 
     bool dequeueOrPopNextItr = true; 
@@ -60,7 +60,8 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * maxim
     }
     __syncthreads();
     if (first_to_dequeue){
-        for(unsigned int vertex = threadIdx.x; vertex < graph.vertexNum; vertex += blockDim.x) {
+        // offsets instead of degrees
+        for(unsigned int vertex = threadIdx.x; vertex < graph.vertexNum+1; vertex += blockDim.x) {
             vertexDegrees_s[vertex]=workList.list[vertex];
         }
         currentEdgeIndex = workList.listNumDeletedVertices[0];

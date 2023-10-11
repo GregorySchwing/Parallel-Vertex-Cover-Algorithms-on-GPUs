@@ -481,18 +481,20 @@ void setBlockDimAndUseGlobalMemoryAutoWorkListSize(Config &config, CSRGraph grap
 		if (config.blockDim)
 		{
 			long long NumBlocks = (maxNumThreadsPerSM / config.blockDim) * numOfMultiProcessors;
-			minStackSize = ((long long)minimum * (long long)(graph.vertexNum + 1) * (long long)sizeof(int)) * NumBlocks;
+			// Offsets instead of degrees
+			minStackSize = ((long long)minimum * (long long)((graph.vertexNum + 1) + 1) * (long long)sizeof(int)) * NumBlocks;
 		}
 		else
 		{
-			minStackSize = ((long long)minimum * (long long)(graph.vertexNum + 1) * (long long)sizeof(int)) * minNumBlocks;
+			// Offsets instead of degrees
+			minStackSize = ((long long)minimum * (long long)((graph.vertexNum + 1) + 1) * (long long)sizeof(int)) * minNumBlocks;
 		}
 
 		int numSharedMemVariables = 50;
 		long long globalListSize;
 		if (config.version == HYBRID)
 		{
-			globalListSize = (long long)config.globalListSize * (long long)(graph.vertexNum + 1) * (long long)sizeof(int);
+			globalListSize = (long long)config.globalListSize * (long long)((graph.vertexNum + 1) + 1) * (long long)sizeof(int);
 		}
 		else
 		{
@@ -500,13 +502,13 @@ void setBlockDimAndUseGlobalMemoryAutoWorkListSize(Config &config, CSRGraph grap
 		}
 		long long consumedGlobalMem = (long long)(1024 * 1024 * 1024 * 2.5) + globalListSize;
 		long long availableGlobalMem = maxGlobalMemory - consumedGlobalMem;
-		long long maxNumBlocksGlobalMem = MIN(availableGlobalMem / ((long long)minimum * (long long)(graph.vertexNum + 1) * (long long)sizeof(int)), maxNumThreadsPerSM * numOfMultiProcessors / 64);
-		long long minNumBlocksGlobalMem = MIN(availableGlobalMem / ((long long)minimum * (long long)(graph.vertexNum + 1) * (long long)sizeof(int)), maxNumThreadsPerSM * numOfMultiProcessors / maxThreadsPerBlock);
+		long long maxNumBlocksGlobalMem = MIN(availableGlobalMem / ((long long)minimum * (long long)((graph.vertexNum + 1) + 1) * (long long)sizeof(int)), maxNumThreadsPerSM * numOfMultiProcessors / 64);
+		long long minNumBlocksGlobalMem = MIN(availableGlobalMem / ((long long)minimum * (long long)((graph.vertexNum + 1) + 1) * (long long)sizeof(int)), maxNumThreadsPerSM * numOfMultiProcessors / maxThreadsPerBlock);
 		long long minBlockDimGlobalMem = maxNumThreadsPerSM * numOfMultiProcessors / maxNumBlocksGlobalMem;
 		minBlockDimGlobalMem = pow(2, floor(log2((double)minBlockDimGlobalMem)));
 		if ((long long)(consumedGlobalMem + minStackSize) > maxGlobalMemory && maxNumBlocksGlobalMem < 1)
 		{
-			fprintf(stderr, "\nDividing WorkList Size By 2 : %d -> ", config.globalListSize, config.globalListSize/2);
+			fprintf(stderr, "\nDividing WorkList Size By 2 : %d -> %d", config.globalListSize, config.globalListSize/2);
 			config.globalListSize=config.globalListSize/2;
 			continue;
 		}
