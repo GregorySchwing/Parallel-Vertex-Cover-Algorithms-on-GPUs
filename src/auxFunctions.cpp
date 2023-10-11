@@ -205,6 +205,16 @@ CSRGraph createCSRGraphFromFile(const char *filename)
 		qsort(&graph.dst[graph.srcPtr[vertex]], graph.degree[vertex], sizeof(int), comp);
 	}
 
+	// After building offsets, set degrees to either 0 or -1
+	// The degree array will be used to set the start pointer of a CSR row
+	for (unsigned int vertex = 0; vertex < graph.vertexNum; ++vertex)
+	{
+		if(graph.degree[vertex]==0)
+			graph.degree[vertex]=-1;
+		else
+			graph.degree[vertex]=0;
+	}
+
 	return graph;
 }
 

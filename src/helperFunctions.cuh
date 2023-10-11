@@ -152,6 +152,55 @@ __device__ unsigned int findNextEdgeByWarp(unsigned int* srcPtrUncompressed, uns
 }
 
 
+__device__ unsigned int findNextVertexByWarp(unsigned int* srcPtrUncompressed, unsigned int *dst, int *vertexDegrees_s, unsigned int currentVertexIndex, unsigned int numberOfVertices) {
+    int iterations = divup(numberOfVertices-currentVertexIndex, warpSize);
+    unsigned int nextVertex = currentVertexIndex + threadIdx.x;
+    int nextVertexDegree;
+    bool foundVertex;
+    // Block size are limited to 1024; 
+    // 32 is the max number of warps per block
+    // First 32 entries are whether the predicate is true
+    // Second 32 are the value
+    __shared__ unsigned int minEdgeIdxInWarp[64];
+    __shared__ unsigned int foundVertexInBlock;
+    __shared__ unsigned int lowestEligibleVertex;
+    // Min tpb is 64 :)
+    if (threadIdx.x < 64)
+        minEdgeIdxInWarp[threadIdx.x]=0;
+    __syncthreads();
+
+    for (int currentIt = 0; currentIt < iterations; ++currentIt){
+        // Prevent oob memory access
+        nextVertexDegree = vertexDegrees_s[nextVertex%numberOfVertices];
+        // Prevent wrap around, also refind the current vertex on defferred matching branch.
+        foundVertex = (nextVertexDegree > -1 & nextVertex >= currentVertexIndex);
+        // Use warp-level ballot to check if any thread found an edge
+        int warpResult = __ballot_sync(0xffffffff,foundVertex);
+        // If result is false, lane 0 writes false and its edge
+        // If result is true, winning lane writes true and its edge
+        if (lane_id()==MultiplyDeBruijnBitPosition[((uint32_t)((warpResult & -warpResult) * 0x077CB531U)) >> 27]){
+            minEdgeIdxInWarp[warp_id()]=warpResult;
+            minEdgeIdxInWarp[32+warp_id()]=nextVertex;
+        }
+        // All warps have written to sm
+        __syncthreads();
+        if (warp_id()==0){
+            foundVertex = minEdgeIdxInWarp[lane_id()];
+            foundVertexInBlock = __ballot_sync(0xffffffff,foundVertex);            
+            lowestEligibleVertex = minEdgeIdxInWarp[32+MultiplyDeBruijnBitPosition[((uint32_t)((foundVertexInBlock & -foundVertexInBlock) * 0x077CB531U)) >> 27]];
+        }
+        __syncthreads();
+        if(foundVertexInBlock){
+            return lowestEligibleVertex;
+        } else {
+            nextVertex+=blockDim.x;
+        }
+    }
+    return numberOfVertices;
+}
+
+
+
 
 __device__ void deleteNeighborsOfMaxDegreeVertex(CSRGraph graph,int* vertexDegrees_s, unsigned int* numDeletedVertices, int* vertexDegrees_s2, 
     unsigned int* numDeletedVertices2, int maxDegree, unsigned int maxVertex){
@@ -184,13 +233,19 @@ __device__ void deleteNeighborsOfMaxDegreeVertex(CSRGraph graph,int* vertexDegre
 }
 
 
-
 __device__ void skipEdge(CSRGraph graph,int* vertexDegrees_s, unsigned int* numDeletedVertices, int* vertexDegrees_s2, 
-    unsigned int* numDeletedVertices2, unsigned int nextEdge){
-    *numDeletedVertices=nextEdge;
-    *numDeletedVertices2 = nextEdge+1;
+    unsigned int* numDeletedVertices2, unsigned int nextVertex){
+    *numDeletedVertices=nextVertex;
+    *numDeletedVertices2 = nextVertex;
     for(unsigned int vertex = threadIdx.x; vertex<graph.vertexNum; vertex+=blockDim.x){
         vertexDegrees_s2[vertex] = vertexDegrees_s[vertex];
+    }
+    __syncthreads();
+    if (threadIdx.x==0){
+        if (graph.srcPtr[nextVertex]+vertexDegrees_s2[nextVertex]>=graph.srcPtr[nextVertex+1])
+            vertexDegrees_s2[nextVertex]=-1;
+        else
+            vertexDegrees_s2[nextVertex]++;
     }
     __syncthreads();
 }
@@ -215,11 +270,11 @@ __device__ void deleteMaxDegreeVertex(CSRGraph graph,int* vertexDegrees_s, unsig
 }
 
 
-__device__ void deleteNextEdge(CSRGraph graph,int* vertexDegrees_s, unsigned int nextEdge){
-    auto src = graph.srcPtrUncompressed[nextEdge];
-    auto dst = graph.dst[nextEdge];
+__device__ void deleteNextEdge(CSRGraph graph,int* vertexDegrees_s, unsigned int nextVertex){
     if(threadIdx.x == 0){
-        vertexDegrees_s[src]=-1;
+        auto colIndex = graph.srcPtr[nextVertex] + vertexDegrees_s[nextVertex];
+        auto dst = graph.dst[colIndex];
+        vertexDegrees_s[nextVertex]=-1;
         vertexDegrees_s[dst]=-1;
     }
     __syncthreads();

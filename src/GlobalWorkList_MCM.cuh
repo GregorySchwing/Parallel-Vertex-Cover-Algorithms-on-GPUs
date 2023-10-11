@@ -32,11 +32,11 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * maxim
     // This is still degrees.
     volatile int * stackVertexDegrees = &stacks.stacks[blockIdx.x * stackSize * graph.vertexNum];
     // Starts at zero.  I use this as an edge index of the currently considered edge.
-    volatile unsigned int * stackcurrentEdgeIndex = &stacks.stacksNumDeletedVertices[blockIdx.x * stackSize];
+    volatile unsigned int * stackCurrentVertexIndex = &stacks.stacksNumDeletedVertices[blockIdx.x * stackSize];
 
     // Define the vertexDegree_s
-    unsigned int currentEdgeIndex;
-    unsigned int currentEdgeIndex2;
+    unsigned int currentVertexIndex;
+    unsigned int currentVertexIndex2;
     
     #if USE_GLOBAL_MEMORY
     int * vertexDegrees_s = &global_memory[graph.vertexNum*(2*blockIdx.x)];
@@ -63,7 +63,7 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * maxim
         for(unsigned int vertex = threadIdx.x; vertex < graph.vertexNum; vertex += blockDim.x) {
             vertexDegrees_s[vertex]=workList.list[vertex];
         }
-        currentEdgeIndex = workList.listNumDeletedVertices[0];
+        currentVertexIndex = workList.listNumDeletedVertices[0];
         dequeueOrPopNextItr = false;
     }
 
@@ -73,7 +73,7 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * maxim
         if(dequeueOrPopNextItr) {
             if(stackTop != -1) { // Local stack is not empty, pop from the local stack
                 startTime(POP_FROM_STACK,&blockCounters);
-                popStack(graph.vertexNum, vertexDegrees_s, &currentEdgeIndex, stackVertexDegrees, stackcurrentEdgeIndex, &stackTop);               
+                popStack(graph.vertexNum, vertexDegrees_s, &currentVertexIndex, stackVertexDegrees, stackCurrentVertexIndex, &stackTop);               
                 endTime(POP_FROM_STACK,&blockCounters);
 
                 #if USE_COUNTERS
@@ -85,7 +85,7 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * maxim
             } else { // Local stack is empty, read from the global workList
                 startTime(TERMINATE,&blockCounters);
                 startTime(DEQUEUE,&blockCounters);
-                if(!dequeue(vertexDegrees_s, workList, graph.vertexNum, &currentEdgeIndex)) {   
+                if(!dequeue(vertexDegrees_s, workList, graph.vertexNum, &currentVertexIndex)) {   
                     endTime(TERMINATE,&blockCounters);
                     break;
                 }
@@ -114,7 +114,9 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * maxim
         // Find the source containing the current edge considered
         // Find the next edge between two vertices with non-zero degree.
         //unsigned int nextEdge = findNextEdge(graph.srcPtrUncompressed, graph.dst, vertexDegrees_s, currentEdgeIndex, 2*graph.edgeNum, graph.vertexNum);            
-        unsigned int nextEdge = findNextEdgeByWarp(graph.srcPtrUncompressed, graph.dst, vertexDegrees_s, currentEdgeIndex, 2*graph.edgeNum, graph.vertexNum);            
+        //unsigned int nextEdge = findNextEdgeByWarp(graph.srcPtrUncompressed, graph.dst, vertexDegrees_s, currentEdgeIndex, 2*graph.edgeNum, graph.vertexNum);    
+        unsigned int nextVertex = findNextVertexByWarp(graph.srcPtrUncompressed, graph.dst, vertexDegrees_s, currentVertexIndex, graph.vertexNum);    
+                
         /*
         if (threadIdx.x==0)
             printf("%d %d \n",nextEdge,nextEdgeFast);
@@ -132,7 +134,7 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * maxim
         // Someone else found a perfect matching
         || maximum_s == graph.vertexNum 
         // Allowable on when matching is empty. Otherwise, indicates node lacks children
-        || nextEdge == 2*graph.edgeNum) { // Reached the bottom of the tree, maximum vertex cover possibly found
+        || nextVertex == graph.vertexNum) { // Reached the bottom of the tree, maximum vertex cover possibly found
             if(threadIdx.x==0){
                 //atomicMin(maximum, currentEdgeIndex);
                 //printf("atomicMax block id %d numMatchedVertices %u maximum_s %d, current edge %u graph.vertexNum/2 %d\n",blockIdx.x,numMatchedVertices, maximum_s, currentEdgeIndex,graph.vertexNum/2);
@@ -147,7 +149,7 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * maxim
 
             startTime(PREPARE_RIGHT_CHILD,&blockCounters);
             //deleteNeighborsOfMaxDegreeVertex(graph,vertexDegrees_s, &currentEdgeIndex, vertexDegrees_s2, &currentEdgeIndex2, maxDegree, maxVertex);
-            skipEdge(graph,vertexDegrees_s, &currentEdgeIndex, vertexDegrees_s2, &currentEdgeIndex2, nextEdge);
+            skipEdge(graph,vertexDegrees_s, &currentVertexIndex, vertexDegrees_s2, &currentVertexIndex2, nextVertex);
             endTime(PREPARE_RIGHT_CHILD,&blockCounters);
             //if (threadIdx.x==0)
             //    printf("pushing block id %d currentEdgeIndex2 %d\n",blockIdx.x,currentEdgeIndex2);
@@ -157,7 +159,7 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * maxim
             bool enqueueSuccess;
             if(checkThreshold(workList)){
                 startTime(ENQUEUE,&blockCounters);
-                enqueueSuccess = enqueue(vertexDegrees_s2, workList, graph.vertexNum, &currentEdgeIndex2);
+                enqueueSuccess = enqueue(vertexDegrees_s2, workList, graph.vertexNum, &currentVertexIndex2);
             } else  {
                 enqueueSuccess = false;
             }
@@ -166,7 +168,7 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * maxim
             
             if(!enqueueSuccess) {
                 startTime(PUSH_TO_STACK,&blockCounters);
-                pushStack(graph.vertexNum, vertexDegrees_s2, &currentEdgeIndex2, stackVertexDegrees, stackcurrentEdgeIndex, &stackTop);                    
+                pushStack(graph.vertexNum, vertexDegrees_s2, &currentVertexIndex2, stackVertexDegrees, stackCurrentVertexIndex, &stackTop);                    
                 maxDepth(stackTop, &blockCounters);
                 endTime(PUSH_TO_STACK,&blockCounters);
                 __syncthreads(); 
@@ -176,7 +178,7 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * maxim
 
             startTime(PREPARE_LEFT_CHILD,&blockCounters);
             // Prepare the child that removes the neighbors of the max vertex to be processed on the next iteration
-            deleteNextEdge(graph, vertexDegrees_s, currentEdgeIndex);
+            deleteNextEdge(graph, vertexDegrees_s, currentVertexIndex);
             endTime(PREPARE_LEFT_CHILD,&blockCounters);
             dequeueOrPopNextItr = false;
         }
