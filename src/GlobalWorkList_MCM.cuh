@@ -132,7 +132,8 @@ __global__ void GlobalWorkList_shared_kernel(Stacks stacks, unsigned int * maxim
         // Someone else found a perfect matching
         || maximum_s == graph.vertexNum 
         // Allowable on when matching is empty. Otherwise, indicates node lacks children
-        || nextEdge == 2*graph.edgeNum) { // Reached the bottom of the tree, maximum vertex cover possibly found
+        || nextEdge == 2*graph.edgeNum
+        || (2*graph.edgeNum - nextEdge) < (graph.vertexNum-numMatchedVertices)/2) { // Reached the bottom of the tree, maximum vertex cover possibly found
             if(threadIdx.x==0){
                 //atomicMin(maximum, currentEdgeIndex);
                 //printf("atomicMax block id %d numMatchedVertices %u maximum_s %d, current edge %u graph.vertexNum/2 %d\n",blockIdx.x,numMatchedVertices, maximum_s, currentEdgeIndex,graph.vertexNum/2);
